@@ -1,0 +1,5 @@
+waveshare product page
+https://www.waveshare.com/esp32-s3-dev-kit-n8r8.htm
+
+waveshare docs, beginner tutorial
+https://www.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8
