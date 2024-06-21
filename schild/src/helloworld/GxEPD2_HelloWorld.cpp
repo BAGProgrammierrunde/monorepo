@@ -60,7 +60,7 @@ SS : nCS, CS, CSB, CSN, nSS, STE, SYNC.
 
 //GxEPD2_BW<GxEPD2_290_GDEY029T94, GxEPD2_290_GDEY029T94::HEIGHT> display(GxEPD2_290_GDEY029T94(/*CS=*/ SS, /*DC=*/ 0, /*RST=*/ 6, /*BUSY=*/ 4)); // GDEY029T94  128x296, SSD1680, (FPC-A005 20.06.15)
 
-GxEPD2_BW<GxEPD2_290_GDEY029T94, GxEPD2_290_GDEY029T94::HEIGHT> display(GxEPD2_290_GDEY029T94(/*CS=*/ SS, /*DC=*/ 0, /*RST=*/ 13, /*BUSY=*/ 10)); // GDEY029T94  128x296, SSD1680, (FPC-A005 20.06.15)
+GxEPD2_BW<GxEPD2_290_GDEY029T94, GxEPD2_290_GDEY029T94::HEIGHT> display(GxEPD2_290_GDEY029T94(/*CS=*/ 22, /*DC=*/ 0, /*RST=*/ 21, /*BUSY=*/ 19)); // GDEY029T94  128x296, SSD1680, (FPC-A005 20.06.15)
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -84,7 +84,7 @@ void setup()
       display.fillScreen(GxEPD_WHITE);
       display.setCursor(0, 0);
       display.setTextSize(2);
-      display.print(random(100000));
+      display.print(random(10000000));
   } while (display.nextPage());
   Serial.println("Display update done");
 
@@ -94,9 +94,9 @@ void setup()
 }
 
 void loop() {
-  Serial.println("GxEjiäjkoä");
-  //esp_deep_sleep(5000000);
-  delay(5000);
+  //Serial.println("GxEjiäjkoä");
+  //esp_deep_sleep(500000000);
+  //delay(5000);
 
   /*if (digitalRead(PIN_BUTTON_READ)) {
     digitalWrite(PIN_WHITE_LED, HIGH);
