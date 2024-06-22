@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'DFR0478'
+CLASS = DISCRETE
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "ARROW_PART_NUMBER", "ARROW_PRICE/STOCK", "DESCRIPTION", "DATASHEET";
+{========================================================================================}
+ "DFRobot", "DFR0478" (!) = "", "FIREBEETLE_ESP32", "Other", "426-DFR0478", "https://www.mouser.co.uk/ProductDetail/DFRobot/DFR0478?qs=EU6FO9ffTwc%252BR65h2NUGQw%3D%3D", "DFR0478", "https://www.arrow.com/en/products/dfr0478/dfrobot?region=nac", "Development Boards & Kits - Wireless FireBeetle ESP32 IOT MCU", "https://datasheet.datasheetarchive.com/originals/distributors/DKDS-1/13356.pdf"
+END_PART
+
+END.

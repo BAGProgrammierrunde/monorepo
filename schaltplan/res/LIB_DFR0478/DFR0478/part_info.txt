@@ -1,0 +1,9 @@
+Manufacturer=DFRobot
+PartNumber=DFR0478
+PartCategory=Undefined or Miscellaneous
+PackageCategory=Other
+PinCount=40
+Version=1.4
+Released=2018-04-05 08:13:04
+Downloaded=2024-06-21 19:57:37
+3D=Y
