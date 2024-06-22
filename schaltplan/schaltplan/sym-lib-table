@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "video")(type "KiCad")(uri "C:/Projekte/Programmierrunde/monorepo/schaltplan/res/kicad/video.kicad_sym")(options "")(descr ""))
+)
