@@ -471,22 +471,20 @@
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "U"
-				(at 54.61 20.32 0)
+			(property "Reference" "U1"
+				(at 59.69 6.3186 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify left top)
 				)
 			)
 			(property "Value" "DFR0478"
-				(at 54.61 17.78 0)
+				(at 59.69 3.7786 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify left top)
 				)
 			)
 			(property "Footprint" "FIREBEETLE_ESP32"
@@ -1284,42 +1282,6 @@
 						)
 					)
 				)
-				(pin passive line
-					(at 58.42 0 180)
-					(length 5.08)
-					(name "MH3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "MH3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 58.42 -2.54 180)
-					(length 5.08)
-					(name "MH4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "MH4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
 			)
 		)
 		(symbol "Switch:SW_Nidec_CAS-120A1"
@@ -1508,20 +1470,22 @@
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "U"
-				(at 0 0 0)
+			(property "Reference" "U3"
+				(at -3.048 11.938 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left)
 				)
 			)
-			(property "Value" ""
-				(at -0.762 -4.572 0)
+			(property "Value" "~"
+				(at 1.27 11.43 90)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left)
 				)
 			)
 			(property "Footprint" ""
@@ -2458,7 +2422,7 @@
 		(dnp no)
 		(uuid "595e5663-937f-49b9-ba03-24c9437a08bc")
 		(property "Reference" "U3"
-			(at 69.85 145.4149 90)
+			(at 69.342 143.002 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2749,9 +2713,6 @@
 		(pin "23"
 			(uuid "64c352c4-6c89-4733-8928-1a9e1908190f")
 		)
-		(pin "MH4"
-			(uuid "40fbde64-5160-4d2f-a319-13667046bde6")
-		)
 		(pin "12"
 			(uuid "92e35228-8fd5-4ebf-b032-75f7b194b2cd")
 		)
@@ -2793,9 +2754,6 @@
 		)
 		(pin "MH2"
 			(uuid "e65a7fdd-ac9a-4c6e-a3b2-b132c1e07154")
-		)
-		(pin "MH3"
-			(uuid "20e22278-4846-4cf6-b57e-117ff55be036")
 		)
 		(pin "15"
 			(uuid "af88b16d-03a0-405d-91ac-4f717f4181fb")
