@@ -57,6 +57,7 @@ void setup() {
     digitalWrite(27, HIGH);
     pinMode(26, OUTPUT);
     digitalWrite(26, HIGH);
+    pinMode(15, INPUT);
 
     temperatureSensor.init(17);
 }
@@ -65,7 +66,11 @@ void loop() {
 
     digitalWrite(27, HIGH);
     digitalWrite(26, HIGH);
-
+    
+    for (int i = 0; i<1000; i++) {
+      delay(100);
+      Serial.println(analogRead(15));
+    }
     showTemperature();
 };
 
