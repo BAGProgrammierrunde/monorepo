@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "components/DS18B20/DS18B20.h"
+#include "components/Joystick/Joystick.h"
 #include <GxEPD2_BW.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 
@@ -21,12 +22,16 @@
 
 #define PIN_YELLOW_LED 27
 #define PIN_YELLOW_LED_2 26
+
 void showTemperature();
+void readJoystick();
 
 GxEPD2_BW<GxEPD2_290_GDEY029T94, GxEPD2_290_GDEY029T94::HEIGHT> display(
         GxEPD2_290_GDEY029T94(/*CS=*/ 0, /*DC=*/ 19, /*RST=*/ 21, /*BUSY=*/ 22));
 
 DS18B20 temperatureSensor;
+unsigned long previousMillis = 0;
+Joystick joystick;
 
 const char HelloWorld[] = "Hello World!";
 
@@ -60,27 +65,46 @@ void setup() {
     pinMode(15, INPUT);
 
     temperatureSensor.init(17);
+    joystick.init(6, 3);
 }
 
 void loop() {
 
     digitalWrite(27, HIGH);
     digitalWrite(26, HIGH);
-    
+
     for (int i = 0; i<1000; i++) {
       delay(100);
       Serial.println(analogRead(15));
     }
     showTemperature();
+
+    readJoystick();
 };
 
-void showTemperature() {
-    delay(1500);
-    display.nextPage();
-    display.fillScreen(GxEPD_WHITE);
-    display.setCursor(0, 0);
-    display.print(temperatureSensor.getTemperature());
-    display.print("C");
+// Um schnellere Ergebnisse zu erhalten muss der Rest auskommentiert werden!
+void readJoystick() {
+    Serial.print("Y is: ");
+    Serial.print(joystick.getYPercent());
 
-    Serial.println(temperatureSensor.getTemperature());
+    Serial.print(" and X is: ");
+    Serial.print(joystick.getXPercent());
+
+    Serial.print(" and Button is: ");
+    Serial.println(joystick.getSwitch() ? "ON" : "OFF");
+}
+
+void showTemperature() {
+    unsigned long currentMillis = millis();
+
+    if (currentMillis - previousMillis >= 1300) {
+        previousMillis = currentMillis;
+        display.nextPage();
+        display.fillScreen(GxEPD_WHITE);
+        display.setCursor(0, 0);
+        display.print(temperatureSensor.getTemperature());
+        display.print("C");
+
+        Serial.println(temperatureSensor.getTemperature());
+    }
 }
