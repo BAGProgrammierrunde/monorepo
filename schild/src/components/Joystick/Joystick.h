@@ -8,15 +8,16 @@
 
 class Joystick {
 public:
-    void init();
-    void init(int switchPin, int xPin, int yPin);
+    void init(int xOffset = 0, int yOffset = 0);
+    void init(int switchPin, int xPin, int yPin, int xOffset = 0, int yOffset = 0);
     int getX();
-    int getXPercent();
+    int getXPercent(int offset = 0);
     int getY();
-    int getYPercent();
-    int getSwitch();
+    int getYPercent(int offset = 0);
+    bool getSwitch();
 private:
     void setupPins();
+    int getPercent(int value, int offset);
 };
 
 
