@@ -27,7 +27,7 @@ float DS18B20::getTemperature() {
 /// <para>The default pin is: 17</para>
 /// </summary>
 void DS18B20::init() {
-    this->init(18);
+    this->init(17);
 }
 
 /// <summary>Use temperature sensor on specific pin.<br>
