@@ -65,7 +65,7 @@ void setup() {
     pinMode(15, INPUT);
 
     temperatureSensor.init(17);
-    joystick.init(6, 3);
+    joystick.init(25, 34, 35, 6, 3);
 }
 
 void loop() {

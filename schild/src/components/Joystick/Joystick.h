@@ -5,10 +5,10 @@
 #ifndef SCHILD_JOYSTICK_H
 #define SCHILD_JOYSTICK_H
 
+#include "Arduino.h"
 
 class Joystick {
 public:
-    void init(int xOffset = 0, int yOffset = 0);
     void init(int switchPin, int xPin, int yPin, int xOffset = 0, int yOffset = 0);
     int getX();
     int getXPercent(int offset = 0);
@@ -18,6 +18,12 @@ public:
 private:
     void setupPins();
     int getPercent(int value, int offset);
+    int buttonPin;
+    int xAxisPin;
+    int yAxisPin;
+
+    int xAxisOffset;
+    int yAxisOffset;
 };
 
 

@@ -2,29 +2,7 @@
 // Created by fabian on 17.09.24.
 //
 
-#include "Arduino.h"
 #include "Joystick.h"
-
-int buttonPin;
-int xAxisPin;
-int yAxisPin;
-
-int xAxisOffset;
-int yAxisOffset;
-
-/// <summary>Initializes the joystick with the default pins.<br>
-/// The default pins are:<br>
-/// - switch = 25<br>
-/// - x = 34<br>
-/// - y = 35<br>
-/// <para><br>
-/// Optional xOffset: The offset for the x-axis in percent <br>
-/// Optional yOffset: The offset for the y-axis in percent
-/// </para>
-/// </summary>
-void Joystick::init(int xOffset, int yOffset) {
-    this->init(25, 34, 35, xOffset, yOffset);
-}
 
 /// <summary>Initializes the joystick with specified pins.<br>
 /// <para><br>

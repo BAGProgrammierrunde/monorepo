@@ -3,11 +3,14 @@
 //
 
 #include <Arduino.h>
+#include "DallasTemperature.h"
 
 class DS18B20 {
 public:
-    float getTemperature();
-    void init();
     void init(int pin);
+    float getTemperature();
     bool isConnected();
+private:
+    DallasTemperature sensors;
+    OneWire oneWire;
 };
