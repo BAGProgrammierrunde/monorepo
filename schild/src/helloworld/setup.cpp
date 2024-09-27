@@ -73,10 +73,8 @@ void loop() {
     digitalWrite(27, HIGH);
     digitalWrite(26, HIGH);
 
-    for (int i = 0; i<1000; i++) {
-      delay(100);
-      Serial.println(analogRead(15));
-    }
+    Serial.println(analogRead(15));
+
     showTemperature();
 
     readJoystick();
@@ -94,17 +92,23 @@ void readJoystick() {
     Serial.println(joystick.getSwitch() ? "ON" : "OFF");
 }
 
+int temperature = 0;
+
 void showTemperature() {
-    unsigned long currentMillis = millis();
+    int currentTemperature = temperatureSensor.getTemperature();
+    if (currentTemperature != temperature) {        
+        temperature = currentTemperature;
+        unsigned long currentMillis = millis();
 
-    if (currentMillis - previousMillis >= 1300) {
-        previousMillis = currentMillis;
-        display.nextPage();
-        display.fillScreen(GxEPD_WHITE);
-        display.setCursor(0, 0);
-        display.print(temperatureSensor.getTemperature());
-        display.print("C");
+        if (currentMillis - previousMillis >= 1300) {
+            previousMillis = currentMillis;
+            display.nextPage();
+            display.fillScreen(GxEPD_WHITE);
+            display.setCursor(0, 0);
+            display.print(currentTemperature);
+            display.print("C");
 
-        Serial.println(temperatureSensor.getTemperature());
+            Serial.println(currentTemperature);
+        }
     }
 }
