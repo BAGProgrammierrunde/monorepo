@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "components/DS18B20/DS18B20.h"
 #include "components/Joystick/Joystick.h"
+#include "components/potentiometer/Potentiometer.h"
 #include <GxEPD2_BW.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 
@@ -32,9 +33,9 @@ GxEPD2_BW<GxEPD2_290_GDEY029T94, GxEPD2_290_GDEY029T94::HEIGHT> display(
 DS18B20 temperatureSensor;
 unsigned long previousMillis = 0;
 Joystick joystick;
+Potentiometer potentiometer;
 
 const char HelloWorld[] = "Hello World!";
-
 
 void setup() {
     Serial.begin(115000);
@@ -66,14 +67,14 @@ void setup() {
 
     temperatureSensor.init(17);
     joystick.init(25, 34, 35, 6, 3);
+    potentiometer.init(15);
 }
 
 void loop() {
-
     digitalWrite(27, HIGH);
     digitalWrite(26, HIGH);
 
-    Serial.println(analogRead(15));
+    Serial.println(potentiometer.getValue());
 
     showTemperature();
 
