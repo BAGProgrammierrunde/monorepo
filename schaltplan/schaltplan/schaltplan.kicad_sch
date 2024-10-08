@@ -352,6 +352,164 @@
 				)
 			)
 		)
+		(symbol "Device:Buzzer"
+			(pin_names
+				(offset 0.0254) hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "BZ"
+				(at 3.81 1.27 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "Buzzer"
+				(at 3.81 -1.27 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at -0.635 2.54 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at -0.635 2.54 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Buzzer, polarized"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "quartz resonator ceramic"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "*Buzzer*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Buzzer_0_1"
+				(arc
+					(start 0 -3.175)
+					(mid 3.1612 0)
+					(end 0 3.175)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.651 1.905) (xy -1.143 1.905)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.397 2.159) (xy -1.397 1.651)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 3.175) (xy 0 -3.175)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Buzzer_1_1"
+				(pin passive line
+					(at -2.54 2.54 0)
+					(length 2.54)
+					(name "+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -2.54 -2.54 0)
+					(length 2.54)
+					(name "-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "Device:LED"
 			(pin_numbers hide)
 			(pin_names
@@ -2296,6 +2454,12 @@
 		(uuid "1ae24070-b609-4341-876c-b9522c9e8b29")
 	)
 	(junction
+		(at 67.31 60.96)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "4210692e-1610-4d8c-a420-304fc691dcb3")
+	)
+	(junction
 		(at 120.65 127)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2533,6 +2697,16 @@
 	)
 	(wire
 		(pts
+			(xy 77.47 68.58) (xy 77.47 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2c68be0f-98f3-4885-a878-7bb324b708ce")
+	)
+	(wire
+		(pts
 			(xy 67.31 134.62) (xy 68.58 134.62)
 		)
 		(stroke
@@ -2551,6 +2725,17 @@
 			(type default)
 		)
 		(uuid "2f6c3708-457c-484a-9848-2d92bc2ae6af")
+	)
+	(wire
+		(pts
+			(xy 67.31 60.96) (xy 60.96 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 0 0 0 1)
+		)
+		(uuid "33421b1e-e034-4918-95cc-3f366a83aba5")
 	)
 	(wire
 		(pts
@@ -2595,7 +2780,7 @@
 	)
 	(wire
 		(pts
-			(xy 67.31 55.88) (xy 67.31 69.85)
+			(xy 67.31 55.88) (xy 67.31 60.96)
 		)
 		(stroke
 			(width 0)
@@ -2708,6 +2893,16 @@
 			(color 255 0 9 1)
 		)
 		(uuid "523990dd-9cb6-411c-8993-09edb415ddde")
+	)
+	(wire
+		(pts
+			(xy 55.88 68.58) (xy 77.47 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "56382998-e036-4cfe-9e95-686c25d6f70e")
 	)
 	(wire
 		(pts
@@ -2835,6 +3030,16 @@
 			(type default)
 		)
 		(uuid "78760d2d-1b61-4caa-9d45-b8ca0e199f63")
+	)
+	(wire
+		(pts
+			(xy 55.88 59.69) (xy 55.88 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "78fe85c4-e375-4bf9-9ead-36d2a23cab4a")
 	)
 	(wire
 		(pts
@@ -3070,6 +3275,17 @@
 	)
 	(wire
 		(pts
+			(xy 60.96 59.69) (xy 60.96 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 0 0 0 1)
+		)
+		(uuid "b000dabe-bbb6-4289-b9f4-d64f8c30a62b")
+	)
+	(wire
+		(pts
 			(xy 93.98 135.89) (xy 93.98 153.67)
 		)
 		(stroke
@@ -3173,6 +3389,17 @@
 			(color 0 0 0 1)
 		)
 		(uuid "d341ac50-fbb7-408a-a26a-e9f77f642b08")
+	)
+	(wire
+		(pts
+			(xy 67.31 60.96) (xy 67.31 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+			(color 0 0 0 1)
+		)
+		(uuid "d6a50ceb-9f27-4674-a1d9-2b4d6248b175")
 	)
 	(wire
 		(pts
@@ -4317,6 +4544,76 @@
 			(project ""
 				(path "/f79f94d7-572e-4250-b494-96d40f946eb3"
 					(reference "U4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:Buzzer")
+		(at 58.42 57.15 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e120791c-ef6d-4cc8-bcbc-ffca697d5c1e")
+		(property "Reference" "BZ1"
+			(at 62.23 55.1248 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "Buzzer"
+			(at 62.23 57.6648 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 55.88 57.785 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 55.88 57.785 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Buzzer, polarized"
+			(at 58.42 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "b98b1fca-45df-4448-a90a-463104d45d56")
+		)
+		(pin "1"
+			(uuid "f29019e1-d6af-4768-90f1-1d3248f171e5")
+		)
+		(instances
+			(project ""
+				(path "/f79f94d7-572e-4250-b494-96d40f946eb3"
+					(reference "BZ1")
 					(unit 1)
 				)
 			)
