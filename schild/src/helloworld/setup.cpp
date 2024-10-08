@@ -82,8 +82,8 @@ void loop() {
     digitalWrite(26, HIGH);
 
     Serial.println(potentiometer.getValue());
-//    showTemperature();
-//
+    showTemperature();
+
 //    readJoystick();
     playMelody();
 //    playNote();
