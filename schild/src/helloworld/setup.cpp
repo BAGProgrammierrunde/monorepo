@@ -2,6 +2,9 @@
 #include "components/DS18B20/DS18B20.h"
 #include "components/Joystick/Joystick.h"
 #include "components/potentiometer/Potentiometer.h"
+#include "components/PassiveBuzzer/Tone.h"
+#include "components/PassiveBuzzer/notes.h"
+#include "components/PassiveBuzzer/PassiveBuzzer.h"
 #include <GxEPD2_BW.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 
@@ -26,6 +29,8 @@
 
 void showTemperature();
 void readJoystick();
+void playMelody();
+void playNote();
 
 GxEPD2_BW<GxEPD2_290_GDEY029T94, GxEPD2_290_GDEY029T94::HEIGHT> display(
         GxEPD2_290_GDEY029T94(/*CS=*/ 0, /*DC=*/ 19, /*RST=*/ 21, /*BUSY=*/ 22));
@@ -34,6 +39,7 @@ DS18B20 temperatureSensor;
 unsigned long previousMillis = 0;
 Joystick joystick;
 Potentiometer potentiometer;
+PassiveBuzzer passiveBuzzer;
 
 const char HelloWorld[] = "Hello World!";
 
@@ -68,6 +74,7 @@ void setup() {
     temperatureSensor.init(17);
     joystick.init(25, 34, 35, 6, 3);
     potentiometer.init(15);
+    passiveBuzzer.init(2);
 }
 
 void loop() {
@@ -75,11 +82,37 @@ void loop() {
     digitalWrite(26, HIGH);
 
     Serial.println(potentiometer.getValue());
-
-    showTemperature();
-
-    readJoystick();
+//    showTemperature();
+//
+//    readJoystick();
+    playMelody();
+//    playNote();
 };
+
+void playMelody() {
+    Tone tones[] = {
+            {NOTE_E5, 80}, {NOTE_E5, 80},{NOTE_E5, 40},
+            {NOTE_E5, 80},{NOTE_E5, 80},{NOTE_E5, 40},
+            {NOTE_E5, 80},{NOTE_G5, 80},{NOTE_C5, 80},{NOTE_D5, 80},
+            {NOTE_E5, 20},
+            {NOTE_F5, 80},{NOTE_F5, 80},{NOTE_F5, 80},{NOTE_F5, 80},
+            {NOTE_F5, 80},{NOTE_E5, 80},{NOTE_E5, 80},{NOTE_E5, 160},{NOTE_E5, 160},
+            {NOTE_E5, 80},{NOTE_D5, 80},{NOTE_D5, 80},{NOTE_E5, 80},
+            {NOTE_D5, 40},{NOTE_G5}
+    };
+
+    passiveBuzzer.playNotes(tones, 25, 200);
+
+    delay(3000);
+}
+
+void playNote() {
+    passiveBuzzer.playNote(NOTE_F3, 160);
+    delay(1000);
+    passiveBuzzer.playNote(NOTE_C5);
+    delay(500);
+    passiveBuzzer.stopNote();
+}
 
 // Um schnellere Ergebnisse zu erhalten muss der Rest auskommentiert werden!
 void readJoystick() {
