@@ -2,7 +2,7 @@
 - [Architektur](#architektur)
 - [Links](#links)
 - [Hilfen \& Tutorials](#hilfen--tutorials)
-  - [Platformio Tutorial (deutsch)](#platformio-tutorial-deutsch)
+  - [Platformio Tutorials](#platformio-tutorials)
 
 ## Architektur
 ...
@@ -13,4 +13,5 @@
 
 ## Hilfen & Tutorials
 
-### [Platformio Tutorial (deutsch)](https://www.youtube.com/watch?v=0lCem8XTKMs)
+### Platformio Tutorials
+[Youtube - Platformio Tutorial (deutsch)](https://www.youtube.com/watch?v=0lCem8XTKMs)
