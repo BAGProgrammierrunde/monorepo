@@ -3811,7 +3811,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "595e5663-937f-49b9-ba03-24c9437a08bc")
-		(property "Reference" "Display"
+		(property "Reference" "Display_Waveshare29eink"
 			(at 69.342 143.002 0)
 			(effects
 				(font
@@ -3883,7 +3883,7 @@
 		(instances
 			(project ""
 				(path "/f79f94d7-572e-4250-b494-96d40f946eb3"
-					(reference "Display")
+					(reference "Display_Waveshare29eink")
 					(unit 1)
 				)
 			)
