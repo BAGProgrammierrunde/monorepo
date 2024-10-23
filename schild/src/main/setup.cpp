@@ -77,6 +77,8 @@ void setup() {
     passiveBuzzer.init(2);
 }
 
+bool played = false;
+
 void loop() {
     digitalWrite(27, HIGH);
     digitalWrite(26, HIGH);
@@ -84,8 +86,11 @@ void loop() {
     Serial.println(potentiometer.getValue());
     showTemperature();
 
-//    readJoystick();
-    playMelody();
+    readJoystick();
+    if (!played) {
+        playMelody();
+        played = true;
+    }
 //    playNote();
 };
 
