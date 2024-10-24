@@ -96,17 +96,17 @@ void loop() {
 
 void playMelody() {
     Tone tones[] = {
-            {NOTE_E5, 80}, {NOTE_E5, 80}, {NOTE_E5, 260},
-            {NOTE_E5, 80}, {NOTE_E5, 80}, {NOTE_E5, 260},
-            {NOTE_E5, 80}, {NOTE_G5, 80}, {NOTE_C5, 80},{NOTE_D5, 80},
-            {NOTE_E5, 80}, {NOTE_E5, 80}, {NOTE_E5, 80},{NOTE_E5, 80},
-            {NOTE_F5, 80}, {NOTE_F5, 80}, {NOTE_F5, 80},{NOTE_F5, 80},
-            {NOTE_F5, 80}, {NOTE_E5, 80}, {NOTE_E5, 80},{NOTE_E5, 160},{NOTE_E5, 160},
-            {NOTE_E5, 80}, {NOTE_D5, 80}, {NOTE_D5, 80},{NOTE_E5, 80},
-            {NOTE_D5, 40},{NOTE_G5}
+            {NOTE_E5,  80},  {NOTE_E5, 80},  {NOTE_E5, 360}, {NOTE_E5,   0},
+            {NOTE_E5,  80},  {NOTE_E5, 80},  {NOTE_E5, 360}, {NOTE_E5,   0},
+            {NOTE_E5,  80},  {NOTE_G5, 80},  {NOTE_C5,  80}, {NOTE_D5,  80},
+            {NOTE_E5, 760},  {NOTE_E5,  0},  {NOTE_E5,   0}, {NOTE_E5,   0},
+            {NOTE_F5,  80},  {NOTE_F5, 80},  {NOTE_F5,  80}, {NOTE_F5,  80},
+            {NOTE_F5,  80},  {NOTE_E5, 80},  {NOTE_E5,  80}, {NOTE_E5,  80},
+            {NOTE_E5,  80},  {NOTE_D5, 80},  {NOTE_D5,  80}, {NOTE_E5,  80},  
+            {NOTE_D5, 360},  {NOTE_G5,  0},  {NOTE_G5,   0}, {NOTE_G5,   0}
     };
 
-    passiveBuzzer.playNotes(tones, 28, 200);
+    passiveBuzzer.playNotes(tones, 31, 200);
 
     delay(3000);
 }

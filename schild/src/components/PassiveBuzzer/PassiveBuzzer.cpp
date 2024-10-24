@@ -63,7 +63,9 @@ void PassiveBuzzer::playNotes(int *notes, int *durations, int numberOfNotes, int
 /// </summary>
 void PassiveBuzzer::playNotes(Tone *tones, int numberOfNotes, int pause) {
     for (int currentNote = 0; currentNote < numberOfNotes; currentNote++) {
-        this->playNote(tones[currentNote].note, tones[currentNote].duration);
+        if (tones[currentNote].duration > 0) {
+            this->playNote(tones[currentNote].note, tones[currentNote].duration);
+        }
 
         delay(pause);
     }
