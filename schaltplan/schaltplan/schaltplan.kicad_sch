@@ -1782,8 +1782,8 @@
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "Temp.Sensor"
-				(at -6.35 1.2701 0)
+			(property "Reference" "TS1"
+				(at -6.35 2.54 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -1792,7 +1792,7 @@
 				)
 			)
 			(property "Value" "DS18B20"
-				(at -6.35 -1.2699 0)
+				(at -6.35 0 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -1969,6 +1969,42 @@
 					)
 					(stroke
 						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.81 -1.27) (xy 3.81 -3.81)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 -2.54)
+					(mid 2.912 -3.438)
+					(end 3.81 -3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 -1.27)
+					(mid 2.912 -1.642)
+					(end 2.54 -2.54)
+					(stroke
+						(width 0)
 						(type default)
 					)
 					(fill
