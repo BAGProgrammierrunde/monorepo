@@ -67,7 +67,7 @@ bool Joystick::getSwitch() {
 // ====================================================================================================================
 
 void Joystick::setupPins() {
-    pinMode(buttonPin, INPUT);
+    pinMode(buttonPin, INPUT_PULLUP);
     pinMode(xAxisPin, INPUT);
     pinMode(yAxisPin, INPUT);
 }
