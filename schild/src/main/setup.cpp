@@ -65,11 +65,16 @@ void setup() {
     Serial.println("Display update done");
 
 
+    //LED 1
     pinMode(27, OUTPUT);
     digitalWrite(27, HIGH);
+
+    //LED 2
     pinMode(26, OUTPUT);
     digitalWrite(26, HIGH);
-    pinMode(15, INPUT);
+
+    //da gewandelte buttons
+    pinMode(36, INPUT);
 
     temperatureSensor.init(17);
     joystick.init(25, 34, 35, 6, 3);
@@ -79,19 +84,35 @@ void setup() {
 
 bool played = false;
 
+
+int readCounter = 0;
+long maxReads = 100;
+long readValueTotal = 0;
 void loop() {
-    digitalWrite(27, HIGH);
-    digitalWrite(26, HIGH);
+    
+    //LEDs AN
+    //digitalWrite(27, HIGH);
+    //digitalWrite(26, HIGH);
 
     Serial.println(potentiometer.getValue());
+    
+    readValueTotal = readValueTotal + analogRead(36);
+    readCounter = readCounter + 1;
+    if (readCounter == maxReads) {
+        Serial.println(readValueTotal / maxReads);
+        readCounter = 0;
+        readValueTotal = 0;
+    }
+
     showTemperature();
 
     readJoystick();
-    if (!played) {
+    /*if (!played) {
         playMelody();
         played = true;
-    }
-//    playNote();
+    }*/
+
+    //playNote();
 };
 
 void playMelody() {
