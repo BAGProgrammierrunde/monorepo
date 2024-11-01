@@ -5,6 +5,7 @@
 #include "components/PassiveBuzzer/Tone.h"
 #include "components/PassiveBuzzer/notes.h"
 #include "components/PassiveBuzzer/PassiveBuzzer.h"
+#include "components/buttons/Buttons.h"
 #include <GxEPD2_BW.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 
@@ -40,6 +41,7 @@ unsigned long previousMillis = 0;
 Joystick joystick;
 Potentiometer potentiometer;
 PassiveBuzzer passiveBuzzer;
+Buttons buttons;
 
 const char HelloWorld[] = "Hello World!";
 
@@ -73,13 +75,15 @@ void setup() {
     pinMode(26, OUTPUT);
     digitalWrite(26, HIGH);
 
-    //da gewandelte buttons
+    //D/A gewandelte buttons
     pinMode(36, INPUT);
 
     temperatureSensor.init(17);
     joystick.init(25, 34, 35, 6, 3);
     potentiometer.init(15);
     passiveBuzzer.init(2);
+
+    buttons.init(36);
 }
 
 bool played = false;
@@ -94,19 +98,18 @@ void loop() {
     //digitalWrite(27, HIGH);
     //digitalWrite(26, HIGH);
 
-    Serial.println(potentiometer.getValue());
+    //Serial.println(potentiometer.getValue());
     
-    readValueTotal = readValueTotal + analogRead(36);
-    readCounter = readCounter + 1;
-    if (readCounter == maxReads) {
-        Serial.println(readValueTotal / maxReads);
-        readCounter = 0;
-        readValueTotal = 0;
-    }
+    Serial.print("analog: ");
+    Serial.print(analogRead(36));
+    Serial.print("  digital: ");
+    Serial.print(buttons.getDigitalValue());
+    Serial.println();
+    delay(1000);
 
-    showTemperature();
+    //showTemperature();
 
-    readJoystick();
+    //readJoystick();
     /*if (!played) {
         playMelody();
         played = true;
@@ -154,13 +157,18 @@ void readJoystick() {
 
 int temperature = 0;
 
-void showTemperature() {
-    int currentTemperature = temperatureSensor.getTemperature();
-    if (currentTemperature != temperature) {        
-        temperature = currentTemperature;
+const int MILLIS_TO_SECOND = 1000;
+const int MINUTE_IN_MILLIS = 60 * MILLIS_TO_SECOND;
+
+void showTemperature() { 
+    float currentTemperature = temperatureSensor.getTemperature();
+    int currentTemperatureInt = round(currentTemperature);
+
+    if (currentTemperatureInt != temperature) {   
+        temperature = currentTemperatureInt;
         unsigned long currentMillis = millis();
 
-        if (currentMillis - previousMillis >= 1300) {
+        if (currentMillis - previousMillis >= MINUTE_IN_MILLIS) {
             previousMillis = currentMillis;
             display.nextPage();
             display.fillScreen(GxEPD_WHITE);
