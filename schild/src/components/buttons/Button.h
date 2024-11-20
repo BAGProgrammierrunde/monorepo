@@ -1,12 +1,11 @@
 #pragma once
-
 #include "Arduino.h"
 
 class Button {
-public: 
-    Button(int);
-    bool isPressed(); 
+public:
+    Button(int pinNumber);  
+    bool isPressed();      
+
 private:
-    bool m_isPressed;
-    int pin;
+    int pin; 
 };
