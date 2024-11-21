@@ -5,8 +5,7 @@
 #include "components/PassiveBuzzer/Tone.h"
 #include "components/PassiveBuzzer/notes.h"
 #include "components/PassiveBuzzer/PassiveBuzzer.h"
-#include "components/buttons/Buttons.h"
-#include "components/buttons/Button.h"
+#include "components/button/Button.h"
 #include <GxEPD2_BW.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 
@@ -28,6 +27,11 @@
 
 #define PIN_YELLOW_LED 27
 #define PIN_YELLOW_LED_2 26
+
+#define PIN_BUTTON_1 9
+#define PIN_BUTTON_2 10
+#define PIN_BUTTON_3 13
+#define PIN_BUTTON_4 5
 
 // Wenn du eine Komponente verwenden möchtest, ersetze das 'false' mit einem 'true'
 #define ENABLE_DISPLAY false
@@ -53,11 +57,10 @@ Joystick joystick;
 Potentiometer potentiometer;
 PassiveBuzzer passiveBuzzer;
 #if ENABLE_BUTTONS
-Buttons buttons;
-Button button1(9);
-Button button2(10);
-Button button3(13);
-Button button4(5);
+Button button1(PIN_BUTTON_1);
+Button button2(PIN_BUTTON_2);
+Button button3(PIN_BUTTON_3);
+Button button4(PIN_BUTTON_4);
 #endif
 
 const char HelloWorld[] = "Hello World!";
@@ -98,9 +101,18 @@ void setup() {
 #endif
 
 #if ENABLE_BUTTONS
-    //D/A gewandelte buttons
-    pinMode(36, INPUT);
-    buttons.init(36);
+    button1.init([]() -> void {
+        Serial.println("Button 1 clicked");
+    });
+    button2.init([]() -> void {
+        Serial.println("Button 2 clicked");
+    });
+    button3.init([]() -> void {
+        Serial.println("Button 3 clicked");
+    });
+    button4.init([]() -> void {
+        Serial.println("Button 4 clicked");
+    });
 #endif
 }
 
@@ -138,28 +150,7 @@ void loop() {
 #endif
 
 #if ENABLE_BUTTONS
-    /*Serial.print("analog: ");
-    Serial.print(analogRead(36));
-    Serial.print("  digital: ");
-    Serial.print(buttons.getDigitalValue());
-    Serial.println();
-    delay(1000); */
 
-    if (button1.isPressed()) {
-        Serial.println("Button 1 gedrückt!");
-    }
-
-    if (button2.isPressed()) {
-      Serial.println("Button 2 gedrückt!");
-    }
-
-    if (button3.isPressed()) {
-       Serial.println("Button 3 gedrückt!");
-    }
-
-    if (button4.isPressed()) {
-       Serial.println("Button 4 gedrückt!");
-    }
 #endif
 
     delay(200);
