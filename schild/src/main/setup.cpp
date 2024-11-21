@@ -29,11 +29,16 @@
 #define PIN_YELLOW_LED 27
 #define PIN_YELLOW_LED_2 26
 
-Button button1(9);
-Button button2(10);
-Button button3(13);
-Button button4(5);
+// Wenn du eine Komponente verwenden möchtest, ersetze das 'false' mit einem 'true'
+#define ENABLE_DISPLAY false
+#define ENABLE_LEDS false
+#define ENABLE_TEMPERATURE false
+#define ENABLE_JOYSTICK false
+#define ENABLE_POTENTIOMETER false
+#define ENABLE_BUZZER false
+#define ENABLE_BUTTONS false
 
+void setupDisplay();
 void showTemperature();
 void readJoystick();
 void playMelody();
@@ -47,13 +52,120 @@ unsigned long previousMillis = 0;
 Joystick joystick;
 Potentiometer potentiometer;
 PassiveBuzzer passiveBuzzer;
+#if ENABLE_BUTTONS
 Buttons buttons;
+Button button1(9);
+Button button2(10);
+Button button3(13);
+Button button4(5);
+#endif
 
 const char HelloWorld[] = "Hello World!";
 
 void setup() {
     Serial.begin(115000);
-    while (!Serial);
+    while (!Serial) {}
+    Serial.println("Starting...");
+
+#if ENABLE_DISPLAY
+    setupDisplay();
+#endif
+
+#if ENABLE_LEDS
+    //LED 1
+    pinMode(27, OUTPUT);
+    digitalWrite(27, HIGH);
+
+    //LED 2
+    pinMode(26, OUTPUT);
+    digitalWrite(26, HIGH);
+#endif
+
+#if ENABLE_TEMPERATURE
+    temperatureSensor.init(17);
+#endif
+
+#if ENABLE_JOYSTICK
+    joystick.init(25, 34, 35, 6, 3);
+#endif
+
+#if ENABLE_POTENTIOMETER
+    potentiometer.init(15);
+#endif
+
+#if ENABLE_BUZZER
+    passiveBuzzer.init(2);
+#endif
+
+#if ENABLE_BUTTONS
+    //D/A gewandelte buttons
+    pinMode(36, INPUT);
+    buttons.init(36);
+#endif
+}
+
+bool played = false;
+int readCounter = 0;
+long maxReads = 100;
+long readValueTotal = 0;
+
+void loop() {
+#if ENABLE_LEDS
+    //LEDs AN
+    digitalWrite(27, HIGH);
+    digitalWrite(26, HIGH);
+#endif
+
+#if ENABLE_TEMPERATURE
+    showTemperature();
+#endif
+
+#if ENABLE_POTENTIOMETER
+    Serial.println(potentiometer.getValue());
+#endif
+
+#if ENABLE_JOYSTICK
+    readJoystick();
+#endif
+
+#if ENABLE_BUZZER
+    if (!played) {
+        playMelody();
+        played = true;
+
+        playNote();
+    }
+#endif
+
+#if ENABLE_BUTTONS
+    /*Serial.print("analog: ");
+    Serial.print(analogRead(36));
+    Serial.print("  digital: ");
+    Serial.print(buttons.getDigitalValue());
+    Serial.println();
+    delay(1000); */
+
+    if (button1.isPressed()) {
+        Serial.println("Button 1 gedrückt!");
+    }
+
+    if (button2.isPressed()) {
+      Serial.println("Button 2 gedrückt!");
+    }
+
+    if (button3.isPressed()) {
+       Serial.println("Button 3 gedrückt!");
+    }
+
+    if (button4.isPressed()) {
+       Serial.println("Button 4 gedrückt!");
+    }
+#endif
+
+    delay(200);
+}
+
+void setupDisplay() {
     Serial.println("GxEPD2 2.9-inch  e-ink display test start1");
 
     display.init(115200, true, 2, true); // USE THIS for Waveshare boards with "clever" reset circuit, 2ms reset pulse
@@ -71,77 +183,8 @@ void setup() {
         display.print(random(10000000));
     } while (display.nextPage());
     Serial.println("Display update done");
-
-
-    //LED 1
-    pinMode(27, OUTPUT);
-    digitalWrite(27, HIGH);
-
-    //LED 2
-    pinMode(26, OUTPUT);
-    digitalWrite(26, HIGH);
-
-    //D/A gewandelte buttons
-    pinMode(36, INPUT);
-
-    temperatureSensor.init(17);
-    joystick.init(25, 34, 35, 6, 3);
-    potentiometer.init(15);
-    passiveBuzzer.init(2);
-
-    buttons.init(36);
-
 }
 
-bool played = false;
-
-
-int readCounter = 0;
-long maxReads = 100;
-long readValueTotal = 0;
-void loop() {
-    
-    //LEDs AN
-    //digitalWrite(27, HIGH);
-    //digitalWrite(26, HIGH);
-
-    //Serial.println(potentiometer.getValue());
-    
-    /*Serial.print("analog: ");
-    Serial.print(analogRead(36));
-    Serial.print("  digital: ");
-    Serial.print(buttons.getDigitalValue());
-    Serial.println();
-    delay(1000); */
-
-    //showTemperature();
-
-    //readJoystick();
-    /*if (!played) {
-        playMelody();
-        played = true;
-    }*/
-
-    //playNote();
-
-    if (button1.isPressed()) {
-        Serial.println("Button 1 gedrückt!");
-    }
-
-    if (button2.isPressed()) {
-      Serial.println("Button 2 gedrückt!");
-    }
-
-    if (button3.isPressed()) {
-       Serial.println("Button 3 gedrückt!");
-    }
-
-    if (button4.isPressed()) {
-       Serial.println("Button 4 gedrückt!");
-    }
-
-    delay(200);
-};
 
 void playMelody() {
     Tone tones[] = {
