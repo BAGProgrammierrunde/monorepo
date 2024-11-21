@@ -3,9 +3,8 @@
 
 class Button {
 public:
-    Button(int pinNumber);  
-    bool isPressed();      
-
+    explicit Button(int pinNumber);
+    bool isPressed() const;
 private:
-    int pin; 
+    int pin;
 };
