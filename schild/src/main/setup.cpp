@@ -67,8 +67,9 @@ const char HelloWorld[] = "Hello World!";
 
 void setup() {
     Serial.begin(115000);
+    delay(100);
     while (!Serial) {}
-    Serial.println("Starting...");
+    Serial.println("Build with C++ version: " + String(__cplusplus));
 
 #if ENABLE_DISPLAY
     setupDisplay();
