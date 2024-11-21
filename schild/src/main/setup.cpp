@@ -49,7 +49,7 @@ void playMelody();
 void playNote();
 
 GxEPD2_BW<GxEPD2_290_GDEY029T94, GxEPD2_290_GDEY029T94::HEIGHT> display(
-        GxEPD2_290_GDEY029T94(/*CS=*/ 0, /*DC=*/ 19, /*RST=*/ 21, /*BUSY=*/ 22));
+    GxEPD2_290_GDEY029T94(/*CS=*/ 0, /*DC=*/ 19, /*RST=*/ 21, /*BUSY=*/ 22));
 
 DS18B20 temperatureSensor;
 unsigned long previousMillis = 0;
@@ -180,14 +180,14 @@ void setupDisplay() {
 
 void playMelody() {
     Tone tones[] = {
-            {NOTE_E5,  80},  {NOTE_E5, 80},  {NOTE_E5, 360}, {NOTE_E5,   0},
-            {NOTE_E5,  80},  {NOTE_E5, 80},  {NOTE_E5, 360}, {NOTE_E5,   0},
-            {NOTE_E5,  80},  {NOTE_G5, 80},  {NOTE_C5,  80}, {NOTE_D5,  80},
-            {NOTE_E5, 760},  {NOTE_E5,  0},  {NOTE_E5,   0}, {NOTE_E5,   0},
-            {NOTE_F5,  80},  {NOTE_F5, 80},  {NOTE_F5,  80}, {NOTE_F5,  80},
-            {NOTE_F5,  80},  {NOTE_E5, 80},  {NOTE_E5,  80}, {NOTE_E5,  80},
-            {NOTE_E5,  80},  {NOTE_D5, 80},  {NOTE_D5,  80}, {NOTE_E5,  80},  
-            {NOTE_D5, 360},  {NOTE_G5,  0},  {NOTE_G5,   0}, {NOTE_G5,   0}
+        {NOTE_E5, 80}, {NOTE_E5, 80}, {NOTE_E5, 360}, {NOTE_E5, 0},
+        {NOTE_E5, 80}, {NOTE_E5, 80}, {NOTE_E5, 360}, {NOTE_E5, 0},
+        {NOTE_E5, 80}, {NOTE_G5, 80}, {NOTE_C5, 80}, {NOTE_D5, 80},
+        {NOTE_E5, 760}, {NOTE_E5, 0}, {NOTE_E5, 0}, {NOTE_E5, 0},
+        {NOTE_F5, 80}, {NOTE_F5, 80}, {NOTE_F5, 80}, {NOTE_F5, 80},
+        {NOTE_F5, 80}, {NOTE_E5, 80}, {NOTE_E5, 80}, {NOTE_E5, 80},
+        {NOTE_E5, 80}, {NOTE_D5, 80}, {NOTE_D5, 80}, {NOTE_E5, 80},
+        {NOTE_D5, 360}, {NOTE_G5, 0}, {NOTE_G5, 0}, {NOTE_G5, 0}
     };
 
     passiveBuzzer.playNotes(tones, 31, 200);
@@ -220,11 +220,11 @@ int temperature = 0;
 const int MILLIS_TO_SECOND = 1000;
 const int MINUTE_IN_MILLIS = 60 * MILLIS_TO_SECOND;
 
-void showTemperature() { 
+void showTemperature() {
     float currentTemperature = temperatureSensor.getTemperature();
     int currentTemperatureInt = round(currentTemperature);
 
-    if (currentTemperatureInt != temperature) {   
+    if (currentTemperatureInt != temperature) {
         temperature = currentTemperatureInt;
         unsigned long currentMillis = millis();
 
