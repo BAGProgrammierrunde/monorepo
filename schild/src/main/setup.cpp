@@ -7,6 +7,7 @@
 #include "components/PassiveBuzzer/PassiveBuzzer.h"
 #include "components/button/Button.h"
 #include <GxEPD2_BW.h>
+#include <driver/rtc_io.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 
 /*
@@ -32,6 +33,8 @@
 #define PIN_BUTTON_2 10
 #define PIN_BUTTON_3 13
 #define PIN_BUTTON_4 5
+
+#define PIN_WAKE_UP_BUTTON GPIO_NUM_39
 
 // Wenn du eine Komponente verwenden möchtest, ersetze das 'false' mit einem 'true'
 #define ENABLE_DISPLAY false
@@ -65,11 +68,43 @@ Button button4(PIN_BUTTON_4);
 
 const char HelloWorld[] = "Hello World!";
 
+#define BUTTON_PIN_BITMASK(GPIO) (1ULL << GPIO)
+
+void print_wakeup_reason() {
+    esp_sleep_wakeup_cause_t wakeup_reason;
+
+    wakeup_reason = esp_sleep_get_wakeup_cause();
+
+    switch (wakeup_reason) {
+        case ESP_SLEEP_WAKEUP_EXT0:     Serial.println("Wakeup caused by external signal using RTC_IO"); break;
+        case ESP_SLEEP_WAKEUP_EXT1:     Serial.println("Wakeup caused by external signal using RTC_CNTL"); break;
+        case ESP_SLEEP_WAKEUP_TIMER:    Serial.println("Wakeup caused by timer"); break;
+        case ESP_SLEEP_WAKEUP_TOUCHPAD: Serial.println("Wakeup caused by touchpad"); break;
+        case ESP_SLEEP_WAKEUP_ULP:      Serial.println("Wakeup caused by ULP program"); break;
+        default:                        Serial.printf("Wakeup was not caused by deep sleep: %d\n", wakeup_reason); break;
+    }
+}
+
+auto test = []() -> void {
+    Serial.println("Button 1 clicked");
+    esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK(PIN_WAKE_UP_BUTTON),ESP_EXT1_WAKEUP_ANY_HIGH);
+    Serial.print("Sleep countdown triggered - sleeping in 2 seconds");
+    for (int i = 0; i < 50; i++) {
+        Serial.print(".");
+        delay(20);
+    }
+    Serial.println();
+    Serial.println("Sleeping now");
+    Serial.flush();
+    esp_deep_sleep_start();
+};
+
 void setup() {
     Serial.begin(115000);
     delay(100);
     while (!Serial) {}
     Serial.println("Build with C++ version: " + String(__cplusplus));
+    print_wakeup_reason();
 
 #if ENABLE_DISPLAY
     setupDisplay();
@@ -104,9 +139,28 @@ void setup() {
 #if ENABLE_BUTTONS
     button1.init([]() -> void {
         Serial.println("Button 1 clicked");
+        esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK(PIN_WAKE_UP_BUTTON),ESP_EXT1_WAKEUP_ANY_HIGH);
+        Serial.print("Sleep countdown triggered - sleeping in 2 seconds");
+        for (int i = 0; i < 50; i++) {
+            Serial.print(".");
+            delay(20);
+        }
+        Serial.println();
+        Serial.println("Sleeping now");
+        Serial.flush();
+        esp_deep_sleep_start();
     });
     button2.init([]() -> void {
         Serial.println("Button 2 clicked");
+        String currentMenu = "main_menu";
+
+        if (currentMenu == "main_menu") {
+            // do function related to main menu
+        } else if (currentMenu == "settings") {
+            // do function related to settings
+        } else if (currentMenu == "show_data") {
+            // do function related to show data
+        }
     });
     button3.init([]() -> void {
         Serial.println("Button 3 clicked");
@@ -154,6 +208,7 @@ void loop() {
 
 #endif
 
+    Serial.println("loop");
     delay(200);
 }
 

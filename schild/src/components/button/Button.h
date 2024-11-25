@@ -13,6 +13,7 @@ public:
     void init(voidFuncPtr callback);
     void attach(voidFuncPtr callback);
     void detach();
+    void doCallback();
 
     void internalCallback();
 private:
