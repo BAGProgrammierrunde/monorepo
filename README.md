@@ -1,12 +1,24 @@
+# BAG Programmierrunde - Monorepo
+
+TODO Beschreibung
+
+## Inhalt
+- [Programmierrunden Protokoll](#programmierrunden-protokoll)
 - [Code](#code)
 - [Schaltplan](#schaltplan)
 - [Teileliste](#teileliste)
+
+## [Programmierrunden Protokoll](./protokoll/1%20-%20Protokolle.md)
 
 ## [Code](./schild/README.md)
 
 ## [Schaltplan](./schaltplan/README.md)
 
 ## Teileliste
+
+TODO Spalte 2 benennen
+TODO Fehlende Infos ergänzen - für Infos die noch nicht bekannt sind "tbd" (to be defined) eintragen
+TODO "..." entfernen
 
 |Typ||Link1|
 |---|---|---|
