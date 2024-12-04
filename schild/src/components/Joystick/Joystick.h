@@ -1,30 +1,16 @@
-//
-// Created by fabian on 17.09.24.
-//
+#pragma once
 
-#ifndef SCHILD_JOYSTICK_H
-#define SCHILD_JOYSTICK_H
-
-#include "Arduino.h"
-
-class Joystick {
-public:
-    void init(int switchPin, int xPin, int yPin, int xOffset = 0, int yOffset = 0);
-    int getX();
-    int getXPercent(int offset = 0);
-    int getY();
-    int getYPercent(int offset = 0);
-    bool getSwitch();
+class Joystick : public Component<2> {
 private:
-    void setupPins();
-    int getPercent(int value, int offset);
-    int buttonPin;
-    int xAxisPin;
-    int yAxisPin;
+    float threshold;
 
-    int xAxisOffset;
-    int yAxisOffset;
+    float readAsPercent(unsigned int pPin);
+
+public:
+    Button button;
+    
+    explicit Joystick(unsigned int pPinX, unsigned int pPinY, unsigned int pPinButton, float pThreshold);
+
+    float getX();
+    float getY();
 };
-
-
-#endif //SCHILD_JOYSTICK_H

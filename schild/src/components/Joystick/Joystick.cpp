@@ -1,81 +1,25 @@
-//
-// Created by fabian on 17.09.24.
-//
-
 #include "Joystick.h"
 
-/// <summary>Initializes the joystick with specified pins.<br>
-/// <para><br>
-/// switchPin: The pin for the button of the joystick.<br>
-/// xPin: The pin for the x-axis of the joystick.<br>
-/// yPin: The pin for the y-axis of the joystick.
-/// Optional xOffset: The offset for the x-axis in percent <br>
-/// Optional yOffset: The offset for the y-axis in percent
-/// </para>
-/// </summary>
-void Joystick::init(int switchPin, int xPin, int yPin, int xOffset, int yOffset) {
-    buttonPin = switchPin;
-    xAxisPin = xPin;
-    yAxisPin = yPin;
-
-    xAxisOffset = xOffset;
-    yAxisOffset = yOffset;
-
-    setupPins();
+Joystick::Joystick(unsigned int pPinX, unsigned int pPinY, unsigned int pPinButton, float pThreshold) : Component({pPinX, pPinY}) {
+    pinMode(pins[0], INPUT);
+    pinMode(pins[1], INPUT);
+    button = Button(pPinButton);
+    threshold = pThreshold;
 }
 
-/// <summary>Returns the value of the x-axis.<br>
-/// Value range is: 0 - 4095
-/// </summary>
-int Joystick::getX() {
-    return analogRead(xAxisPin);
+float Joystick::getX() {
+    return readAsPercent(pins[0]);
 }
 
-/// <summary>Returns the value of the x-axis in percent.<br>
-/// <para>Optional offset: the offset (+ or -) in percent to be 50% in middle.</para>
-/// </summary>
-int Joystick::getXPercent(int offset) {
-    int value = analogRead(xAxisPin);
-
-    return getPercent(value, (offset == 0 ? xAxisOffset : offset));
+float Joystick::getY() {
+    return readAsPercent(pins[1]);
 }
 
-/// <summary>Returns the value of the y-axis.<br>
-/// Value range is: 0 - 4095
-/// </summary>
-int Joystick::getY() {
-    return analogRead(yAxisPin);
-}
-
-/// <summary>Returns the value of the y-axis in percent.<br>
-/// <para>Optional offset: the offset (+ or -) in percent to be 50% in middle.</para>
-/// </summary>
-int Joystick::getYPercent(int offset) {
-    int value = analogRead(yAxisPin);
-
-    return getPercent(value, (offset == 0 ? yAxisOffset : offset));
-}
-
-/// <summary>Returns wether or not the button / switch is pressed.<br>
-/// </summary>
-bool Joystick::getSwitch() {
-    return !digitalRead(buttonPin);
-}
-
-// ====================================================================================================================
-//                                                 Private
-// ====================================================================================================================
-
-void Joystick::setupPins() {
-    pinMode(buttonPin, INPUT_PULLUP);
-    pinMode(xAxisPin, INPUT);
-    pinMode(yAxisPin, INPUT);
-}
-
-int Joystick::getPercent(int value, int offset) {
-    if (value <= 2047) {
-        return map(value, 0, 2047, 0, 50 + offset);
-    }else {
-        return map(value, 2048, 4095, 50 + offset, 100);
-    }
+// Returns range -1 to 1
+float Joystick::readAsPercent(unsigned int pPin) {
+    int analogValue = analogRead(pPin); // Returns value from 0 to 4095
+    return (analogValue > threshold ? analogValue / 4095.f * 2.f - 1 : 0);
+    
+    //if (analogValue <= 2047) return map(analogValue, 0, 2047, 0, 50 + offset);
+    //else return map(analogValue, 2048, 4095, 50 + offset, 100);
 }
