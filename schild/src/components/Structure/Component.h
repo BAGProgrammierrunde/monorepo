@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 
 class ComponentBase {
 public:
@@ -7,11 +8,11 @@ public:
 
 template <unsigned int PinCount>
 class Component : public ComponentBase {
-private:
+protected:
     unsigned int pins[PinCount];
 
 public:
-    Component(unsigned int pPins[PinCount]);
+    explicit Component(std::array<unsigned int, PinCount> pPins);
     
     unsigned int getPinCount();
     bool usesPin(unsigned int pPin);

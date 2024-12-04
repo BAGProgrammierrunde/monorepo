@@ -1,5 +1,9 @@
 #pragma once
 
+#include <Arduino.h>
+#include <components/Button/Button.h>
+#include <components/Structure/Component.h>
+
 class Joystick : public Component<2> {
 private:
     float threshold;
@@ -9,7 +13,7 @@ private:
 public:
     Button button;
     
-    explicit Joystick(unsigned int pPinX, unsigned int pPinY, unsigned int pPinButton, float pThreshold);
+    explicit Joystick(unsigned int pPinX, unsigned int pPinY, unsigned int _pPinButton, float pThreshold);
 
     float getX();
     float getY();

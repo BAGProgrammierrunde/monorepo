@@ -9,7 +9,7 @@ Button::Button(unsigned int pPin) : Component({pPin}) {
 }
 
 void Button::init() {
-    attachInterruptArg(pin, [](void* arg) -> void IRAM_ATTR {
+    attachInterruptArg(pins[0], [](void* arg) -> void IRAM_ATTR {
         Button* button = static_cast<Button*>(arg);
         button->fallingTime = millis();
         if (button->fallingTime - button->lastFallingTime > Button::DEBOUNCE_TIME)

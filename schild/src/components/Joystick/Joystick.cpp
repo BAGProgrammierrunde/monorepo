@@ -1,9 +1,8 @@
 #include "Joystick.h"
 
-Joystick::Joystick(unsigned int pPinX, unsigned int pPinY, unsigned int pPinButton, float pThreshold) : Component({pPinX, pPinY}) {
+Joystick::Joystick(unsigned int pPinX, unsigned int pPinY, unsigned int _pPinButton, float pThreshold) : Component<2>({pPinX, pPinY}), button(_pPinButton) {
     pinMode(pins[0], INPUT);
     pinMode(pins[1], INPUT);
-    button = Button(pPinButton);
     threshold = pThreshold;
 }
 

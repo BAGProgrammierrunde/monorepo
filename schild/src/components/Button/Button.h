@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Arduino.h>
+#include "components/Structure/Component.h"
+
 class Button : public Component<1> {
 public:
     typedef void (*CallbackFuncPtr)(ulong);
