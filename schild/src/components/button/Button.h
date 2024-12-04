@@ -1,3 +1,4 @@
+// TODO ir31k0 27.11.2024: Implementieren von einem kurzen Button-Klick und einem langen
 #pragma once
 
 #include "Arduino.h"
