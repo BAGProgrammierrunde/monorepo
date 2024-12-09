@@ -1,11 +1,7 @@
-//
-// Created by fabian on 17.09.24.
-//
+// TODO Umstellen auf Component
+#pragma once
 
-#ifndef SCHILD_POTENTIOMETER_H
-#define SCHILD_POTENTIOMETER_H
-
-#include "Arduino.h"
+#include <Arduino.h>
 
 class Potentiometer {
 public:
@@ -14,6 +10,3 @@ public:
 private:    
     int potentiometerPin;
 };
-
-
-#endif //SCHILD_POTENTIOMETER_H

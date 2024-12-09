@@ -19,6 +19,7 @@ private:
 public:
   explicit Button(unsigned int pin);
   unsigned int testgetPin(unsigned int pin) const;
+  // TODO init weg -> in Konstruktor
   void init();
   bool isPressed();
   void setCallback(CallbackFuncPtr pCallbackFunction);

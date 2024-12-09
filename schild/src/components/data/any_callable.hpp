@@ -1,3 +1,5 @@
+// TODO data und Structure würde ich gerne wo anders unterbringen als in components
+// TODO Maybe Component.* nach components/ - Device eventuell auch
 #pragma once
 
 namespace me {

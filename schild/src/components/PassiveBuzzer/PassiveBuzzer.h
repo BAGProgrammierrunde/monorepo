@@ -1,9 +1,5 @@
-//
-// Created by fabian on 01.10.24.
-//
-
-#ifndef SCHILD_PASSIVEBUZZER_H
-#define SCHILD_PASSIVEBUZZER_H
+// TODO Umstellen auf Component
+#pragma once
 
 #include <Arduino.h>
 #include "notes.h"
@@ -20,6 +16,3 @@ public:
 private:
     int passiveBuzzerPin;
 };
-
-
-#endif //SCHILD_PASSIVEBUZZER_H
