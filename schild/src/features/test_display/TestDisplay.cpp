@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 #include "main/Utility.hpp"
 #include "TestDisplay.hpp"

@@ -2,7 +2,7 @@
 #include <driver/rtc_io.h>
 
 #include "Configuration.hpp"
-//#include "Utility.hpp"
+#include "main/Utility.hpp"
 #include "Components/Structure/Component.hpp"
 #include "Components/Button/Button.hpp"
 #include "Components/Joystick/Joystick.hpp"
@@ -14,25 +14,25 @@
 #include "Components/PassiveBuzzer/notes.hpp"
 #include "Components/PassiveBuzzer/PassiveBuzzer.hpp"
 
-/*#include "Features/deep_sleep/DeepSleep.hpp"
+#include "Features/deep_sleep/DeepSleep.hpp"
 #include "Features/lightup_leds/LightupLEDs.hpp"
 #include "Features/melody/Melody.hpp"
 #include "Features/print_button_pin/PrintButtonPin.hpp"
-#include "Features/test_display/TestDisplay.hpp"*/
+#include "Features/test_display/TestDisplay.hpp"
 
 void setup() {
   Serial.begin(115200);
   delay(100);
   while (!Serial) {}
 
-  //Utility::printWakeupReason();
+  Utility::printWakeupReason();
   Serial.println("The project is built with C++ version: " + String(__cplusplus));
 
   const auto device = Device::getInstance();
-  /*Features::useButtonForDeepSleep(device->button1, device->button4);
+  Features::useButtonForDeepSleep(device->button1, device->button4);
   Features::lightupLEDs();
   Features::printButtonPinWhenPressed(device->button2);
-  Features::printButtonPinWhenPressed(device->button3);*/
+  Features::printButtonPinWhenPressed(device->button3);
 }
 
 void loop() {
