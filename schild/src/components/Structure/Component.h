@@ -1,5 +1,4 @@
 #pragma once
-#include <array>
 
 class ComponentBase {
 public:
@@ -12,9 +11,10 @@ protected:
     unsigned int pins[PinCount];
 
 public:
-    explicit Component(std::array<unsigned int, PinCount> pPins);
+  template <typename... Pins>
+  explicit Component(Pins... pins) : pins{pins...} { }
     
-    unsigned int getPinCount();
-    bool usesPin(unsigned int pPin);
+    unsigned int getPinCount() const;
+    bool usesPin(unsigned int pPin) const;
     int getPin(unsigned int pIndex);
 };

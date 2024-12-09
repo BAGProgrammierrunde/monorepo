@@ -1,18 +1,30 @@
 #pragma once
 
-/*
+#include <memory>
 #include <components/button/Button.h>
 #include <components/Joystick/Joystick.h>
 
-// Unser "Gerät" als Ganzes, mit all seinen Komponenten und Funktionen
 class Device {
 private:
-    Button button1;
-    Button button2;
-    Joystick joystick;
-
+    static std::shared_ptr<Device> instance;
 public:
-    Device();
-    void init();
+    std::shared_ptr<Button> button1;
+    std::shared_ptr<Button> button2;
+    std::shared_ptr<Button> button3;
+    std::shared_ptr<Button> button4;
+
+    std::shared_ptr<Joystick> joystick;
+
+    explicit Device();
+
+    static std::shared_ptr<Device> getInstance();
+
+    /**
+     * Singletons should not be cloneable.
+     */
+    Device(Device &other) = delete;
+    /**
+     * Singletons should not be assignable.
+     */
+    void operator=(const Device &) = delete;
 };
-*/

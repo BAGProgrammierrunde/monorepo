@@ -1,11 +1,16 @@
 #include "Button.h"
 
-Button::Button(unsigned int pPin) : Component({pPin}) {
+Button::Button(unsigned int pin) : Component(pin) {
     pinMode(pins[0], INPUT_PULLUP);
     pressed = false;
     callbackFunc = &defaultCallback;
     fallingTime = 0;
     lastFallingTime = 0;
+}
+
+// TODO nur hinzugefügt weil getPin aus Component von außen nicht aufrufbar ist
+unsigned int Button::testgetPin(const unsigned int pin) const {
+    return pins[pin];
 }
 
 void Button::init() {
