@@ -5,7 +5,8 @@
   - [Platformio Tutorials](#platformio-tutorials)
 
 ## Architektur
-...
+
+TODO
 
 ## Links
 - [Miro Board](https://miro.com/app/board/o9J_loXnq8o=/)
