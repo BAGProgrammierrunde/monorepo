@@ -1,5 +1,5 @@
 #pragma once
 
-namespace features {
+namespace Features {
   void lightupLEDs();
 }

@@ -34,11 +34,17 @@
 #define PIN_LED_1 27
 #define PIN_LED_2 26
 
-#define PIN_BUTTON_1 9
-#define PIN_BUTTON_2 10
-#define PIN_BUTTON_3 13
-#define PIN_BUTTON_4 5
+#define PIN_TEMPERATURE 17
 
 #define PIN_JOYSTICK_X 25
 #define PIN_JOYSTICK_Y 34
 #define PIN_JOYSTICK_BUTTON 35
+
+#define PIN_POTENTIOMETER 15
+
+#define PIN_BUZZER 2
+
+#define PIN_BUTTON_1 9
+#define PIN_BUTTON_2 10
+#define PIN_BUTTON_3 13
+#define PIN_BUTTON_4 5

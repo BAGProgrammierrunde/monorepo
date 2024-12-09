@@ -1,7 +1,7 @@
 #include "LightupLEDs.h"
 #include "features/common/Common.h"
 
-namespace features {
+namespace Features {
   void lightupLEDs() {
     // TODO Split initialization, setup and feature implementation
 #if ENABLE_LEDS
@@ -11,7 +11,7 @@ namespace features {
     pinMode(PIN_LED_2, OUTPUT);
     digitalWrite(PIN_LED_2, HIGH);
 #else
-    features::printComponentNotEnabledMessage("lightupLEDs", "ENABLE_LEDS");
+    printComponentNotEnabledMessage("lightupLEDs", "ENABLE_LEDS");
 #endif
   }
 }

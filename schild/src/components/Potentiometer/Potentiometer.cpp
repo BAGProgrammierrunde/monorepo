@@ -1,10 +1,9 @@
 #include "Potentiometer.h"
 
-void Potentiometer::init(int potentiometerPin) { 
-    pinMode(potentiometerPin, INPUT);
-    this->potentiometerPin = potentiometerPin;
+Potentiometer::Potentiometer(unsigned int pin) : Component(pin) {
+    pinMode(pin, INPUT);
 }
 
 int Potentiometer::getValue() {
-    return analogRead(potentiometerPin);
+    return analogRead(pins[0]);
 }

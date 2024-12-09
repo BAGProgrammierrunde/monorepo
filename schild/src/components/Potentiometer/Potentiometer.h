@@ -1,12 +1,12 @@
-// TODO Umstellen auf Component
 #pragma once
 
 #include <Arduino.h>
+#include <components/Structure/Component.h>
 
-class Potentiometer {
+class Potentiometer : public Component<1> {
+private:
 public:
-    void init(int potentiometerPin);
+    explicit Potentiometer(unsigned int pin);
+
     int getValue();
-private:    
-    int potentiometerPin;
 };

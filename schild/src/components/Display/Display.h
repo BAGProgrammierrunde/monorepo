@@ -1,8 +1,13 @@
-// TODO Umstellen auf Component
 #pragma once
 
-#include <Arduino.h>
+#include <GxEPD2_BW.h>
 
-class Display {
-// TODO muss noch komplett implementiert werden
+#include "components/Structure/Component.h"
+
+class Display : public Component<6> {
+private:
+  GxEPD2_BW<GxEPD2_290_GDEY029T94, GxEPD2_290_GDEY029T94::HEIGHT> epd;
+public:
+  explicit Display(unsigned int pinBusy, unsigned int pinRst, unsigned int pinDc, unsigned int pinCs, unsigned int pinClk, unsigned int pinDin);
+  void render();
 };

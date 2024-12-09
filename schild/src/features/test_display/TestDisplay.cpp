@@ -1,9 +1,10 @@
+#include <Fonts/FreeMonoBold9pt7b.h>
+
 #include "TestDisplay.h"
 
-namespace features {
-  void testDisplay(const std::shared_ptr<Button> &button);
-
-  inline void testDisplay(const std::shared_ptr<Button> &button) {
+namespace Features {
+// TODO Change button to display
+  void testDisplay(const std::shared_ptr<Button> &button) {
 #if ENABLE_DISPLAY
     Serial.println("GxEPD2 2.9-inch  e-ink display test start1");
     display->init(115200, true, 2, true); // USE THIS for Waveshare boards with "clever" reset circuit, 2ms reset pulse

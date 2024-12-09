@@ -7,6 +7,6 @@
 #include "components/Button/Button.h"
 #include "features/common/Common.h"
 
-namespace features {
+namespace Features {
   void testDisplay(const std::shared_ptr<Button> &button);
 }

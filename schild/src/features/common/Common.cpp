@@ -5,13 +5,15 @@
 
 void printWakeupReason();
 
-void features::printStartMessage() {
-  printWakeupReason();
-  Serial.println("The project is built with C++ version: " + String(__cplusplus));
-}
+namespace Features {
+  void printStartMessage() {
+    printWakeupReason();
+    Serial.println("The project is built with C++ version: " + String(__cplusplus));
+  }
 
-void features::printComponentNotEnabledMessage(String functionName, String defineName) {
-  Serial.printf("You cannot use the method '%s' if the necessary component is not enabled in 'configuration.h'. Please enable with '#define %s true'\n", functionName.c_str(), defineName.c_str());
+  void printComponentNotEnabledMessage(String functionName, String defineName) {
+    Serial.printf("You cannot use the method '%s' if the necessary component is not enabled in 'configuration.h'. Please enable with '#define %s true'\n", functionName.c_str(), defineName.c_str());
+  }
 }
 
 void printWakeupReason() {

@@ -2,7 +2,7 @@
 #include "features/common/Common.h"
 #include "main/configuration.h"
 
-namespace features {
+namespace Features {
   void useButtonForDeepSleep(const std::shared_ptr<Button> &deepSleepButton, const std::shared_ptr<Button> &wakeupButton) {
     ulong wakeupPin = wakeupButton->testgetPin(0);
     if (wakeupPin != PIN_BUTTON_4) {

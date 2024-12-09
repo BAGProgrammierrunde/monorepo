@@ -4,6 +4,6 @@
 
 #include "components/Button/Button.h"
 
-namespace features {
+namespace Features {
   void useButtonForDeepSleep(const std::shared_ptr<Button> &deepSleepButton, const std::shared_ptr<Button> &wakeupButton);
 }

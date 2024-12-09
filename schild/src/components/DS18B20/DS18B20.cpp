@@ -1,15 +1,6 @@
-//
-// Created by fabian on 13.09.24.
-//
-
 #include "DS18B20.h"
 
-#ifndef SCHILD_DS28B20_H
-#define SCHILD_DS28B20_H
-
-/// <summary>Use temperature sensor on specific pin.<br>
-/// </summary>
-void DS18B20::init(int pin) {
+DS18B20::DS18B20(unsigned int pin) : Component(pin) {
     oneWire = OneWire(pin);
 
     sensors.setOneWire(&oneWire);
@@ -22,7 +13,6 @@ void DS18B20::init(int pin) {
 float DS18B20::getTemperature() {
     sensors.requestTemperatures();
     float tempC = sensors.getTempCByIndex(0);
-
     return tempC != DEVICE_DISCONNECTED_C ? tempC : (float) 0.0;
 }
 
@@ -32,8 +22,5 @@ float DS18B20::getTemperature() {
 bool DS18B20::isConnected() {
     sensors.requestTemperatures();
     float connection = sensors.getTempCByIndex(0);
-
     return connection != DEVICE_DISCONNECTED_C;
 }
-
-#endif //SCHILD_DS28B20_H

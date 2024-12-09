@@ -1,18 +1,17 @@
-// TODO Umstellen auf Component
 #pragma once
 
 #include <Arduino.h>
-#include "notes.h"
 #include "Tone.h"
+#include "components/Structure/Component.h"
 
-class PassiveBuzzer {
-public:
-    void init(int passiveBuzzerPin);
-    void playNote(int note, int duration = 0);
-    void playNote(Tone tone);
-    void stopNote();
-    void playNotes(int notes[], int durations[], int numberOfNotes, int pause);
-    void playNotes(Tone tones[], int numberOfNotes, int pause);
+class PassiveBuzzer : public Component<1> {
 private:
-    int passiveBuzzerPin;
+public:
+    explicit PassiveBuzzer(unsigned int pin);
+
+    void playNote(int note, int duration = 0) const;
+    void playNote(Tone tone) const;
+    void stopNote() const;
+    void playNotes(const int notes[], const int durations[], int numberOfNotes, int pause) const;
+    void playNotes(const Tone tones[], int numberOfNotes, int pause) const;
 };

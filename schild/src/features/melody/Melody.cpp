@@ -1,9 +1,11 @@
 #include <Arduino.h>
 
 #include "Melody.h"
+#include "features/common/Common.h"
 
-namespace features {
-  inline void playMelody(const std::shared_ptr<PassiveBuzzer> &buzzer) {
+namespace Features {
+  void playMelody(const std::shared_ptr<PassiveBuzzer> &buzzer) {
+#if ENABLE_BUZZER
     Tone tones[] = {
       {NOTE_E5, 80}, {NOTE_E5, 80}, {NOTE_E5, 360}, {NOTE_E5, 0},
       {NOTE_E5, 80}, {NOTE_E5, 80}, {NOTE_E5, 360}, {NOTE_E5, 0},
@@ -18,13 +20,20 @@ namespace features {
     buzzer->playNotes(tones, 31, 200);
 
     delay(3000);
+#else
+    printComponentNotEnabledMessage("playMelody", "ENABLE_BUZZER");
+#endif
   }
 
-  inline void playNote(const std::shared_ptr<PassiveBuzzer> &buzzer) {
+  void playNote(const std::shared_ptr<PassiveBuzzer> &buzzer) {
+#if ENABLE_BUZZER
     buzzer->playNote(NOTE_F3, 160);
     delay(1000);
     buzzer->playNote(NOTE_C5);
     delay(500);
     buzzer->stopNote();
+#else
+    printComponentNotEnabledMessage("playNote", "ENABLE_BUZZER");
+#endif
   }
 }

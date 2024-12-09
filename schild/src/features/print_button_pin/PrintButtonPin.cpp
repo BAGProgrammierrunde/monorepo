@@ -1,6 +1,6 @@
 #include "PrintButtonPin.h"
 
-namespace features {
+namespace Features {
   void printButtonPinWhenPressed(const std::shared_ptr<Button> &button) {
     button->setCallback([](ulong) -> void {
     Serial.print("Button with GPIO ");
