@@ -1,8 +1,7 @@
 #pragma once
 
 #include <memory>
-
-#include "components/PassiveBuzzer/PassiveBuzzer.h"
+#include "Components/PassiveBuzzer/PassiveBuzzer.hpp"
 
 namespace Features {
   void playMelody(const std::shared_ptr<PassiveBuzzer> &buzzer);

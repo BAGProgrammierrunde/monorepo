@@ -1,47 +1,38 @@
 #include <Arduino.h>
 #include <driver/rtc_io.h>
 
-#include "configuration.h"
-#include "components/Structure/Component.h"
-#include "components/Button/Button.h"
-#include "components/Joystick/Joystick.h"
-#include <components/Structure/Device.h>
+#include "Configuration.hpp"
+//#include "Utility.hpp"
+#include "Components/Structure/Component.hpp"
+#include "Components/Button/Button.hpp"
+#include "Components/Joystick/Joystick.hpp"
+#include "Components/Display/Display.hpp"
+#include "Components/Structure/Device.hpp"
+#include "Components/TemperatureSensor/TemperatureSensor.hpp"
+#include "Components/potentiometer/Potentiometer.hpp"
+#include "Components/PassiveBuzzer/Tone.hpp"
+#include "Components/PassiveBuzzer/notes.hpp"
+#include "Components/PassiveBuzzer/PassiveBuzzer.hpp"
 
-#include "components/DS18B20/DS18B20.h"
-#include "components/potentiometer/Potentiometer.h"
-#include "components/PassiveBuzzer/Tone.h"
-#include "components/PassiveBuzzer/notes.h"
-#include "components/PassiveBuzzer/PassiveBuzzer.h"
-#include "features/common/Common.h"
-#include "features/deep_sleep/DeepSleep.h"
-#include "features/lightup_leds/LightupLEDs.h"
-#include "features/melody/Melody.h"
-#include "features/print_button_pin/PrintButtonPin.h"
-#include "features/test_display/TestDisplay.h"
-
-// Lange nicht an ihrer finalen Position Komponenten funktionstest-Funktionen
-void setupDisplay();
-
-void showTemperature();
-
-void readJoystick();
-
-void playMelody();
-
-void playNote();
+/*#include "Features/deep_sleep/DeepSleep.hpp"
+#include "Features/lightup_leds/LightupLEDs.hpp"
+#include "Features/melody/Melody.hpp"
+#include "Features/print_button_pin/PrintButtonPin.hpp"
+#include "Features/test_display/TestDisplay.hpp"*/
 
 void setup() {
-  Serial.begin(115000);
+  Serial.begin(115200);
   delay(100);
-  while (!Serial) { }
+  while (!Serial) {}
 
-  Features::printStartMessage();
+  //Utility::printWakeupReason();
+  Serial.println("The project is built with C++ version: " + String(__cplusplus));
 
   const auto device = Device::getInstance();
-  Features::useButtonForDeepSleep(device->button1, device->button4);
+  /*Features::useButtonForDeepSleep(device->button1, device->button4);
   Features::lightupLEDs();
   Features::printButtonPinWhenPressed(device->button2);
-  Features::printButtonPinWhenPressed(device->button3);
+  Features::printButtonPinWhenPressed(device->button3);*/
 }
 
 void loop() {

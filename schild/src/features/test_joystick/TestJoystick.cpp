@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
-#include "TestJoystick.h"
-#include "features/common/Common.h"
+#include "TestJoystick.hpp"
+#include "main/Utility.hpp"
 
 namespace Features {
   void readJoystick(const std::shared_ptr<Joystick> &joystick) {
@@ -15,7 +15,7 @@ namespace Features {
     Serial.print(" and Button is: ");
     Serial.println(joystick->button.isPressed() ? "ON" : "OFF");
 #else
-    printComponentNotEnabledMessage("readJoystick", "ENABLE_JOYSTICK");
+    Utility::printComponentNotEnabledMessage("readJoystick", "ENABLE_JOYSTICK");
 #endif
   }
 }

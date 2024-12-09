@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
-#include <components/Structure/Component.h>
+#include "Components/Structure/Component.hpp"
 
 class Potentiometer : public Component<1> {
 private:

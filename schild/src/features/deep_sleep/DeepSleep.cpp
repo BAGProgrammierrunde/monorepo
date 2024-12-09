@@ -1,6 +1,5 @@
-#include "DeepSleep.h"
-#include "features/common/Common.h"
-#include "main/configuration.h"
+#include "DeepSleep.hpp"
+#include "main/Configuration.hpp"
 
 namespace Features {
   void useButtonForDeepSleep(const std::shared_ptr<Button> &deepSleepButton, const std::shared_ptr<Button> &wakeupButton) {

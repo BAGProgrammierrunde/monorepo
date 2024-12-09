@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Arduino.h>
-#include "Tone.h"
-#include "components/Structure/Component.h"
+#include "Tone.hpp"
+#include "Components/Structure/Component.hpp"
 
 class PassiveBuzzer : public Component<1> {
 private:

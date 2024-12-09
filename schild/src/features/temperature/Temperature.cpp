@@ -1,9 +1,9 @@
-#include "Temperature.h"
-#include "components/DS18B20/DS18B20.h"
-#include "features/common/Common.h"
+#include "Temperature.hpp"
+#include "Components/TemperatureSensor/TemperatureSensor.hpp"
+#include "main/Utility.hpp"
 
 namespace Features {
-  void displayTemperature(const std::shared_ptr<Display> &display, const std::shared_ptr<DS18B20> &temperatureSensor) {
+  void displayTemperature(const std::shared_ptr<Display> &display, const std::shared_ptr<TemperatureSensor> &temperatureSensor) {
 #if ENABLE_TEMPERATURE
     float currentTemperature = temperatureSensor->getTemperature();
     int currentTemperatureInt = round(currentTemperature);
@@ -24,7 +24,7 @@ namespace Features {
       }
     }
 #else
-    printComponentNotEnabledMessage("displayTemperature", "ENABLE_TEMPERATURE");
+    Utility::printComponentNotEnabledMessage("displayTemperature", "ENABLE_TEMPERATURE");
 #endif
   }
 }

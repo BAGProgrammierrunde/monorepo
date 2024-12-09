@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Arduino.h>
-#include <components/Button/Button.h>
-#include <components/Structure/Component.h>
+#include "Components/Button/Button.hpp"
+#include "Components/Structure/Component.hpp"
 
 class Joystick : public Component<2> {
 private:

@@ -1,5 +1,5 @@
-#include "LightupLEDs.h"
-#include "features/common/Common.h"
+#include "LightupLEDs.hpp"
+#include "main/Utility.hpp"
 
 namespace Features {
   void lightupLEDs() {
@@ -11,7 +11,7 @@ namespace Features {
     pinMode(PIN_LED_2, OUTPUT);
     digitalWrite(PIN_LED_2, HIGH);
 #else
-    printComponentNotEnabledMessage("lightupLEDs", "ENABLE_LEDS");
+    Utility::printComponentNotEnabledMessage("lightupLEDs", "ENABLE_LEDS");
 #endif
   }
 }

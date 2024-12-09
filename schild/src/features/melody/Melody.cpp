@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
-#include "Melody.h"
-#include "features/common/Common.h"
+#include "Melody.hpp"
+#include "main/Utility.hpp"
 
 namespace Features {
   void playMelody(const std::shared_ptr<PassiveBuzzer> &buzzer) {
@@ -21,7 +21,7 @@ namespace Features {
 
     delay(3000);
 #else
-    printComponentNotEnabledMessage("playMelody", "ENABLE_BUZZER");
+    Utility::printComponentNotEnabledMessage("playMelody", "ENABLE_BUZZER");
 #endif
   }
 
@@ -33,7 +33,7 @@ namespace Features {
     delay(500);
     buzzer->stopNote();
 #else
-    printComponentNotEnabledMessage("playNote", "ENABLE_BUZZER");
+    Utility::printComponentNotEnabledMessage("playNote", "ENABLE_BUZZER");
 #endif
   }
 }

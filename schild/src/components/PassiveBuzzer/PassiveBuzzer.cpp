@@ -1,4 +1,4 @@
-#include "PassiveBuzzer.h"
+#include "PassiveBuzzer.hpp"
 
 /// <summary>Constructs the buzzer with specified pin.<br>
 /// <para><br>

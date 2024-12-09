@@ -1,5 +1,7 @@
 #pragma once
 
+#define BUTTON_PIN_BITMASK(GPIO) (1ULL << GPIO)
+
 // Wenn du eine Komponente verwenden möchtest, ersetze das 'false' mit einem 'true'
 #define ENABLE_DISPLAY false
 #define ENABLE_LEDS false
@@ -24,6 +26,7 @@
  * | grau   | VCC     | 3.3V       |
  * | ------ |-------- | ---------- |
  */
+
 #define PIN_DISPLAY_BUSY 22
 #define PIN_DISPLAY_RST 21
 #define PIN_DISPLAY_DC 19

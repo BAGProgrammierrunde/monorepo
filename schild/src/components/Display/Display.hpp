@@ -1,8 +1,7 @@
 #pragma once
 
 #include <GxEPD2_BW.h>
-
-#include "components/Structure/Component.h"
+#include "Components/Structure/Component.hpp"
 
 class Display : public Component<6> {
 private:

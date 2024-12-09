@@ -1,4 +1,4 @@
-#include "Button.h"
+#include "Button.hpp"
 
 Button::Button(unsigned int pin) : Component(pin) {
     pinMode(pins[0], INPUT_PULLUP);

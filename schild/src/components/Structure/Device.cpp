@@ -1,6 +1,5 @@
-#include "Device.h"
-
-#include <main/configuration.h>
+#include "Device.hpp"
+#include "main/Configuration.hpp"
 
 std::shared_ptr<Device> Device::instance = nullptr;
 

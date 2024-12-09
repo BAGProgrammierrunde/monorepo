@@ -1,8 +1,7 @@
 #pragma once
 
 #include <memory>
-
-#include "components/joystick/Joystick.h"
+#include "Components/joystick/Joystick.hpp"
 
 namespace Features {
   void readJoystick(const std::shared_ptr<Joystick> &joystick);

@@ -1,4 +1,4 @@
-#include "Component.h"
+#include "Component.hpp"
 
 // TODO Why this resulting in: undefined reference to `Component<1u>::Component<unsigned int>(unsigned int)'
 // template<unsigned int PinCount>

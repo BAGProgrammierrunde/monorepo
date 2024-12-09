@@ -1,4 +1,4 @@
-#include "PrintButtonPin.h"
+#include "PrintButtonPin.hpp"
 
 namespace Features {
   void printButtonPinWhenPressed(const std::shared_ptr<Button> &button) {

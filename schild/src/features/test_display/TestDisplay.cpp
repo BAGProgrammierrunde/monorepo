@@ -1,6 +1,6 @@
 #include <Fonts/FreeMonoBold9pt7b.h>
-
-#include "TestDisplay.h"
+#include "main/Utility.hpp"
+#include "TestDisplay.hpp"
 
 namespace Features {
 // TODO Change button to display
@@ -23,7 +23,7 @@ namespace Features {
     } while (display->nextPage());
     Serial.println("Display update done");
 #else
-    printComponentNotEnabledMessage("testDisplay", "ENABLE_DISPLAY");
+    Utility::printComponentNotEnabledMessage("testDisplay", "ENABLE_DISPLAY");
 #endif
   }
 }
