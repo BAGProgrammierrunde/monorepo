@@ -1,3 +1,5 @@
+![Device Skizze](device_skizze.png)
+
 # BAG Programmierrunde - Monorepo
 
 TODO Beschreibung
@@ -12,7 +14,11 @@ TODO Beschreibung
 
 ## [Code](./schild/README.md)
 
+Unter Schild befindet sich der Code.
+
 ## [Schaltplan](./schaltplan/README.md)
+
+Unter Schaltplan befindet sich der Schaltplan.
 
 ## Teileliste
 
