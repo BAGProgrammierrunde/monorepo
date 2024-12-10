@@ -1,4 +1,7 @@
 #include "DeepSleep.hpp"
+
+#include <driver/rtc_io.h>
+
 #include "main/Configuration.hpp"
 
 namespace Features {
