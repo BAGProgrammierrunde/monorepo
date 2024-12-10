@@ -11,6 +11,8 @@
 #define ENABLE_BUZZER false
 #define ENABLE_BUTTONS false
 
+#define BAUD_RATE 115200
+
 /*
  * |          Anschlüsse           |
  * | ----------------------------- |

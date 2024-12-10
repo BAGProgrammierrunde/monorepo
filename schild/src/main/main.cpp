@@ -21,7 +21,7 @@
 #include "Features/test_display/TestDisplay.hpp"
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(BAUD_RATE);
   delay(100);
   while (!Serial) {}
 
