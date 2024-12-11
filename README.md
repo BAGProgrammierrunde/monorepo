@@ -39,3 +39,7 @@ TODO "..." entfernen
 |Schalter|...||
 |Kabel|...||
 |Joystick|Joystick Modul|[Beispiel](https://www.conrad.de/de/p/joy-it-joystick-modul-881921103.html)|
+
+## FireBeetle ESP WROOM 32 - Pinout
+
+![FireBeetle ESP WROOM 32 - Pinout](firebeetle_esp_wroom_32_pinout.png)
