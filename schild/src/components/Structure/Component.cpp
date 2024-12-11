@@ -1,10 +1,9 @@
 #include "Component.hpp"
 
-// TODO Why this resulting in: undefined reference to `Component<1u>::Component<unsigned int>(unsigned int)'
-// template<unsigned int PinCount>
-// template<typename ... T>
-// Component<PinCount>::Component(T... ts) : pins{ts...} {
-// }
+template <unsigned int PinCount>
+Component<PinCount>::Component(std::array<unsigned int, PinCount> pPins) {
+    pins = pPins;
+}
 
 template <unsigned int PinCount>
 unsigned int Component<PinCount>::getPinCount() const {
@@ -18,7 +17,7 @@ bool Component<PinCount>::usesPin(unsigned int pPin) const {
     return false;
 }
 
-template<unsigned int PinCount>
-int Component<PinCount>::getPin(unsigned int pIndex) {
-    return pIndex < PinCount ? pins[pIndex] : -1;
+template <unsigned int PinCount>
+int Component<PinCount>::getPin(unsigned int pIndex) const {
+    return (pIndex < PinCount ? pins[pIndex] : -1);
 }

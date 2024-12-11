@@ -5,7 +5,7 @@
 /// pin: The pin for the buzzer.<br>
 /// </para>
 /// </summary>
-PassiveBuzzer::PassiveBuzzer(unsigned int pin) : Component(pin) {
+PassiveBuzzer::PassiveBuzzer(unsigned int pin) : Component({pin}) {
 }
 
 /// <summary>Plays a note. If no duration is given the note will play until "stopNote()" is called!<br>
