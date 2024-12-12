@@ -1,6 +1,6 @@
 #include "TemperatureSensor.hpp"
 
-TemperatureSensor::TemperatureSensor(unsigned int pin) : Component({pin}) {
+TemperatureSensor::TemperatureSensor(unsigned int pin) : Component(pin) {
     oneWire = OneWire(pin);
 
     sensors.setOneWire(&oneWire);

@@ -5,7 +5,7 @@
 #ifndef SCHILD_TONE_H
 #define SCHILD_TONE_H
 
-
+// TODO Nutzen von pragma once
 class Tone {
 public:
     int note;

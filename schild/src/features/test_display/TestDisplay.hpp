@@ -1,9 +1,9 @@
 #pragma once
 
-#include <GxEPD2_BW.h>
 #include <memory>
-#include "Components/Button/Button.hpp"
+
+#include "Components/Display/Display.hpp"
 
 namespace Features {
-  void testDisplay(const std::shared_ptr<Button> &button);
+  void testDisplay(const std::shared_ptr<Display> &display);
 }

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "macros.hpp"
+#include "poly_value.hpp"
+
 namespace me {
     // Basically a std::function implementation with no small object optimization and thus a size of just 16 instead of 32
     // Huge credits to this SO question and its accepted answer!!: https://stackoverflow.com/questions/14936539/how-stdfunction-works
@@ -50,8 +53,7 @@ namespace me {
         }
 
         ReturnT operator()(Params... pArgs) { // It doesn't seem to like perfect forwarding here ;c
-            if (!has()) throw std::bad_function_call();
-            return (*anyCallable.get())(pArgs...);
+            return has() ? (*anyCallable.get())(pArgs...) : ReturnT();
         }
 
         template <typename ClassT>

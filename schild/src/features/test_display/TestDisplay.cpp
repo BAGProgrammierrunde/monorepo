@@ -1,27 +1,30 @@
-#include <Arduino.h>
-#include <Fonts/FreeMonoBold9pt7b.h>
-#include "main/Utility.hpp"
 #include "TestDisplay.hpp"
 
+#include <Arduino.h>
+#include <GxEPD2_BW.h>
+#include <Fonts/FreeMonoBold9pt7b.h>
+
+#include "main/Configuration.hpp"
+#include "main/Utility.hpp"
+
 namespace Features {
-// TODO Change button to display
-  void testDisplay(const std::shared_ptr<Button> &button) {
+  void testDisplay(const std::shared_ptr<Display> &display) {
 #if ENABLE_DISPLAY
-    Serial.println("GxEPD2 2.9-inch  e-ink display test start1");
-    display->init(115200, true, 2, true); // USE THIS for Waveshare boards with "clever" reset circuit, 2ms reset pulse
+    Serial.println("GxEPD2 2.9-inch  e-ink display");
+    display->getEpdRef()->init(115200, true, 2, true); // USE THIS for Waveshare boards with "clever" reset circuit, 2ms reset pulse
     Serial.println("Display initialized");
 
-    display->setRotation(1);
-    display->setTextColor(GxEPD_BLACK);
-    display->setFullWindow();
-    display->firstPage();
+    display->getEpdRef()->setRotation(1);
+    display->getEpdRef()->setTextColor(GxEPD_BLACK);
+    display->getEpdRef()->setFullWindow();
+    display->getEpdRef()->firstPage();
     Serial.println("Starting display update");
     do {
-      display->fillScreen(GxEPD_WHITE);
-      display->setCursor(0, 0);
-      display->setTextSize(2);
-      display->print(random(10000000));
-    } while (display->nextPage());
+      display->getEpdRef()->fillScreen(GxEPD_WHITE);
+      display->getEpdRef()->setCursor(0, 0);
+      display->getEpdRef()->setTextSize(2);
+      display->getEpdRef()->print(random(10000000));
+    } while (display->getEpdRef()->nextPage());
     Serial.println("Display update done");
 #else
     Utility::printComponentNotEnabledMessage("testDisplay", "ENABLE_DISPLAY");

@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include <DallasTemperature.h>
+
 #include "Components/Structure/Component.hpp"
 
 class TemperatureSensor : public Component<1> {

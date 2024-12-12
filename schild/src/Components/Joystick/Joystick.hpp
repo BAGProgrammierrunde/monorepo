@@ -7,7 +7,6 @@
 class Joystick : public Component<2> {
 private:
     float threshold;
-
     float readAsPercent(unsigned int pPin);
 
 public:

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+
+// TODO Warum können wir den Button.hpp entfernen und Display.hpp nicht?
 #include "Components/Button/Button.hpp"
 #include "Components/Display/Display.hpp"
 #include "Components/TemperatureSensor/TemperatureSensor.hpp"
@@ -16,17 +18,20 @@ private:
 
 public:
     std::shared_ptr<Display> display;
-    std::shared_ptr<Button> button1;
-    std::shared_ptr<Button> button2;
-    std::shared_ptr<Button> button3;
-    std::shared_ptr<Button> button4;
+
+    // TODO led1
+    // TODO led2
+
+    // TODO temperature
+
     std::shared_ptr<TemperatureSensor> temperatureSensor;
     std::shared_ptr<Joystick> joystick;
     std::shared_ptr<Potentiometer> potentiometer;
     std::shared_ptr<PassiveBuzzer> passiveBuzzer;
-    // TODO led1
-    // TODO led2
-    // TODO temperature
+    std::shared_ptr<Button> button1;
+    std::shared_ptr<Button> button2;
+    std::shared_ptr<Button> button3;
+    std::shared_ptr<Button> button4;
 
     explicit Device();
 

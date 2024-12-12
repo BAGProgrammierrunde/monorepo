@@ -1,17 +1,18 @@
 #include <Arduino.h>
 
-#include "Configuration.hpp"
-#include "main/Utility.hpp"
 #include "Components/Structure/Device.hpp"
-
+#include "Configuration.hpp"
 #include "Features/deep_sleep/DeepSleep.hpp"
 #include "Features/lightup_leds/LightupLEDs.hpp"
 #include "Features/print_button_pin/PrintButtonPin.hpp"
+#include "Features/test_display/TestDisplay.hpp"
+#include "Utility.hpp"
 
 void setup() {
     Serial.begin(BAUD_RATE);
     delay(100);
-    while (!Serial) {}
+    while (!Serial) {
+    }
 
     Utility::printWakeupReason();
     Serial.println("The project is built with C++ version: " + String(__cplusplus));
@@ -21,6 +22,7 @@ void setup() {
     Features::lightupLEDs();
     Features::printButtonPinWhenPressed(device->button2);
     Features::printButtonPinWhenPressed(device->button3);
+    Features::testDisplay(device->display);
 }
 
 void loop() {
