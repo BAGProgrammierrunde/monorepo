@@ -1,12 +1,11 @@
 #include "PrintButtonPin.hpp"
 
 namespace Features {
-  void printButtonPinWhenPressed(const std::shared_ptr<Button> &button) {
-    button->setCallback([](ulong) -> void {
-    Serial.print("Button with GPIO ");
-    // TODO We need captures in button callback
-    Serial.print("{CURRENTLY UNKNOWN}");
-    Serial.print(" was pressed");
-  });
-  }
+    void printButtonPinWhenPressed(const std::shared_ptr<Button> &button) {
+        button->setCallback([](Button* pThisRef) -> void {
+            Serial.print("Button with GPIO ");
+            Serial.print("{CURRENTLY UNKNOWN}");
+            Serial.print(" was pressed");
+        });
+    }
 }

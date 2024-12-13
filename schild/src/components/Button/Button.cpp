@@ -1,6 +1,6 @@
 #include "Button.hpp"
 
-Button::Button(unsigned int pin) : Component(pin) {
+Button::Button(unsigned int _pPin) : Component({_pPin}) {
     pinMode(pins[0], INPUT_PULLUP);
     pressed = false;
     callbackFunc = &defaultCallback;
@@ -8,36 +8,31 @@ Button::Button(unsigned int pin) : Component(pin) {
     lastFallingTime = 0;
 }
 
-// TODO nur hinzugefügt weil getPin aus Component von außen nicht aufrufbar ist
-unsigned int Button::testgetPin(const unsigned int pin) const {
-    return pins[pin];
-}
-
 void Button::init() {
-    attachInterruptArg(pins[0], [](void* arg) -> void IRAM_ATTR {
-        Button* button = static_cast<Button*>(arg);
-        button->fallingTime = millis();
-        if (button->fallingTime - button->lastFallingTime > Button::DEBOUNCE_TIME)
+    attachInterruptArg(pins[0], [](void* pArg) -> void IRAM_ATTR {
+        Button* thisRef = (Button*)pArg;
+        thisRef->fallingTime = millis();
+        if (thisRef->fallingTime - thisRef->lastFallingTime > Button::DEBOUNCE_TIME)
         {
             xTaskCreate(
-                [](void* arg) -> void {
-                    static_cast<Button *>(arg)->callCallback();
+                [](void* pThreadArg) -> void {
+                    ((Button*)pThreadArg)->callCallback();
                     vTaskDelete(NULL);
                 },
                 "ButtonCallback", // Name of the task (e.g. for debugging)
                 2048, // Stack size (bytes)
-                button, // Parameter to pass
+                thisRef, // Parameter to pass
                 1, // Task priority
                 NULL // Task handle
             );
 
-            button->lastFallingTime = button->fallingTime;
+            thisRef->lastFallingTime = thisRef->fallingTime;
         }
     }, this, FALLING);
 }
 
-void Button::defaultCallback(ulong pClickTime) {
-    Serial.println(pClickTime + "Button clicked");
+void Button::defaultCallback(Button* pThisRef) {
+    Serial.println("Button on pin " + String(pThisRef->getPin(0)) + " clicked");
 }
 
 bool Button::isPressed() {
@@ -53,5 +48,5 @@ void Button::clearCallback() {
 }
 
 void Button::callCallback() {
-    callbackFunc(millis());
+    callbackFunc(this);
 }

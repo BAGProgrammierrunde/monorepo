@@ -9,18 +9,18 @@
 #include "Features/print_button_pin/PrintButtonPin.hpp"
 
 void setup() {
-  Serial.begin(BAUD_RATE);
-  delay(100);
-  while (!Serial) {}
+    Serial.begin(BAUD_RATE);
+    delay(100);
+    while (!Serial) {}
 
-  Utility::printWakeupReason();
-  Serial.println("The project is built with C++ version: " + String(__cplusplus));
+    Utility::printWakeupReason();
+    Serial.println("The project is built with C++ version: " + String(__cplusplus));
 
-  const auto device = Device::getInstance();
-  Features::useButtonForDeepSleep(device->button1, device->button4);
-  Features::lightupLEDs();
-  Features::printButtonPinWhenPressed(device->button2);
-  Features::printButtonPinWhenPressed(device->button3);
+    const std::shared_ptr<Device> device = Device::getInstance();
+    Features::useButtonForDeepSleep(device->button1, device->button4);
+    Features::lightupLEDs();
+    Features::printButtonPinWhenPressed(device->button2);
+    Features::printButtonPinWhenPressed(device->button3);
 }
 
 void loop() {
