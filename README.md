@@ -43,3 +43,7 @@ TODO "..." entfernen
 ## FireBeetle ESP WROOM 32 - Pinout
 
 ![FireBeetle ESP WROOM 32 - Pinout](firebeetle_esp_wroom_32_pinout.png)
+
+### Mit Komponenten
+
+![FireBeetle ESP WROOM 32 - Pinout](miro_pinout_plan.png)
