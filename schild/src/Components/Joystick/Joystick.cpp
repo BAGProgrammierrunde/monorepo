@@ -1,6 +1,6 @@
 #include "Joystick.hpp"
 
-Joystick::Joystick(unsigned int pPinX, unsigned int pPinY, unsigned int _pPinButton, float pThreshold) : Component(pPinX, pPinY), button(_pPinButton) {
+Joystick::Joystick(unsigned int pPinX, unsigned int pPinY, unsigned int _pPinButton, float pThreshold) : Component({pPinX, pPinY}), button(_pPinButton) {
     pinMode(pins[0], INPUT);
     pinMode(pins[1], INPUT);
     threshold = pThreshold;

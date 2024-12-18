@@ -1,6 +1,11 @@
 #include "Component.hpp"
 
 template <unsigned int PinCount>
+Component<PinCount>::Component(std::array<unsigned int, PinCount> pPins) {
+    pins = pPins;
+}
+
+template <unsigned int PinCount>
 unsigned int Component<PinCount>::getPinCount() const {
     return PinCount;
 }

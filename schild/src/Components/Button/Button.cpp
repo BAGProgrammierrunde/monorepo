@@ -2,7 +2,7 @@
 
 #include "data/any_callable.hpp"
 
-Button::Button(unsigned int pin) : Component(pin) {
+Button::Button(unsigned int pin) : Component({pin}) {
     pinMode(pins[0], INPUT_PULLUP);
     pressed = false;
     fallingTime = 0;
