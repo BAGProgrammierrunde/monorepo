@@ -4,6 +4,7 @@
 
 // Wenn du eine Komponente verwenden möchtest, ersetze das 'false' mit einem 'true'
 #define ENABLE_DISPLAY false
+#define ENABLE_DISPLAY_GX_EPD2 true
 #define ENABLE_LEDS false
 #define ENABLE_TEMPERATURE false
 #define ENABLE_JOYSTICK false
