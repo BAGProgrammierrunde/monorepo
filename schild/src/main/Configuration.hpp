@@ -1,9 +1,12 @@
 #pragma once
 
+#include "main/LocalConfiguration.hpp"
+
+#ifndef LOCAL_CONFIG_ENABLED
 #define BUTTON_PIN_BITMASK(GPIO) (1ULL << GPIO)
 
 // Wenn du eine Komponente verwenden möchtest, ersetze das 'false' mit einem 'true'
-#define ENABLE_DISPLAY false
+#define ENABLE_DISPLAY true
 #define ENABLE_DISPLAY_GX_EPD2 true
 #define ENABLE_LEDS false
 #define ENABLE_TEMPERATURE false
@@ -54,3 +57,5 @@
 #define PIN_BUTTON_2 10
 #define PIN_BUTTON_3 13
 #define PIN_BUTTON_4 5
+
+#endif
