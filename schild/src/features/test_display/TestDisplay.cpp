@@ -75,7 +75,7 @@ display->getEpdRef()->init(115200, true, 2, true); // USE THIS for Waveshare boa
           display->getEpdRef()->print("Programmierrunde");
       } while (display->getEpdRef()->nextPage());
       delay(800);
-      */
+
     Serial.println("Display update done");
 #else
       static const uint16_t WIDTH = 128;

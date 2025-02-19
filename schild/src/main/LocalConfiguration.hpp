@@ -1,2 +1,8 @@
 #pragma once
-#define LOCAL_CONFIG_ENABLED
+
+//Umgang mit Config Einstellungen:
+//es sind erst einmal standardwerte gesetzt
+//die muss man erst undefinen, dann neu definen
+//BEISPIEL:
+//#undef ENABLE_DISPLAY
+//#define ENABLE_DISPLAY true
