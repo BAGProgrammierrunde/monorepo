@@ -1,43 +1,38 @@
-#include <Arduino.h>
-
-#include "Components/Structure/Device.hpp"
+#include <arduino.h>
 #include "Configuration.hpp"
-#include "Features/deep_sleep/DeepSleep.hpp"
-#include "Features/lightup_leds/LightupLEDs.hpp"
-#include "Features/print_button_pin/PrintButtonPin.hpp"
-#include "Features/test_display/TestDisplay.hpp"
-#include "Utility.hpp"
+#include "features/IntervalAction.h"
+
 
 void setup() {
-    Serial.begin(BAUD_RATE);
-    delay(100);
-    while (!Serial) {
-    }
-
-    Utility::printWakeupReason();
-    Serial.println("The project is built with C++ version: " + String(__cplusplus));
-
-    const std::shared_ptr<Device> device = Device::getInstance();
-    Features::useButtonForDeepSleep(device->button1, device->button4);
-    Features::lightupLEDs();
-    Features::printButtonPinWhenPressed(device->button2);
-    Features::printButtonPinWhenPressed(device->button3);
-    Features::testDisplay(device->display);
+    pinMode(PIN_LED_1, OUTPUT);
+    pinMode(PIN_LED_2, OUTPUT);
+    pinMode(PIN_BUZZER, OUTPUT);
+    pinMode(PIN_POTENTIOMETER, INPUT);
+    digitalWrite(PIN_BUZZER, LOW);
+    Serial.begin(115200);
+    ledcSetup(0, 5000, 8);
+    ledcAttachPin(PIN_LED_1, 0);
 }
+bool ledState = HIGH;
+void toggleLED() {
+    ledState = ledState == HIGH ? LOW : HIGH;
+    digitalWrite(PIN_LED_2, ledState);
+    Serial.println(ledState);
+}
+IntervalAction blinker(1000, toggleLED);
 
+int analogValue = 0;
+void printPotentiometerValue() {
+    Serial.println(analogValue);
+}
+IntervalAction potiOutput(1000, printPotentiometerValue);
+
+// the loop function runs over and over again forever
 void loop() {
-  Serial.print(".");
-  delay(500);
+    blinker.update();
+    potiOutput.update();
+    analogValue = analogRead(PIN_POTENTIOMETER);
+    int pwmValue = map(analogValue, 0, 4095, 10, 255);
+    ledcWrite(0, pwmValue);
 }
 
-/*
-const float MAX_READOUT = 4095;
-const float READOUT_CORRECTION = 50;
-const float MAX_VOLTAGE = 4.2;
-String batteryVoltage = "0V";
-void checkBattery() {
-  Serial.println("Battery Analog Read: " + String(analogRead(A0)-READOUT_CORRECTION));
-  batteryVoltage = String((float((analogRead(A0)-READOUT_CORRECTION))/MAX_READOUT) * MAX_VOLTAGE) + "V";
-  Serial.println("Battery Check: " + batteryVoltage);
-}
-*/
