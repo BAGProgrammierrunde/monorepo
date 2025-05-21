@@ -1,8 +1,6 @@
 #pragma once
 
-#include <memory>
-
-// TODO Warum können wir den Button.hpp entfernen und Display.hpp nicht?
+#include "main/Configuration.hpp"
 #include "Components/Button/Button.hpp"
 #include "Components/Display/Display.hpp"
 #include "Components/TemperatureSensor/TemperatureSensor.hpp"
@@ -10,33 +8,29 @@
 #include "Components/Potentiometer/Potentiometer.hpp"
 #include "Components/Joystick/Joystick.hpp"
 
-class Device {
-private:
-    static std::shared_ptr<Device> instance;
 
-    static void printEnabledMessage(const String &name, const bool &enableDefine);
-
+class Device { // Static class
 public:
-    std::shared_ptr<Display> display;
+    // INPUT:
+    static Button button1;
+    static Button button2;
+    static Button button3;
+    static Button button4;
+    static Joystick joystick;
+    static Potentiometer potentiometer;
 
-    // TODO led1
-    // TODO led2
+    // Passive (Sensors & stuff)
+    static TemperatureSensor temperatureSensor;
 
-    // TODO temperature
+    // OUTPUT:
+    // TODO led1 & led2
+    static PassiveBuzzer passiveBuzzer;
+    static Display display;
 
-    std::shared_ptr<TemperatureSensor> temperatureSensor;
-    std::shared_ptr<Joystick> joystick;
-    std::shared_ptr<Potentiometer> potentiometer;
-    std::shared_ptr<PassiveBuzzer> passiveBuzzer;
-    std::shared_ptr<Button> button1;
-    std::shared_ptr<Button> button2;
-    std::shared_ptr<Button> button3;
-    std::shared_ptr<Button> button4;
+    // METHODS:
 
-    explicit Device();
-
-    static std::shared_ptr<Device> getInstance();
-
-    Device(Device &other) = delete; // Singletons should not be cloneable
-    void operator=(const Device &) = delete; // Singletons should not be assignable
+    Device() = delete;
+    static void init();
+    //static void handleEvents(); // Mabye later
+    static void update();
 };

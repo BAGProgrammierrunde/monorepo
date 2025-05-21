@@ -1,19 +1,22 @@
 #pragma once
 
 #include <Arduino.h>
-#include <DallasTemperature.h>
+#include <DallasTemperature.h> // Includes OneWire.h too
 
 #include "Components/Structure/Component.hpp"
 
 class TemperatureSensor : public Component<1> {
 private:
-    // TODO Maybe kann man den Code von DallasTemperature hier aufnehmen - viel Boilerplate Code?
-    DallasTemperature sensors;
-    // TODO Wirklich benötigt? Wirft Warnings - Updates?
+    // TODO Maybe kann man den Code von den Libraries hier selbst implementieren und die dann rausschmeißen..
+    // Muss man mal reinschauen wie die Funktionieren und ob das in machbarem Rahmen geht.
     OneWire oneWire;
-public:
-    explicit TemperatureSensor(unsigned int pin);
+    DallasTemperature sensor;
+    unsigned int mySensorIndex;
 
-    float getTemperature();
-    bool isConnected();
+    static inline unsigned int internalTempSensorCount = 0;
+
+public:
+    TemperatureSensor(unsigned int _pPin);
+    float getTemperature(bool pCelsiusElseFahrenheit = true);
+    //bool isConnected();
 };

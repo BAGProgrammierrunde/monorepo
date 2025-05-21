@@ -6,14 +6,16 @@
 
 class Joystick : public Component<2> {
 private:
+    Button button;
     float threshold;
-    float readAsPercent(unsigned int pPin);
+
+    float readCoordAsPercent(bool pXElseY) const;
 
 public:
-    Button button;
-    
-    explicit Joystick(unsigned int pPinX, unsigned int pPinY, unsigned int _pPinButton, float pThreshold);
-
-    float getX();
-    float getY();
+    Joystick(unsigned int _pPinX, unsigned int _pPinY, unsigned int _pPinButton, float pThreshold = 0);
+    float getX() const;
+    float getY() const;
+    float getThreshold() const;
+    Button* getButtonRef();
+    void setThreshold(float pThreshold);
 };

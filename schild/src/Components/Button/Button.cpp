@@ -1,8 +1,6 @@
 #include "Button.hpp"
 
-#include "Data_Types/any_callable.hpp"
-
-Button::Button(unsigned int pPin) : Component({pPin}) {
+Button::Button(unsigned int _pPin) : Component({_pPin}) {
     pinMode(pins[0], INPUT_PULLUP);
     lastFallingTime = 0;
 

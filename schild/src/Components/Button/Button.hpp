@@ -14,7 +14,7 @@ private:
 public:
     static const ulong DEBOUNCE_MILLIS = 200;
 
-    explicit Button(unsigned int pPin);
+    Button(unsigned int _pPin);
     bool isPressed() const;
     template <typename CallableT>
     CallableT& getRawClickFunctionCallableRef();

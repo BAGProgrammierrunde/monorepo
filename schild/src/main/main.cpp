@@ -1,13 +1,12 @@
 #include <arduino.h>
-#include "Configuration.hpp"
-#include "features/IntervalAction.h"
 
-#include "../Components/Button/Button.hpp"
+#include "Components/Structure/Device.hpp"
 
-
-/////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 //POTI&LED DEBUG MODE: poti auf > 0 beim start und dann hoch runter drehen
 //led debug mode -> poti auf 0 beim start und dann blinken die LEDs
+#include "Configuration.hpp"
+#include "Data_Types/IntervalAction.hpp"
 
 int analogValue = 0;
 bool POTI_DEBUG = false;
@@ -33,13 +32,14 @@ void printPotentiometerValue() {
 IntervalAction blinker1(1000, toggleLED1);
 IntervalAction blinker2(1000, toggleLED2);
 IntervalAction potiOutput(1000, printPotentiometerValue);
-/////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 
 void setup() {
     Serial.begin(115200);
+    Device::init();
 
-    /////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
     pinMode(PIN_BUZZER, OUTPUT);
     pinMode(PIN_POTENTIOMETER, INPUT);
     analogValue = analogRead(PIN_POTENTIOMETER);
@@ -58,12 +58,13 @@ void setup() {
         pinMode(PIN_LED_1, OUTPUT);
         pinMode(PIN_LED_2, OUTPUT);
     }
+    ////////////////////////////////////////////////////////////////
 }
 
 void loop() {
+    Device::update();
 
-
-    /////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
     if (POTI_DEBUG)
     {
         potiOutput.update();
@@ -80,4 +81,5 @@ void loop() {
         blinker1.update();
         blinker2.update();
     }
+    ////////////////////////////////////////////////////////////////
 }

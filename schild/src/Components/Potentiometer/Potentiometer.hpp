@@ -5,8 +5,8 @@
 
 class Potentiometer : public Component<1> {
 private:
-public:
-    explicit Potentiometer(unsigned int pin);
 
-    int getValue();
+public:
+    Potentiometer(unsigned int _pPin);
+    float getValue() const;
 };

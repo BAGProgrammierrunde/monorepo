@@ -1,5 +1,6 @@
 #pragma once
 
+/*
 #define ENABLE_DISPLAY false
 #define ENABLE_LEDS false
 #define ENABLE_TEMPERATURE false
@@ -7,6 +8,7 @@
 #define ENABLE_POTENTIOMETER false
 #define ENABLE_BUZZER false
 #define ENABLE_BUTTONS false
+*/
 
 
 /*

@@ -2,15 +2,10 @@
 
 #include "Components/Structure/Component.hpp"
 
-class Display : public Component<6>
-{
+class Display : public Component<6> {
 private:
+
 public:
-    explicit Display(
-        unsigned int pinBusy,
-        unsigned int pinRst,
-        unsigned int pinDc,
-        unsigned int pinCs,
-        unsigned int pinClk,
-        unsigned int pinDin);
+    Display(unsigned int _pPinBusy, unsigned int _pPinRst, unsigned int _pPinDc, unsigned int _pPinCs, unsigned int _pPinClk, unsigned int _pPinDin);
+    // TODO: Ja das halt hier wirklich implementieren dann :)
 };
