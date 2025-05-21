@@ -3,22 +3,22 @@
 #include <Arduino.h>
 
 #include "Components/Structure/Component.hpp"
-#include "data/any_callable.hpp"
+#include "Data_Types/any_callable.hpp"
 
 class Button : public Component<1> {
-public:
-  static const ulong DEBOUNCE_TIME = 250;
-
 private:
-  bool pressed;
-  me::any_callable<void ()> callbackFunc;
-  ulong fallingTime;
-  ulong lastFallingTime;
+    //ulong fallingTime;
+    ulong lastFallingTime; // Last time of millis() the button was released. Used for current debounce pause between clicks.
+    me::any_callable<void()> clickFunc;
 
 public:
-  explicit Button(unsigned int pin);
-  bool isPressed();
-  void setCallback(me::any_callable<void ()> pCallbackFunction);
-  void clearCallback();
-  void callCallback();
+    static const ulong DEBOUNCE_MILLIS = 200;
+
+    explicit Button(unsigned int pPin);
+    bool isPressed() const;
+    template <typename CallableT>
+    CallableT& getRawClickFunctionCallableRef();
+    void setClickFunction(me::any_callable<void()> pClickFunction);
+    void clearClickFunction();
+    void callClickFunction();
 };

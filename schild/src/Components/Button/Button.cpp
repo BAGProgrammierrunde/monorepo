@@ -1,21 +1,19 @@
 #include "Button.hpp"
 
-#include "data/any_callable.hpp"
+#include "Data_Types/any_callable.hpp"
 
-Button::Button(unsigned int pin) : Component({pin}) {
+Button::Button(unsigned int pPin) : Component({pPin}) {
     pinMode(pins[0], INPUT_PULLUP);
-    pressed = false;
-    fallingTime = 0;
     lastFallingTime = 0;
 
-    attachInterruptArg(pins[0], [](void* arg) -> void IRAM_ATTR {
-        Button* button = static_cast<Button*>(arg);
-        button->fallingTime = millis();
-        if (button->fallingTime - button->lastFallingTime > Button::DEBOUNCE_TIME) {
+    attachInterruptArg(pins[0], [](void* pArg) -> void IRAM_ATTR {
+        Button* button = static_cast<Button*>(pArg);
+        ulong fallingTime = millis();
+        if (fallingTime - button->lastFallingTime > Button::DEBOUNCE_MILLIS)
+        {
             xTaskCreate(
-                [](void* arg) -> void {
-                    Button* button = static_cast<Button*>(arg);
-                    button->callCallback();
+                [](void* pTaskArg) -> void {
+                    static_cast<Button*>(pTaskArg)->callClickFunction();
                     vTaskDelete(NULL);
                 },
                 "ButtonCallback", // Name of the task (e.g. for debugging)
@@ -25,23 +23,28 @@ Button::Button(unsigned int pin) : Component({pin}) {
                 NULL // Task handle
             );
 
-            button->lastFallingTime = button->fallingTime;
+            button->lastFallingTime = fallingTime;
         }
     }, this, FALLING);
 }
 
-bool Button::isPressed() {
-    return pressed;
+bool Button::isPressed() const {
+    return (digitalRead(pins[0]) == LOW);
 }
 
-void Button::setCallback(me::any_callable<void ()> pCallbackFunction) {
-    callbackFunc = pCallbackFunction;
+template <typename CallableT>
+CallableT& Button::getRawClickFunctionCallableRef() {
+    return clickFunc.getRawCallableRef<CallableT>();
 }
 
-void Button::clearCallback() {
-    callbackFunc.clear();
+void Button::setClickFunction(me::any_callable<void()> pClickFunction) {
+    clickFunc = pClickFunction;
 }
 
-void Button::callCallback() {
-    callbackFunc();
+void Button::clearClickFunction() {
+    clickFunc.clear();
+}
+
+void Button::callClickFunction() {
+    clickFunc();
 }

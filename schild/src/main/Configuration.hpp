@@ -1,9 +1,5 @@
 #pragma once
 
-
-#define BUTTON_PIN_BITMASK(GPIO) (1ULL << GPIO)
-
-// Wenn du eine Komponente verwenden möchtest, ersetze das 'false' mit einem 'true'
 #define ENABLE_DISPLAY false
 #define ENABLE_LEDS false
 #define ENABLE_TEMPERATURE false
@@ -12,7 +8,6 @@
 #define ENABLE_BUZZER false
 #define ENABLE_BUTTONS false
 
-#define BAUD_RATE 115200
 
 /*
  * |          Anschlüsse           |
@@ -56,3 +51,7 @@
 #define PIN_BUTTON_4 5
 
 #include "main/LocalConfiguration.hpp"
+
+
+#define BUTTON_PIN_BITMASK(GPIO) (1ULL << GPIO)
+#define BAUD_RATE 115200

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "macros.hpp"
-#include "poly_value.hpp"
+#include "Data_Types/macros.hpp"
+#include "Data_Types/poly_value.hpp"
 
 namespace me {
     // Basically a std::function implementation with no small object optimization and thus a size of just 16 instead of 32

@@ -2,15 +2,44 @@
 #include "Configuration.hpp"
 #include "features/IntervalAction.h"
 
+#include "../Components/Button/Button.hpp"
 
+
+/////////////////////////////////////////////////////////////
 //POTI&LED DEBUG MODE: poti auf > 0 beim start und dann hoch runter drehen
 //led debug mode -> poti auf 0 beim start und dann blinken die LEDs
 
 int analogValue = 0;
 bool POTI_DEBUG = false;
+bool ledState = HIGH;
+bool ledState2 = HIGH;
+
+void toggleLED1() {
+    ledState = ledState == HIGH ? LOW : HIGH;
+    digitalWrite(PIN_LED_1, ledState);
+    Serial.println(ledState);
+}
+
+void toggleLED2() {
+    ledState2 = ledState2 == HIGH ? LOW : HIGH;
+    digitalWrite(PIN_LED_2, ledState2);
+    Serial.println(ledState2);
+}
+
+void printPotentiometerValue() {
+    Serial.println(analogValue);
+}
+
+IntervalAction blinker1(1000, toggleLED1);
+IntervalAction blinker2(1000, toggleLED2);
+IntervalAction potiOutput(1000, printPotentiometerValue);
+/////////////////////////////////////////////////////////////
+
+
 void setup() {
     Serial.begin(115200);
 
+    /////////////////////////////////////////////////////////
     pinMode(PIN_BUZZER, OUTPUT);
     pinMode(PIN_POTENTIOMETER, INPUT);
     analogValue = analogRead(PIN_POTENTIOMETER);
@@ -23,54 +52,32 @@ void setup() {
         ledcAttachPin(PIN_LED_1, 0);
         ledcSetup(1, 5000, 8);
         ledcAttachPin(PIN_LED_2, 1);
-    } else
+    }
+    else
     {
         pinMode(PIN_LED_1, OUTPUT);
         pinMode(PIN_LED_2, OUTPUT);
     }
 }
 
-bool ledState = HIGH;
-void toggleLED1() {
-    ledState = ledState == HIGH ? LOW : HIGH;
-    digitalWrite(PIN_LED_1, ledState);
-    Serial.println(ledState);
-}
-bool ledState2 = HIGH;
-void toggleLED2() {
-    ledState2 = ledState2 == HIGH ? LOW : HIGH;
-    digitalWrite(PIN_LED_2, ledState2);
-    Serial.println(ledState2);
-}
-
-IntervalAction blinker1(1000, toggleLED1);
-IntervalAction blinker2(1000, toggleLED2);
-
-void printPotentiometerValue() {
-    Serial.println(analogValue);
-}
-IntervalAction potiOutput(1000, printPotentiometerValue);
-
-// the loop function runs over and over again forever
 void loop() {
 
+
+    /////////////////////////////////////////////////////////
     if (POTI_DEBUG)
     {
         potiOutput.update();
         analogValue = analogRead(PIN_POTENTIOMETER);
 
         int pwmValue = 0;
-        if (analogValue > 0)
-        {
-            pwmValue = map(analogValue, 0, 4095, 10, 255);
-        }
+        if (analogValue > 0) pwmValue = map(analogValue, 0, 4095, 10, 255);
 
         ledcWrite(0, pwmValue);
         ledcWrite(1, pwmValue);
-    } else
+    }
+    else
     {
         blinker1.update();
         blinker2.update();
     }
 }
-
