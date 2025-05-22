@@ -2,7 +2,7 @@
 
 # BAG Programmierrunde - Monorepo
 
-TODO Beschreibung
+Hier finden Sie sämtliche relevanten Dateien und Links für unser ESP32-Projekt. Das Projekt widmet sich der Entwicklung eines Geräts, das durch die Integration zahlreicher Komponenten – darunter Buttons, ein Buzzer, ein E-Ink Display, LEDs, ein Joystick, ein Potentiometer, Schalter und ein Akku – ein breites Spektrum an Funktionalitäten ermöglicht.
 
 ## Inhalt
 - [Programmierrunden Protokoll](#programmierrunden-protokoll)
@@ -10,6 +10,7 @@ TODO Beschreibung
 - [Schaltplan](#schaltplan)
 - [Teileliste](#teileliste)
 - [Gehäuse (CAD)](#gehäuse)
+- [Quellcode](schild/README.md)
 
 ## [Programmierrunden Protokoll](./protokoll/1%20-%20Protokolle.md)
 
