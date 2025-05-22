@@ -27,8 +27,9 @@
 # THE SOFTWARE.
 #
 ******************************************************************************/
-#include "EPD_5IN83_V2.h"
+#include "EPD_5in83_V2.h"
 #include "Debug.h"
+#include "DEV_Config.h"
 
 /******************************************************************************
 function :	Software reset
