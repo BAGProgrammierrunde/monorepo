@@ -1,4 +1,4 @@
-#include <arduino.h>
+#include <Arduino.h>
 
 #include "Scenes/TestScene.hpp"
 #include "Core/Structure/Device.hpp"

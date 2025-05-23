@@ -1,14 +1,16 @@
-![Device Skizze](device_skizze.png)
+![Device Skizze](media/device_skizze.png)
 
 # BAG Programmierrunde - Monorepo
 
-TODO Beschreibung
+Hier finden Sie sämtliche relevanten Dateien und Links für unser ESP32-Projekt. Das Projekt widmet sich der Entwicklung eines Geräts, das durch die Integration zahlreicher Komponenten – darunter Buttons, ein Buzzer, ein E-Ink Display, LEDs, ein Joystick, ein Potentiometer, Schalter und ein Akku – ein breites Spektrum an Funktionalitäten ermöglicht.
 
 ## Inhalt
 - [Programmierrunden Protokoll](#programmierrunden-protokoll)
 - [Code](#code)
 - [Schaltplan](#schaltplan)
 - [Teileliste](#teileliste)
+- [Gehäuse (CAD)](#gehäuse)
+- [Quellcode](schild/README.md)
 
 ## [Programmierrunden Protokoll](./protokoll/1%20-%20Protokolle.md)
 
@@ -42,8 +44,14 @@ TODO "..." entfernen
 
 ## FireBeetle ESP WROOM 32 - Pinout
 
-![FireBeetle ESP WROOM 32 - Pinout](firebeetle_esp_wroom_32_pinout.png)
+![FireBeetle ESP WROOM 32 - Pinout](media/firebeetle_esp_wroom_32_pinout.png)
 
 ### Mit Komponenten
 
-![FireBeetle ESP WROOM 32 - Pinout](miro_pinout_plan.png)
+![FireBeetle ESP WROOM 32 - Pinout](media/miro_pinout_plan.png)
+
+## Gehäuse
+
+Das Gehäuse kann in [OnShape](https://cad.onshape.com/documents/e09c03e3f038d8f4d3313e7c/w/14c21061c9193615a201d46b/e/6a487c004af487d85a03bcde) bearbeitet werden.
+
+![OnShape Gehäuse](media/onshape_cad_case.png)
