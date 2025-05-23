@@ -7,7 +7,6 @@
 
 class Button : public Component<1> {
 private:
-    //ulong fallingTime;
     ulong lastFallingTime; // Last time of millis() the button was released. Used for current debounce pause between clicks.
     me::any_callable<void()> clickFunc;
 

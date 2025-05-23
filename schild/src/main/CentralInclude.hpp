@@ -23,6 +23,7 @@
 #include "Components/Joystick/Joystick.hpp"
 #include "Components/Potentiometer/Potentiometer.hpp"
 #include "Components/TemperatureSensor/TemperatureSensor.hpp"
+#include "Components/LED/LED.hpp"
 #include "Components/PassiveBuzzer/predefinedNoteTones.hpp"
 #include "Components/PassiveBuzzer/Note.hpp"
 #include "Components/PassiveBuzzer/Melody.hpp"
@@ -32,6 +33,7 @@
 //#include "Configuration.hpp"
 //#include "LocalConfiguration.hpp"
 #include "Features.hpp"
-#include "Utility.hpp"
 
-#include "Components/Structure/Device.hpp"
+#include "Core/Utility.hpp"
+#include "Core/Structure/Scene.hpp"
+#include "Core/Structure/Device.hpp"

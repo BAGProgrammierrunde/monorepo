@@ -10,7 +10,7 @@
 #include "Components/PassiveBuzzer/predefinedNoteTones.hpp"
 #include "Data_Types/any_callable.hpp"
 #include "main/Configuration.hpp"
-#include "main/Utility.hpp"
+#include "Core/Utility.hpp"
 
 namespace Features {
     //////////////////////////////////////////////////////////////// DeepSleep

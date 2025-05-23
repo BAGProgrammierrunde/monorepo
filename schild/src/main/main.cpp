@@ -1,6 +1,7 @@
 #include <arduino.h>
 
-#include "Components/Structure/Device.hpp"
+#include "Scenes/TestScene.hpp"
+#include "Core/Structure/Device.hpp"
 
 ////////////////////////////////////////////////////////////////////
 //POTI&LED DEBUG MODE: poti auf > 0 beim start und dann hoch runter drehen
@@ -37,7 +38,7 @@ IntervalAction potiOutput(1000, printPotentiometerValue);
 
 void setup() {
     Serial.begin(115200);
-    Device::init();
+    Device::getInstance().scene.set(TestScene("HI :O"));
 
     ////////////////////////////////////////////////////////////////
     pinMode(PIN_BUZZER, OUTPUT);
@@ -62,7 +63,7 @@ void setup() {
 }
 
 void loop() {
-    Device::update();
+    Device::getInstance().update();
 
     ////////////////////////////////////////////////////////////////
     if (POTI_DEBUG)
