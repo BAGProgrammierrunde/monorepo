@@ -30,10 +30,11 @@ public:
     PassiveBuzzer passiveBuzzer;
     Display display;
 
-    me::poly_value<Scene> scene;
-
 
 private:
+    me::poly_value<Scene> scene;
+    me::any_callable<void()> delayedSceneSwitchFunc;
+
     Device();
 
 public:
@@ -42,7 +43,15 @@ public:
     Device(Device&& pOther) noexcept = delete; // Move constructor
     void operator=(const Device& pOther) = delete; // Assignment operator
     void operator=(Device&& pOther) noexcept = delete; // Move-assignment operator
-    static Device& getInstance();
+    static Device& get();
+
+    template <typename SceneT, typename ...Params>
+    void setScene(Params... pConstructorArgs) { // Template function has to stay in same compilation unit as it's class (don't move to .cpp)
+        delayedSceneSwitchFunc = [&, pConstructorArgs...]() -> void {
+            scene.clear();
+            scene.setInPlace(new SceneT(pConstructorArgs...));
+        };
+    }
 
     void update();
 };

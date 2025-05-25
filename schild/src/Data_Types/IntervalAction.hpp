@@ -5,17 +5,16 @@
 #pragma once
 
 #include <Arduino.h>
-#include <functional>
+#include "Data_Types/any_callable.hpp"
 
 class IntervalAction {
 private:
     unsigned long previousMillis;
     unsigned long interval;
-    std::function<void()> action;
+    me::any_callable<void()> action;
 
 public:
-    IntervalAction(unsigned long intervalMs, std::function<void()> callback);
-
-    void update();
+    IntervalAction(unsigned long intervalMs = 1000, me::any_callable<void()> callback = me::any_callable<void()>());
     void setInterval(unsigned long newInterval);
+    void update();
 };

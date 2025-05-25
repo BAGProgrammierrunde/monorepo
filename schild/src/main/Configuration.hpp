@@ -1,17 +1,6 @@
 #pragma once
 
 /*
-#define ENABLE_DISPLAY false
-#define ENABLE_LEDS false
-#define ENABLE_TEMPERATURE false
-#define ENABLE_JOYSTICK false
-#define ENABLE_POTENTIOMETER false
-#define ENABLE_BUZZER false
-#define ENABLE_BUTTONS false
-*/
-
-
-/*
  * |          Anschlüsse           |
  * | ----------------------------- |
  * | Farbe  | Display | Firebeetle |
@@ -54,6 +43,16 @@
 
 #include "main/LocalConfiguration.hpp"
 
+// Other:
 
 #define BUTTON_PIN_BITMASK(GPIO) (1ULL << GPIO)
 #define BAUD_RATE 115200
+
+
+// SCENES
+class TestScene;
+class MainScene;
+
+#include "Scenes/TestScene.hpp"
+#include "Scenes/MainScene.hpp"
+/////////

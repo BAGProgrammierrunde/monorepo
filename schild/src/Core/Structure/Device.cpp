@@ -14,11 +14,16 @@ Device::Device() : temperatureSensor(PIN_TEMPERATURE),
     // ...
 }
 
-Device& Device::getInstance() {
+Device& Device::get() {
     static Device device;
     return device;
 }
 
 void Device::update() {
+    if (delayedSceneSwitchFunc.has())
+    {
+        delayedSceneSwitchFunc();
+        delayedSceneSwitchFunc.clear();
+    }
     if (scene.has()) scene.get()->update();
 }
