@@ -1,0 +1,273 @@
+#include "st7789.h"
+
+#include "driver/gpio.h"
+#include "driver/spi_master.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
+#include <array>
+#include <string.h>
+
+#define TAG "ST7789"
+
+#define PIN_NUM_MOSI  GPIO_NUM_11
+#define PIN_NUM_CLK   GPIO_NUM_12
+#define PIN_NUM_CS    GPIO_NUM_10
+#define PIN_NUM_DC    GPIO_NUM_17
+#define PIN_NUM_RST   GPIO_NUM_18
+#define PIN_NUM_BCKL  GPIO_NUM_8
+
+#define CLOCK_SPEED_HZ (80 * 1000 * 1000)
+
+#define MAX_CHUNK_BYTES 30720
+#define PIXEL_SIZE     2
+
+#define SWAP16(x) (((uint16_t)(x) << 8) | ((uint16_t)(x) >> 8))
+#define WHITE   SWAP16(0xFFFF)
+#define BLACK   SWAP16(0x0000)
+
+#define BUFFER_SIZE (LCD_WIDTH * LCD_HEIGHT * PIXEL_SIZE)
+
+void ST7789::info() {
+  ESP_LOGI(TAG, "Hello from display");
+}
+
+void ST7789::init() {
+    ESP_LOGI(TAG, "Initialize display ST7789..");
+    init_buffers();
+    spi_init();
+    st7789_init();
+    ESP_LOGI(TAG, "Initialization DONE");
+}
+
+static volatile bool spi_ready = true;
+
+void IRAM_ATTR ST7789::spi_post_cb(spi_transaction_t *trans) {
+    spi_ready = true;
+}
+
+uint16_t hsvToRgb565(float h, float s, float v) {
+    float r = 0;
+    float g = 0;
+    float b = 0;
+
+    int i = int(h / 60.0f) % 6;
+    float f = (h / 60.0f) - i;
+    float p = v * (1.0f - s);
+    float q = v * (1.0f - f * s);
+    float t = v * (1.0f - (1.0f - f) * s);
+
+    switch(i) {
+    case 0: r = v; g = t; b = p; break;
+    case 1: r = q; g = v; b = p; break;
+    case 2: r = p; g = v; b = t; break;
+    case 3: r = p; g = q; b = v; break;
+    case 4: r = t; g = p; b = v; break;
+    case 5: r = v; g = p; b = q; break;
+    }
+
+    // Konvertiere 0..1 floats zu RGB565
+    uint8_t red   = (uint8_t)(r * 31.0f);  // 5 Bit
+    uint8_t green = (uint8_t)(g * 63.0f);  // 6 Bit
+    uint8_t blue  = (uint8_t)(b * 31.0f);  // 5 Bit
+
+    return (red << 11) | (green << 5) | blue;
+}
+
+uint16_t rainbowColor(uint16_t index) {
+    if (index > 319) index = 319;  // Begrenze auf gültigen Bereich
+    float hue = (float)index * 360.0f / 320.0f;  // Mappe auf 0..360°
+    return hsvToRgb565(index, 1.0f, 1.0f);
+}
+
+int getRotatedIndex(int x, int y, int size, int rotation) {
+    int newX = 0, newY = 0; // Initialisierung, um Compiler-Warnung zu vermeiden
+
+    switch (rotation % 4) {
+    case 0: // keine Drehung
+        newX = x;
+        newY = y;
+        break;
+    case 1: // 90° im Uhrzeigersinn
+        newX = size - 1 - y;
+        newY = x;
+        break;
+    case 2: // 180°
+        newX = size - 1 - x;
+        newY = size - 1 - y;
+        break;
+    case 3: // 270° im Uhrzeigersinn
+        newX = y;
+        newY = size - 1 - x;
+        break;
+    default:
+        // Falls rotation aus irgendeinem Grund außerhalb von 0-3 liegt
+        newX = x;
+        newY = y;
+        break;
+    }
+
+    return newY * size + newX;
+}
+
+void IRAM_ATTR ST7789::draw_vertical_line(int x, uint16_t color) {
+    memset(next_frame_buffer, BLACK, BUFFER_SIZE);
+
+    if (x > -1) rotation = 0;
+
+    if (rotation == 0) {
+        for (int y = 0; y < LCD_HEIGHT; ++y) {
+            next_frame_buffer[y * LCD_WIDTH + x] = WHITE;
+            // next_frame_buffer[getRotatedIndex(x, y, LCD_WIDTH * LCD_HEIGHT, rotation)] = y < 100 ? WHITE : BLACK;
+        }
+    } else if (rotation == 1) {
+        for (int y = 0; y < LCD_WIDTH; ++y) {
+            next_frame_buffer[y + (LCD_HEIGHT - 1 - x) * LCD_WIDTH] = y < 100 ? WHITE : BLACK;
+        }
+    } else if (rotation == 2) {
+        for (int y = 0; y < LCD_HEIGHT; ++y) {
+            next_frame_buffer[(LCD_HEIGHT - 1 - y) * LCD_WIDTH + (LCD_WIDTH - 1 - x)] = y < 100 ? WHITE : BLACK;
+        }
+    } else if (rotation == 3) {
+        for (int y = 0; y < LCD_WIDTH; ++y) {
+            next_frame_buffer[(LCD_WIDTH - 1 - y) + x * LCD_WIDTH] = y < 100 ? WHITE : BLACK;
+        }
+    }
+}
+
+void ST7789::switch_frame_buffers() {
+    uint16_t *tmp_buffer = active_frame_buffer;
+    active_frame_buffer = next_frame_buffer;
+    next_frame_buffer = tmp_buffer;
+}
+
+void ST7789::send_active_buffer() {
+    size_t offset = 0;
+    spi_transaction_t t[5];
+    int queued = 0;
+    size_t total_words = LCD_WIDTH * LCD_HEIGHT;
+    gpio_set_level(PIN_NUM_DC, 1);
+    while (total_words > 0) {
+        size_t chunk_words = total_words > (MAX_CHUNK_BYTES / PIXEL_SIZE) ? (MAX_CHUNK_BYTES / PIXEL_SIZE) : total_words;
+
+        t[queued] = {
+            .length = chunk_words * PIXEL_SIZE * 8,
+            .user = (void*)1,
+            .tx_buffer = active_frame_buffer + offset,
+        };
+
+        spi_ready = false;
+        ESP_ERROR_CHECK(spi_device_queue_trans(spi, &t[queued], portMAX_DELAY));
+
+        offset += chunk_words;
+        total_words -= chunk_words;
+        queued++;
+    }
+    for (int i = 0; i < queued; ++i) {
+        spi_transaction_t *rtrans;
+        ESP_ERROR_CHECK(spi_device_get_trans_result(spi, &rtrans, portMAX_DELAY));
+    }
+    spi_ready = true;
+}
+
+void ST7789::st7789_send_cmd(uint8_t cmd) {
+    spi_transaction_t t = {
+        .length = 8,
+        .user = (void*)0,
+        .tx_buffer = &cmd
+    };
+    gpio_set_level(PIN_NUM_DC, 0);
+    ESP_ERROR_CHECK(spi_device_transmit(spi, &t));
+}
+
+void ST7789::st7789_send_data(const void* data, int len) {
+    if (len == 0) return;
+
+    spi_transaction_t t = {
+        .length = (uint16_t)(len * 8),
+        .user = (void*)1,
+        .tx_buffer = data
+    };
+    gpio_set_level(PIN_NUM_DC, 1);
+    ESP_ERROR_CHECK(spi_device_transmit(spi, &t));
+}
+
+void ST7789::set_address_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
+    uint8_t data[4];
+
+    st7789_send_cmd(0x2A);
+    data[0] = x0 >> 8; data[1] = x0 & 0xFF;
+    data[2] = x1 >> 8; data[3] = x1 & 0xFF;
+    st7789_send_data(data, 4);
+
+    st7789_send_cmd(0x2B);
+    data[0] = y0 >> 8; data[1] = y0 & 0xFF;
+    data[2] = y1 >> 8; data[3] = y1 & 0xFF;
+    st7789_send_data(data, 4);
+
+    st7789_send_cmd(0x2C);
+}
+
+void ST7789::st7789_init() {
+    gpio_set_direction(PIN_NUM_RST, GPIO_MODE_OUTPUT);
+    gpio_set_level(PIN_NUM_RST, 0);
+    vTaskDelay(pdMS_TO_TICKS(100));
+    gpio_set_level(PIN_NUM_RST, 1);
+    vTaskDelay(pdMS_TO_TICKS(100));
+
+    st7789_send_cmd(0x36);
+    uint8_t data1[] = {0x00};
+    st7789_send_data(data1, sizeof(data1));
+
+    st7789_send_cmd(0x3A);
+    uint8_t data2[] = {0x05};
+    st7789_send_data(data2, sizeof(data2));
+
+    st7789_send_cmd(0x21);
+    st7789_send_cmd(0x11);
+    vTaskDelay(pdMS_TO_TICKS(120));
+    st7789_send_cmd(0x29);
+
+    gpio_set_direction(PIN_NUM_BCKL, GPIO_MODE_OUTPUT);
+    gpio_set_level(PIN_NUM_BCKL, 1);
+
+    set_address_window(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
+}
+
+void ST7789::spi_init() {
+    spi_bus_config_t buscfg = {
+        .mosi_io_num = PIN_NUM_MOSI,
+        .miso_io_num = -1,
+        .sclk_io_num = PIN_NUM_CLK,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1,
+        .max_transfer_sz = MAX_CHUNK_BYTES
+    };
+    ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO));
+
+    spi_device_interface_config_t devcfg = {
+        .mode = 0,
+        .clock_speed_hz = CLOCK_SPEED_HZ,
+        .spics_io_num = PIN_NUM_CS,
+        .queue_size = 5,
+    };
+
+    gpio_set_direction(PIN_NUM_DC, GPIO_MODE_OUTPUT);
+    ESP_ERROR_CHECK(spi_bus_add_device(SPI2_HOST, &devcfg, &spi));
+}
+
+void ST7789::init_buffers() {
+    ESP_LOGI(TAG, "BUFFER_SIZE = %d", BUFFER_SIZE);
+    ESP_LOGI(TAG, "Free heap: %d", heap_caps_get_free_size(MALLOC_CAP_DMA));
+    for (int i = 0; i < 2; ++i) {
+        frame_buffers[i] = static_cast<uint16_t*>(heap_caps_malloc(BUFFER_SIZE, MALLOC_CAP_DMA));
+        if (!frame_buffers[i]) {
+            ESP_LOGE(TAG, "Failed to allocate buffer %d", i);
+            assert(frame_buffers[i]);
+        }
+    }
+
+    active_frame_buffer = frame_buffers[0];
+    next_frame_buffer = frame_buffers[1];
+}
