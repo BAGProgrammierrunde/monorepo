@@ -9,6 +9,7 @@
 
 #define SWAP16(x) (((uint16_t)(x) << 8) | ((uint16_t)(x) >> 8))
 #define WHITE   SWAP16(0xFFFF)
+#define BLACK   SWAP16(0x0000)
 
 ST7789 display;
 
@@ -62,7 +63,8 @@ extern "C" void app_main() {
   int current_pos = 0;
 
   while (true) {
-    display.draw_vertical_line(current_pos, WHITE);
+    // display.draw_vertical_line(current_pos, WHITE);
+    display.draw_cactus_1();
     xTaskNotifyGive(displayTaskHandle);
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
@@ -77,8 +79,6 @@ extern "C" void app_main() {
       sw = 1;
       current_pos = 0;
     }
-
-    current_pos = 5;
 
     frames++;
     int64_t now = esp_timer_get_time();

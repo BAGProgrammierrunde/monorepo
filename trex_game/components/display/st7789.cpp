@@ -1,5 +1,7 @@
 #include "st7789.h"
 
+#include "ground.h"
+
 #include "driver/gpio.h"
 #include "driver/spi_master.h"
 #include "esp_log.h"
@@ -26,6 +28,7 @@
 #define SWAP16(x) (((uint16_t)(x) << 8) | ((uint16_t)(x) >> 8))
 #define WHITE   SWAP16(0xFFFF)
 #define BLACK   SWAP16(0x0000)
+#define RED     SWAP16(0xF800)
 
 #define BUFFER_SIZE (LCD_WIDTH * LCD_HEIGHT * PIXEL_SIZE)
 
@@ -136,6 +139,104 @@ void IRAM_ATTR ST7789::draw_vertical_line(int x, uint16_t color) {
     }
 }
 
+void IRAM_ATTR ST7789::draw_color(uint16_t color) {
+    memset(next_frame_buffer, color, BUFFER_SIZE);
+}
+
+// void IRAM_ATTR ST7789::draw_cactus_1() {
+//     memset(next_frame_buffer, BLACK, BUFFER_SIZE);
+//
+//     int cactus_width = 90; // 180
+//     int cactus_height = 38; // 76
+//
+//     for (int y = 0; y < cactus_height; ++y) {
+//         for (int i = 0; i < cactus_width; ++i) {
+//             next_frame_buffer[i*2+LCD_WIDTH*y*2] = cactus_1[i+cactus_width*y];
+//         }
+//     }
+//
+//     for (int y = 0; y < cactus_height * 2; ++y) {
+//         for (int x = 0; x < cactus_width * 2; ++x) {
+//             next_frame_buffer[x+LCD_WIDTH*y] = cactus_1[(x/2)+cactus_width*(y/2)];
+//         }
+//     }
+// }
+//
+// void IRAM_ATTR ST7789::draw_cactus_1() {
+//     constexpr int SRC_W = 90, SRC_H = 38, SCALE = 2;
+//     constexpr int DST_W = LCD_WIDTH; // 240
+//     constexpr int DST_H = 320;
+//
+//     const uint16_t* src = cactus_1;
+//     uint16_t* dst       = next_frame_buffer;
+//
+//     // Hintergrund füllen (korrekt für 16-Bit):
+//     for (int i = 0; i < DST_W * DST_H; ++i) dst[i] = BLACK;
+//
+//     const int OUT_W = SRC_W * SCALE;   // 180
+//     const int OUT_H = SRC_H * SCALE;   // 76
+//
+//     // Zentriert platzieren (oder setze off_x/off_y auf 0 für oben-links)
+//     const int off_x = (DST_W - OUT_W) / 2;  // 30
+//     const int off_y = (DST_H - OUT_H) / 2;  // 122
+//
+//     for (int sy = 0; sy < SRC_H; ++sy) {
+//         const uint16_t* s = src + sy * SRC_W;
+//         uint16_t* d0 = dst + (off_y + sy * SCALE) * DST_W + off_x;
+//         uint16_t* d1 = d0 + DST_W;
+//
+//         for (int sx = 0; sx < SRC_W; ++sx) {
+//             uint16_t c = s[sx];
+//             // 2×2 Block schreiben
+//             d0[0] = c; d0[1] = c;
+//             d1[0] = c; d1[1] = c;
+//             d0 += 2;   d1 += 2;
+//         }
+//     }
+// }
+
+void IRAM_ATTR ST7789::draw_cactus_1() {
+    draw_color(BLACK);
+
+    for (int x = 0; x < LCD_HEIGHT; ++x) {
+        next_frame_buffer[x] = RED;
+        next_frame_buffer[(LCD_HEIGHT * LCD_WIDTH) - x - 1] = RED;
+    }
+
+    // for (int y = 0; y < LCD_WIDTH; ++y) {
+    //     next_frame_buffer[y * LCD_HEIGHT] = RED;
+    //     next_frame_buffer[y * LCD_HEIGHT - 1] = RED;
+    // }
+
+    for (int y = 0, offset = 0; y < LCD_WIDTH; ++y, offset += LCD_HEIGHT) {
+        next_frame_buffer[offset] = RED;
+        next_frame_buffer[offset - 1] = RED;
+    }
+
+    // constexpr int SRC_W = 90, SRC_H = 38;
+    // constexpr int DST_W = LCD_WIDTH; // 240
+    //
+    // const uint16_t* __restrict src = cactus_1;
+    // uint16_t* __restrict dst = next_frame_buffer;
+    //
+    // for (int sy = 0; sy < SRC_H; ++sy) {
+    //     const uint16_t* s = src + sy * SRC_W;
+    //     uint16_t* d0 = dst + (sy * 2) * DST_W;
+    //     uint16_t* d1 = d0 + DST_W;
+    //
+    //     // 32-bit schreiben (2 Pixel auf einmal) – Voraussetzung: d0/d1 32-bit-align, DST_W gerade
+    //     uint32_t* d0w = reinterpret_cast<uint32_t*>(d0);
+    //     uint32_t* d1w = reinterpret_cast<uint32_t*>(d1);
+    //
+    //     for (int sx = 0; sx < SRC_W; ++sx) {
+    //         uint32_t c = s[sx];
+    //         c |= c << 16;          // dupliziere 16-bit Farbe
+    //         d0w[sx] = c;           // zwei Pixel in Zeile 0
+    //         d1w[sx] = c;           // zwei Pixel in Zeile 1
+    //     }
+    // }
+}
+
 void ST7789::switch_frame_buffers() {
     uint16_t *tmp_buffer = active_frame_buffer;
     active_frame_buffer = next_frame_buffer;
@@ -209,6 +310,23 @@ void ST7789::set_address_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t 
     st7789_send_cmd(0x2C);
 }
 
+void ST7789::st7789_set_rotation(uint8_t rot, bool use_bgr,
+                         uint16_t w, uint16_t h,
+                         uint16_t x_off, uint16_t y_off)
+{
+    static const uint8_t ROT2MAD[4] = {0x00, 0x60, 0xC0, 0xA0};
+    uint8_t mad = ROT2MAD[rot & 3] | (use_bgr ? 0x08 : 0); // D3=RGB/BGR
+    st7789_send_cmd(0x36);
+    st7789_send_data(&mad, 1);
+
+    // Breite/Höhe für 90/270 tauschen
+    uint16_t dw = (rot & 1) ? h : w;
+    uint16_t dh = (rot & 1) ? w : h;
+
+    // Fenster inkl. panel-spezifischer Offsets setzen
+    set_address_window(x_off, y_off, x_off + dw - 1, y_off + dh - 1);
+}
+
 void ST7789::st7789_init() {
     gpio_set_direction(PIN_NUM_RST, GPIO_MODE_OUTPUT);
     gpio_set_level(PIN_NUM_RST, 0);
@@ -232,7 +350,8 @@ void ST7789::st7789_init() {
     gpio_set_direction(PIN_NUM_BCKL, GPIO_MODE_OUTPUT);
     gpio_set_level(PIN_NUM_BCKL, 1);
 
-    set_address_window(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
+    st7789_set_rotation(1, false,  LCD_WIDTH, LCD_HEIGHT, 0, 0);
+    // set_address_window(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
 }
 
 void ST7789::spi_init() {
