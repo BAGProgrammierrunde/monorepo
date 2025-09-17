@@ -11,7 +11,7 @@ Device::Device() : temperatureSensor(PIN_TEMPERATURE),
                     led2(PIN_LED_2),
                     passiveBuzzer(PIN_BUZZER),
                     display(PIN_DISPLAY_BUSY, PIN_DISPLAY_RST, PIN_DISPLAY_DC, PIN_DISPLAY_CS, PIN_DISPLAY_CLK, PIN_DISPLAY_DIN) {
-    // ...
+    Serial.begin(BAUD_RATE);
 }
 
 Device& Device::get() {

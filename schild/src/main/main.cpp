@@ -4,7 +4,6 @@
 #include "Core/Structure/Device.hpp"
 
 void setup() {
-    Serial.begin(BAUD_RATE);
     Device::get().setScene<TestScene>();
 }
 
