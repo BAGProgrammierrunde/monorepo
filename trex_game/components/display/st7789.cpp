@@ -50,70 +50,6 @@ void IRAM_ATTR ST7789::spi_post_cb(spi_transaction_t *trans) {
     spi_ready = true;
 }
 
-uint16_t hsvToRgb565(float h, float s, float v) {
-    float r = 0;
-    float g = 0;
-    float b = 0;
-
-    int i = int(h / 60.0f) % 6;
-    float f = (h / 60.0f) - i;
-    float p = v * (1.0f - s);
-    float q = v * (1.0f - f * s);
-    float t = v * (1.0f - (1.0f - f) * s);
-
-    switch(i) {
-    case 0: r = v; g = t; b = p; break;
-    case 1: r = q; g = v; b = p; break;
-    case 2: r = p; g = v; b = t; break;
-    case 3: r = p; g = q; b = v; break;
-    case 4: r = t; g = p; b = v; break;
-    case 5: r = v; g = p; b = q; break;
-    }
-
-    // Konvertiere 0..1 floats zu RGB565
-    uint8_t red   = (uint8_t)(r * 31.0f);  // 5 Bit
-    uint8_t green = (uint8_t)(g * 63.0f);  // 6 Bit
-    uint8_t blue  = (uint8_t)(b * 31.0f);  // 5 Bit
-
-    return (red << 11) | (green << 5) | blue;
-}
-
-uint16_t rainbowColor(uint16_t index) {
-    if (index > 319) index = 319;  // Begrenze auf gültigen Bereich
-    float hue = (float)index * 360.0f / 320.0f;  // Mappe auf 0..360°
-    return hsvToRgb565(index, 1.0f, 1.0f);
-}
-
-int getRotatedIndex(int x, int y, int size, int rotation) {
-    int newX = 0, newY = 0; // Initialisierung, um Compiler-Warnung zu vermeiden
-
-    switch (rotation % 4) {
-    case 0: // keine Drehung
-        newX = x;
-        newY = y;
-        break;
-    case 1: // 90° im Uhrzeigersinn
-        newX = size - 1 - y;
-        newY = x;
-        break;
-    case 2: // 180°
-        newX = size - 1 - x;
-        newY = size - 1 - y;
-        break;
-    case 3: // 270° im Uhrzeigersinn
-        newX = y;
-        newY = size - 1 - x;
-        break;
-    default:
-        // Falls rotation aus irgendeinem Grund außerhalb von 0-3 liegt
-        newX = x;
-        newY = y;
-        break;
-    }
-
-    return newY * size + newX;
-}
-
 void IRAM_ATTR ST7789::draw_vertical_line(int x, uint16_t color) {
     memset(next_frame_buffer, BLACK, BUFFER_SIZE);
 
@@ -140,7 +76,9 @@ void IRAM_ATTR ST7789::draw_vertical_line(int x, uint16_t color) {
 }
 
 void IRAM_ATTR ST7789::draw_color(uint16_t color) {
-    memset(next_frame_buffer, color, BUFFER_SIZE);
+    // memset(next_frame_buffer, color, BUFFER_SIZE);
+    const size_t n = LCD_WIDTH * LCD_HEIGHT;
+    std::fill_n(next_frame_buffer, n, color);
 }
 
 // void IRAM_ATTR ST7789::draw_cactus_1() {
@@ -198,43 +136,61 @@ void IRAM_ATTR ST7789::draw_color(uint16_t color) {
 void IRAM_ATTR ST7789::draw_cactus_1() {
     draw_color(BLACK);
 
-    for (int x = 0; x < LCD_HEIGHT; ++x) {
-        next_frame_buffer[x] = RED;
-        next_frame_buffer[(LCD_HEIGHT * LCD_WIDTH) - x - 1] = RED;
+    // TODO draw cactus
+}
+
+void ST7789::draw_placeholder_test(uint16_t color) {
+    draw_color(BLACK);
+
+    const int width  = LCD_HEIGHT;   // ggf. wegen Rotation so belassen
+    const int height = LCD_WIDTH;
+    const int pixels = width * height;
+
+    // --- Rahmen oben/unten ---
+    for (int x = 0; x < width; ++x) {
+        next_frame_buffer[x] = RED;                          // y = 0
+        next_frame_buffer[pixels - width + x] = RED;         // y = height - 1
     }
 
-    // for (int y = 0; y < LCD_WIDTH; ++y) {
-    //     next_frame_buffer[y * LCD_HEIGHT] = RED;
-    //     next_frame_buffer[y * LCD_HEIGHT - 1] = RED;
-    // }
-
-    for (int y = 0, offset = 0; y < LCD_WIDTH; ++y, offset += LCD_HEIGHT) {
-        next_frame_buffer[offset] = RED;
-        next_frame_buffer[offset - 1] = RED;
+    // --- Rahmen links/rechts (Fix: rechter Rand) ---
+    for (int y = 0; y < height; ++y) {
+        int row = y * width;
+        next_frame_buffer[row] = RED;                        // x = 0
+        next_frame_buffer[row + (width - 1)] = RED;          // x = width - 1
     }
 
-    // constexpr int SRC_W = 90, SRC_H = 38;
-    // constexpr int DST_W = LCD_WIDTH; // 240
-    //
-    // const uint16_t* __restrict src = cactus_1;
-    // uint16_t* __restrict dst = next_frame_buffer;
-    //
-    // for (int sy = 0; sy < SRC_H; ++sy) {
-    //     const uint16_t* s = src + sy * SRC_W;
-    //     uint16_t* d0 = dst + (sy * 2) * DST_W;
-    //     uint16_t* d1 = d0 + DST_W;
-    //
-    //     // 32-bit schreiben (2 Pixel auf einmal) – Voraussetzung: d0/d1 32-bit-align, DST_W gerade
-    //     uint32_t* d0w = reinterpret_cast<uint32_t*>(d0);
-    //     uint32_t* d1w = reinterpret_cast<uint32_t*>(d1);
-    //
-    //     for (int sx = 0; sx < SRC_W; ++sx) {
-    //         uint32_t c = s[sx];
-    //         c |= c << 16;          // dupliziere 16-bit Farbe
-    //         d0w[sx] = c;           // zwei Pixel in Zeile 0
-    //         d1w[sx] = c;           // zwei Pixel in Zeile 1
-    //     }
-    // }
+    // --- Hilfsfunktion: Bresenham-Linie ---
+    auto draw_line = [&](int x0, int y0, int x1, int y1, uint16_t color) {
+        int dx = abs(x1 - x0), sx = (x0 < x1) ? 1 : -1;
+        int dy = -abs(y1 - y0), sy = (y0 < y1) ? 1 : -1;
+        int err = dx + dy;
+
+        while (true) {
+            // Bounds-Check (Sicherheit, falls etwas außerhalb liegt)
+            if ((unsigned)x0 < (unsigned)width && (unsigned)y0 < (unsigned)height) {
+                next_frame_buffer[y0 * width + x0] = color;
+            }
+            if (x0 == x1 && y0 == y1) break;
+            int e2 = err << 1;
+            if (e2 >= dy) { err += dy; x0 += sx; }
+            if (e2 <= dx) { err += dx; y0 += sy; }
+        }
+    };
+
+    // --- Diagonalen für das "X" ---
+    draw_line(0,           0,            width - 1, height - 1, RED); // \  von oben links nach unten rechts
+    draw_line(width - 1,   0,            0,         height - 1, RED); // /  von oben rechts nach unten links
+}
+void ST7789::draw_pixels(uint16_t color, uint16_t count) {
+    draw_color(BLACK);
+
+    for (int i = 0; i < count; ++i) {
+        next_frame_buffer[i] = color;
+    }
+}
+
+void ST7789::rotate(rotation_t rotation) {
+    st7789_set_rotation(rotation, false,  LCD_WIDTH, LCD_HEIGHT, 0, 0);
 }
 
 void ST7789::switch_frame_buffers() {
@@ -341,8 +297,9 @@ void ST7789::st7789_init() {
     st7789_send_cmd(0x3A);
     uint8_t data2[] = {0x05};
     st7789_send_data(data2, sizeof(data2));
-
+#if CONFIG_DISPLAY_INVERSION
     st7789_send_cmd(0x21);
+#endif
     st7789_send_cmd(0x11);
     vTaskDelay(pdMS_TO_TICKS(120));
     st7789_send_cmd(0x29);
@@ -350,8 +307,7 @@ void ST7789::st7789_init() {
     gpio_set_direction(PIN_NUM_BCKL, GPIO_MODE_OUTPUT);
     gpio_set_level(PIN_NUM_BCKL, 1);
 
-    st7789_set_rotation(1, false,  LCD_WIDTH, LCD_HEIGHT, 0, 0);
-    // set_address_window(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
+    set_address_window(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
 }
 
 void ST7789::spi_init() {
