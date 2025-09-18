@@ -1,9 +1,6 @@
 # JetBrains specific configuration
 .idea/
 
-# VS Code specific configuration
-.vscode/
-
 .pytest_cache/
 __pycache__/
 
