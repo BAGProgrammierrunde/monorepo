@@ -15,10 +15,10 @@ typedef enum {
 class ST7789
 {
 private:
-  uint16_t *active_frame_buffer = nullptr;
-  uint16_t *next_frame_buffer = nullptr;
+  uint16_t* active_frame_buffer = nullptr;
+  uint16_t* next_frame_buffer = nullptr;
 
-  uint16_t *frame_buffers[2] = {};
+  uint16_t* frame_buffers[2] = {};
 
   spi_device_handle_t spi = nullptr;
 
@@ -31,18 +31,19 @@ private:
                          uint16_t w, uint16_t h,
                          uint16_t x_off, uint16_t y_off);
 public:
+    void setPixel(int index, uint16_t color);
+    void setFrame(uint16_t color);
   void init();
-  void switch_frame_buffers();
   void spi_post_cb(spi_transaction_t *trans);
   void draw_vertical_line(int x, uint16_t color);
   void draw_color(uint16_t color);
   void draw_cactus_1();
   void draw_placeholder_test(uint16_t color);
   void draw_pixels(uint16_t color, uint16_t count);
-  void rotate(rotation_t rotation);
-  void send_active_buffer();
+    void rotate(rotation_t rotation);
+    void switch_frame_buffers();
+    void send_active_buffer();
   void st7789_send_cmd(uint8_t cmd);
   void st7789_send_data(const void *data, int len);
   void set_address_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
-  void info();
 };
