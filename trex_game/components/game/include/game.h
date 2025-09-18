@@ -1,8 +1,7 @@
 #pragma once
 
 class Game {
-private:
-
-public:
-  void loop();
+  private:
+  public:
+    void loop();
 };

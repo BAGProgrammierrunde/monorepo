@@ -5,5 +5,5 @@
 #define TAG "Game"
 
 void Game::loop() {
-  ESP_LOGI(TAG, "loop");
+    ESP_LOGI(TAG, "loop");
 }

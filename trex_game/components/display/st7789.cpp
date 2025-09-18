@@ -1,32 +1,29 @@
 #include "st7789.h"
 
-#include "driver/gpio.h"
-#include "driver/spi_master.h"
-#include "esp_log.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+#include <string.h>
 
 #include <array>
-#include <string.h>
+#include <driver/gpio.h>
+#include <esp_log.h>
 
 #define TAG "ST7789"
 
-#define PIN_NUM_MOSI  GPIO_NUM_11
-#define PIN_NUM_CLK   GPIO_NUM_12
-#define PIN_NUM_CS    GPIO_NUM_10
-#define PIN_NUM_DC    GPIO_NUM_17
-#define PIN_NUM_RST   GPIO_NUM_18
-#define PIN_NUM_BCKL  GPIO_NUM_8
+#define PIN_NUM_MOSI GPIO_NUM_11
+#define PIN_NUM_CLK  GPIO_NUM_12
+#define PIN_NUM_CS   GPIO_NUM_10
+#define PIN_NUM_DC   GPIO_NUM_17
+#define PIN_NUM_RST  GPIO_NUM_18
+#define PIN_NUM_BCKL GPIO_NUM_8
 
 #define CLOCK_SPEED_HZ (80 * 1000 * 1000)
 
 #define MAX_CHUNK_BYTES 30720
-#define PIXEL_SIZE     2
+#define PIXEL_SIZE      2
 
 #define SWAP16(x) (((uint16_t)(x) << 8) | ((uint16_t)(x) >> 8))
-#define WHITE   SWAP16(0xFFFF)
-#define BLACK   SWAP16(0x0000)
-#define RED     SWAP16(0xF800)
+#define WHITE     SWAP16(0xFFFF)
+#define BLACK     SWAP16(0x0000)
+#define RED       SWAP16(0xF800)
 
 #define BUFFER_SIZE (LCD_WIDTH * LCD_HEIGHT * PIXEL_SIZE)
 
@@ -49,32 +46,32 @@ void ST7789::init() {
 
 static volatile bool spi_ready = true;
 
-void IRAM_ATTR ST7789::spi_post_cb(spi_transaction_t *trans) {
+void IRAM_ATTR ST7789::spi_post_cb(spi_transaction_t* trans) {
     spi_ready = true;
 }
 
 void ST7789::rotate(rotation_t rotation) {
-    st7789_set_rotation(rotation, false,  LCD_WIDTH, LCD_HEIGHT, 0, 0);
+    st7789_set_rotation(rotation, false, LCD_WIDTH, LCD_HEIGHT, 0, 0);
 }
 
 void ST7789::switch_frame_buffers() {
-    uint16_t *tmp_buffer = active_frame_buffer;
-    active_frame_buffer = next_frame_buffer;
-    next_frame_buffer = tmp_buffer;
+    uint16_t* tmp_buffer = active_frame_buffer;
+    active_frame_buffer  = next_frame_buffer;
+    next_frame_buffer    = tmp_buffer;
 }
 
 void ST7789::send_active_buffer() {
     size_t offset = 0;
     spi_transaction_t t[5];
-    int queued = 0;
+    int queued         = 0;
     size_t total_words = LCD_WIDTH * LCD_HEIGHT;
     gpio_set_level(PIN_NUM_DC, 1);
     while (total_words > 0) {
         size_t chunk_words = total_words > (MAX_CHUNK_BYTES / PIXEL_SIZE) ? (MAX_CHUNK_BYTES / PIXEL_SIZE) : total_words;
 
         t[queued] = {
-            .length = chunk_words * PIXEL_SIZE * 8,
-            .user = (void*)1,
+            .length    = chunk_words * PIXEL_SIZE * 8,
+            .user      = (void*)1,
             .tx_buffer = active_frame_buffer + offset,
         };
 
@@ -86,30 +83,23 @@ void ST7789::send_active_buffer() {
         queued++;
     }
     for (int i = 0; i < queued; ++i) {
-        spi_transaction_t *rtrans;
+        spi_transaction_t* rtrans;
         ESP_ERROR_CHECK(spi_device_get_trans_result(spi, &rtrans, portMAX_DELAY));
     }
     spi_ready = true;
 }
 
 void ST7789::st7789_send_cmd(uint8_t cmd) {
-    spi_transaction_t t = {
-        .length = 8,
-        .user = (void*)0,
-        .tx_buffer = &cmd
-    };
+    spi_transaction_t t = { .length = 8, .user = (void*)0, .tx_buffer = &cmd };
     gpio_set_level(PIN_NUM_DC, 0);
     ESP_ERROR_CHECK(spi_device_transmit(spi, &t));
 }
 
 void ST7789::st7789_send_data(const void* data, int len) {
-    if (len == 0) return;
+    if (len == 0)
+        return;
 
-    spi_transaction_t t = {
-        .length = (uint16_t)(len * 8),
-        .user = (void*)1,
-        .tx_buffer = data
-    };
+    spi_transaction_t t = { .length = (uint16_t)(len * 8), .user = (void*)1, .tx_buffer = data };
     gpio_set_level(PIN_NUM_DC, 1);
     ESP_ERROR_CHECK(spi_device_transmit(spi, &t));
 }
@@ -118,24 +108,25 @@ void ST7789::set_address_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t 
     uint8_t data[4];
 
     st7789_send_cmd(0x2A);
-    data[0] = x0 >> 8; data[1] = x0 & 0xFF;
-    data[2] = x1 >> 8; data[3] = x1 & 0xFF;
+    data[0] = x0 >> 8;
+    data[1] = x0 & 0xFF;
+    data[2] = x1 >> 8;
+    data[3] = x1 & 0xFF;
     st7789_send_data(data, 4);
 
     st7789_send_cmd(0x2B);
-    data[0] = y0 >> 8; data[1] = y0 & 0xFF;
-    data[2] = y1 >> 8; data[3] = y1 & 0xFF;
+    data[0] = y0 >> 8;
+    data[1] = y0 & 0xFF;
+    data[2] = y1 >> 8;
+    data[3] = y1 & 0xFF;
     st7789_send_data(data, 4);
 
     st7789_send_cmd(0x2C);
 }
 
-void ST7789::st7789_set_rotation(uint8_t rot, bool use_bgr,
-                         uint16_t w, uint16_t h,
-                         uint16_t x_off, uint16_t y_off)
-{
-    static const uint8_t ROT2MAD[4] = {0x00, 0x60, 0xC0, 0xA0};
-    uint8_t mad = ROT2MAD[rot & 3] | (use_bgr ? 0x08 : 0); // D3=RGB/BGR
+void ST7789::st7789_set_rotation(uint8_t rot, bool use_bgr, uint16_t w, uint16_t h, uint16_t x_off, uint16_t y_off) {
+    static const uint8_t ROT2MAD[4] = { 0x00, 0x60, 0xC0, 0xA0 };
+    uint8_t mad                     = ROT2MAD[rot & 3] | (use_bgr ? 0x08 : 0); // D3=RGB/BGR
     st7789_send_cmd(0x36);
     st7789_send_data(&mad, 1);
 
@@ -155,11 +146,11 @@ void ST7789::st7789_init() {
     vTaskDelay(pdMS_TO_TICKS(100));
 
     st7789_send_cmd(0x36);
-    uint8_t data1[] = {0x00};
+    uint8_t data1[] = { 0x00 };
     st7789_send_data(data1, sizeof(data1));
 
     st7789_send_cmd(0x3A);
-    uint8_t data2[] = {0x05};
+    uint8_t data2[] = { 0x05 };
     st7789_send_data(data2, sizeof(data2));
 #if CONFIG_DISPLAY_INVERSION
     st7789_send_cmd(0x21);
@@ -175,21 +166,19 @@ void ST7789::st7789_init() {
 }
 
 void ST7789::spi_init() {
-    spi_bus_config_t buscfg = {
-        .mosi_io_num = PIN_NUM_MOSI,
-        .miso_io_num = -1,
-        .sclk_io_num = PIN_NUM_CLK,
-        .quadwp_io_num = -1,
-        .quadhd_io_num = -1,
-        .max_transfer_sz = MAX_CHUNK_BYTES
-    };
+    spi_bus_config_t buscfg = { .mosi_io_num     = PIN_NUM_MOSI,
+                                .miso_io_num     = -1,
+                                .sclk_io_num     = PIN_NUM_CLK,
+                                .quadwp_io_num   = -1,
+                                .quadhd_io_num   = -1,
+                                .max_transfer_sz = MAX_CHUNK_BYTES };
     ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO));
 
     spi_device_interface_config_t devcfg = {
-        .mode = 0,
+        .mode           = 0,
         .clock_speed_hz = CLOCK_SPEED_HZ,
-        .spics_io_num = PIN_NUM_CS,
-        .queue_size = 5,
+        .spics_io_num   = PIN_NUM_CS,
+        .queue_size     = 5,
     };
 
     gpio_set_direction(PIN_NUM_DC, GPIO_MODE_OUTPUT);
@@ -208,5 +197,5 @@ void ST7789::init_buffers() {
     }
 
     active_frame_buffer = frame_buffers[0];
-    next_frame_buffer = frame_buffers[1];
+    next_frame_buffer   = frame_buffers[1];
 }

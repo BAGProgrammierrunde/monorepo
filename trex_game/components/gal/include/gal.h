@@ -3,13 +3,14 @@
 #include "st7789.h"
 
 class GAL {
-private:
+  private:
     static ST7789& display() {
         // DISCUSS Display should be instantiated in other place
         static ST7789 display;
         return display;
     }
-public:
+
+  public:
     GAL() = delete;
 
     static void init();
