@@ -1,10 +1,9 @@
 #include "st7789.h"
 
-#include <string.h>
-
 #include <array>
 #include <driver/gpio.h>
 #include <esp_log.h>
+#include <string.h>
 
 #define TAG "ST7789"
 
@@ -17,15 +16,10 @@
 
 #define CLOCK_SPEED_HZ (80 * 1000 * 1000)
 
-#define MAX_CHUNK_BYTES 30720
-#define PIXEL_SIZE      2
+#define MAX_CHUNK_BYTES    30720
+#define DISPLAY_PIXEL_SIZE 2
 
-#define SWAP16(x) (((uint16_t)(x) << 8) | ((uint16_t)(x) >> 8))
-#define WHITE     SWAP16(0xFFFF)
-#define BLACK     SWAP16(0x0000)
-#define RED       SWAP16(0xF800)
-
-#define BUFFER_SIZE (LCD_WIDTH * LCD_HEIGHT * PIXEL_SIZE)
+#define DISPLAY_BUFFER_SIZE (LCD_WIDTH * LCD_HEIGHT * DISPLAY_PIXEL_SIZE)
 
 void ST7789::setPixel(int index, uint16_t color) {
     next_frame_buffer[index] = color;
@@ -67,10 +61,10 @@ void ST7789::send_active_buffer() {
     size_t total_words = LCD_WIDTH * LCD_HEIGHT;
     gpio_set_level(PIN_NUM_DC, 1);
     while (total_words > 0) {
-        size_t chunk_words = total_words > (MAX_CHUNK_BYTES / PIXEL_SIZE) ? (MAX_CHUNK_BYTES / PIXEL_SIZE) : total_words;
+        size_t chunk_words = total_words > (MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE) ? (MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE) : total_words;
 
         t[queued] = {
-            .length    = chunk_words * PIXEL_SIZE * 8,
+            .length    = chunk_words * DISPLAY_PIXEL_SIZE * 8,
             .user      = (void*)1,
             .tx_buffer = active_frame_buffer + offset,
         };
@@ -186,10 +180,10 @@ void ST7789::spi_init() {
 }
 
 void ST7789::init_buffers() {
-    ESP_LOGI(TAG, "BUFFER_SIZE = %d", BUFFER_SIZE);
+    ESP_LOGI(TAG, "BUFFER_SIZE = %d", DISPLAY_BUFFER_SIZE);
     ESP_LOGI(TAG, "Free heap: %d", heap_caps_get_free_size(MALLOC_CAP_DMA));
     for (int i = 0; i < 2; ++i) {
-        frame_buffers[i] = static_cast<uint16_t*>(heap_caps_malloc(BUFFER_SIZE, MALLOC_CAP_DMA));
+        frame_buffers[i] = static_cast<uint16_t*>(heap_caps_malloc(DISPLAY_BUFFER_SIZE, MALLOC_CAP_DMA));
         if (!frame_buffers[i]) {
             ESP_LOGE(TAG, "Failed to allocate buffer %d", i);
             assert(frame_buffers[i]);

@@ -1,21 +1,12 @@
-#include <inttypes.h>
-
-#include "esp_log.h"
-#include "esp_timer.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "gal.h"
 #include "game.h"
 
+#include <esp_log.h>
+#include <esp_timer.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
 #define TAG "TRexGame"
-
-#define SWAP16(x) (((uint16_t)(x) << 8) | ((uint16_t)(x) >> 8))
-#define WHITE     SWAP16(0xFFFF)
-#define BLACK     SWAP16(0x0000)
-#define RED       SWAP16(0xF800)
-#define BLUE      SWAP16(0x001F)
-
-#define DELAY(ms) vTaskDelay(ms / portTICK_PERIOD_MS)
 
 TaskHandle_t mainTaskHandle    = NULL;
 TaskHandle_t displayTaskHandle = NULL;
@@ -43,9 +34,6 @@ void createDisplayTask() {
                             1                   // Core ID (0 or 1)
     );
 }
-
-#define PIXEL_SIZE  2
-#define BUFFER_SIZE (LCD_WIDTH * LCD_HEIGHT * PIXEL_SIZE)
 
 extern "C" void app_main() {
     ESP_LOGI(TAG, "Start Dinosaur game...");

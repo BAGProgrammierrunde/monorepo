@@ -14,17 +14,10 @@
 
 #define TAG "GAL"
 
-#define CLOCK_SPEED_HZ (80 * 1000 * 1000)
-
-#define MAX_CHUNK_BYTES 30720
-#define PIXEL_SIZE      2
-
 #define SWAP16(x) (((uint16_t)(x) << 8) | ((uint16_t)(x) >> 8))
 #define WHITE     SWAP16(0xFFFF)
 #define BLACK     SWAP16(0x0000)
 #define RED       SWAP16(0xF800)
-
-#define BUFFER_SIZE (LCD_WIDTH * LCD_HEIGHT * PIXEL_SIZE)
 
 void GAL::init() {
     // DISCUSS Feels wrong here - see header file
