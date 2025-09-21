@@ -35,6 +35,8 @@ void createDisplayTask() {
     );
 }
 
+
+
 extern "C" void app_main() {
     ESP_LOGI(TAG, "Start Dinosaur game...");
 
@@ -42,6 +44,7 @@ extern "C" void app_main() {
 
     GAL::init();
     Game game;
+    game.init();
 
     mainTaskHandle = xTaskGetCurrentTaskHandle();
 
@@ -50,10 +53,17 @@ extern "C" void app_main() {
     int frames         = 0;
     int64_t start_time = esp_timer_get_time();
 
+    // DISCUSS Here or in game or in device?
     GAL::rotate(ROT_90_CW);
 
+    // DISCUSS Clears the buffers - here or in GAL or in display?
+    GAL::fill_background(BLACK);
+    GAL::switch_frame_buffers();
+    GAL::fill_background(BLACK);
+    GAL::switch_frame_buffers();
+
     while (true) {
-        GAL::draw_cactus_1();
+        game.loop();
 
         xTaskNotifyGive(displayTaskHandle);
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
