@@ -1,10 +1,10 @@
 #pragma once
-#include "st7789.h"
 
 class Game {
-private:
-  ST7789 &display;
-public:
-  Game(ST7789 &display);
-  void loop();
+  private:
+    int shift = 0;
+
+  public:
+    void init();
+    void loop();
 };

@@ -1,5 +1,5 @@
 idf_component_register(
         SRCS "game.cpp"
-        REQUIRES display
+        REQUIRES gal
         INCLUDE_DIRS "include"
 )
