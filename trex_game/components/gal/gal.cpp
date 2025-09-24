@@ -70,92 +70,81 @@ void IRAM_ATTR GAL::fill_background(uint16_t color) {
     display().setFrame(color);
 }
 
-void IRAM_ATTR GAL::draw(const uint8_t* array, int srcWidth, int srcHeight, int verticalScroll, uint16_t foregroundColor,
-                         uint16_t backgroundColor) {
-    constexpr int SCALE = 3;
+void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int verticalScroll, uint16_t fg, uint16_t bg, int scale) {
     constexpr int DST_W = 320, DST_H = 240;
+    if (!sprite || srcWidth <= 0 || srcHeight <= 0 || scale <= 0)
+        return;
 
-    const int OUT_W = srcWidth * SCALE;
-    const int OUT_H = srcHeight * SCALE;
+    const int OUT_W = srcWidth * scale;
+    const int OUT_H = srcHeight * scale;
 
     const int off_x = verticalScroll;
     const int off_y = (DST_H - OUT_H) - 9;
 
-    const int first_dest_x = std::max(0, off_x);
-    const int last_dest_x  = std::min(DST_W, off_x + OUT_W);
-    const int vis_w        = std::max(0, last_dest_x - first_dest_x);
-    if (vis_w == 0)
+    int first_dest_x = off_x < 0 ? 0 : off_x;
+    int last_dest_x  = (off_x + OUT_W > DST_W) ? DST_W : (off_x + OUT_W);
+    int vis_w        = last_dest_x - first_dest_x;
+    if (vis_w <= 0)
         return;
 
-    const int src_scaled_start = first_dest_x - off_x;
-
-    const int left_partial_in_col = src_scaled_start % SCALE;
-    int left_w                    = (left_partial_in_col == 0) ? 0 : (SCALE - left_partial_in_col);
+    const int src_scaled_start   = first_dest_x - off_x;
+    const int left_partial_incol = src_scaled_start % scale;
+    int left_w                   = (left_partial_incol == 0) ? 0 : (scale - left_partial_incol);
     if (left_w > vis_w)
         left_w = vis_w;
 
     int remaining       = vis_w - left_w;
-    const int full_cols = remaining / SCALE;
-    const int right_w   = remaining % SCALE;
+    const int full_cols = remaining / scale;
+    const int right_w   = remaining - full_cols * scale;
 
-    const int sx_start_full = (src_scaled_start / SCALE) + (left_w ? 1 : 0);
+    const int sx_start_full = (src_scaled_start / scale) + (left_w ? 1 : 0);
+    auto& disp = display();
 
     for (int sy = 0; sy < srcHeight; ++sy) {
-        const int y0 = off_y + sy * SCALE;
-        if (y0 < 0 || (y0 + (SCALE - 1)) >= DST_H)
+        const int y0 = off_y + sy * scale;
+        if (y0 < 0 || (y0 + (scale - 1)) >= DST_H)
             continue;
-
-        int d0 = y0 * DST_W + first_dest_x;
-        int d1 = d0 + DST_W;
-        int d2 = d1 + DST_W;
-
+        int d_base = y0 * DST_W + first_dest_x;
+        const int row_bit_base = sy * srcWidth;
         auto bit_at = [&](int sx) -> bool {
-            const int bit_index   = sy * srcWidth + sx;
-            const int byte_idx    = bit_index >> 3;
-            const int bit_in_byte = 7 - (bit_index & 7);
-            return (array[byte_idx] >> bit_in_byte) & 0x1;
+            const int bit_index   = row_bit_base + sx;
+            const int byte_idx    = bit_index >> 3;      // /8
+            const int bit_in_byte = 7 - (bit_index & 7); // %8 und invertiert
+            return (sprite[byte_idx] >> bit_in_byte) & 0x1;
         };
-
         if (left_w) {
-            const int sx     = src_scaled_start / SCALE;
-            const uint16_t c = bit_at(sx) ? foregroundColor : backgroundColor;
-            for (int i = 0; i < left_w; ++i) {
-                display().setPixel(d0++, c);
+            const int sx     = src_scaled_start / scale;
+            const uint16_t c = bit_at(sx) ? fg : bg;
+            int d = d_base;
+            for (int s = 0; s < scale; ++s) {
+                int di = d + s * DST_W;
+                for (int i = 0; i < left_w; ++i) {
+                    disp.setPixel(di++, c);
+                }
             }
-            for (int i = 0; i < left_w; ++i) {
-                display().setPixel(d1++, c);
-            }
-            for (int i = 0; i < left_w; ++i) {
-                display().setPixel(d2++, c);
-            }
+            d_base += left_w;
         }
-
-        for (int k = 0; k < full_cols; ++k) {
-            const int sx     = sx_start_full + k;
-            const uint16_t c = bit_at(sx) ? foregroundColor : backgroundColor;
-
-            display().setPixel(d0++, c);
-            display().setPixel(d0++, c);
-            display().setPixel(d0++, c);
-            display().setPixel(d1++, c);
-            display().setPixel(d1++, c);
-            display().setPixel(d1++, c);
-            display().setPixel(d2++, c);
-            display().setPixel(d2++, c);
-            display().setPixel(d2++, c);
+        for (int k = 0, sx = sx_start_full; k < full_cols; ++k, ++sx) {
+            const uint16_t c = bit_at(sx) ? fg : bg;
+            int d = d_base;
+            for (int s = 0; s < scale; ++s) {
+                int di = d + s * DST_W;
+                for (int r = 0; r < scale; ++r) {
+                    disp.setPixel(di++, c);
+                }
+            }
+            d_base += scale;
         }
-
         if (right_w) {
             const int sx     = sx_start_full + full_cols;
-            const uint16_t c = bit_at(sx) ? foregroundColor : backgroundColor;
-            for (int i = 0; i < right_w; ++i) {
-                display().setPixel(d0++, c);
-            }
-            for (int i = 0; i < right_w; ++i) {
-                display().setPixel(d1++, c);
-            }
-            for (int i = 0; i < right_w; ++i) {
-                display().setPixel(d2++, c);
+            const uint16_t c = bit_at(sx) ? fg : bg;
+
+            int d = d_base;
+            for (int s = 0; s < scale; ++s) {
+                int di = d + s * DST_W;
+                for (int i = 0; i < right_w; ++i) {
+                    disp.setPixel(di++, c);
+                }
             }
         }
     }

@@ -16,13 +16,15 @@ void Game::init() {
 void Game::loop() {
     GAL::fill_background(BACKGROUND);
 
-    if (++shift > 270) {
+    if (++shift > 180) {
         shift = 0;
 
         // Update ground array here
     }
 
-    GAL::draw(cactus_1, 90, 38, -shift, BACKGROUND, FOREGROUND);
-    GAL::draw(cactus_1, 90, 38, 270 + -shift, BACKGROUND, FOREGROUND);
-    GAL::draw(cactus_1, 90, 38, 540 + -shift, BACKGROUND, FOREGROUND);
+    GAL::draw(cactus_1, 90, 38, -shift, BACKGROUND, FOREGROUND, 2);
+    GAL::draw(cactus_1, 90, 38, 180 + -shift, BACKGROUND, FOREGROUND, 2);
+    GAL::draw(cactus_1, 90, 38, 360 + -shift, BACKGROUND, FOREGROUND, 2);
+    // GAL::draw(cactus_1, 90, 38, 270 + -shift, BACKGROUND, FOREGROUND, 1);
+    // GAL::draw(cactus_1, 90, 38, 360 + -shift, BACKGROUND, FOREGROUND, 1);
 }
