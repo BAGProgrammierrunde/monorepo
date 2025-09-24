@@ -7,8 +7,8 @@
 
 #define TAG "ST7789"
 
-#define PIN_NUM_MOSI GPIO_NUM_11
-#define PIN_NUM_CLK  GPIO_NUM_12
+#define PIN_NUM_MOSI GPIO_NUM_11 // SDA
+#define PIN_NUM_CLK  GPIO_NUM_12 // SCK
 #define PIN_NUM_CS   GPIO_NUM_10
 #define PIN_NUM_DC   GPIO_NUM_17
 #define PIN_NUM_RST  GPIO_NUM_18
