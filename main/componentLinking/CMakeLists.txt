@@ -1,0 +1,1 @@
+idf_component_register(SRCS "../src/main/main.cpp" INCLUDE_DIRS "../src") # Sadly required by ESP-IDF to have a second CMakeLists... ;(
