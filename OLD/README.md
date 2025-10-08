@@ -1,4 +1,4 @@
-![Device Skizze](./DevDocs/media/device_skizze.png)
+![Device Skizze](../DevDocs/media/device_skizze.png)
 
 # BAG Programmierrunde - Monorepo
 
@@ -51,11 +51,11 @@ TODO "..." entfernen
 |Joystick|Joystick Modul|[Beispiel](https://www.conrad.de/de/p/joy-it-joystick-modul-881921103.html)|
 
 ## FireBeetle ESP WROOM 32 - Pinout
-![FireBeetle ESP WROOM 32 - Pinout](./DevDocs/media/firebeetle_esp_wroom_32_pinout.png)
+![FireBeetle ESP WROOM 32 - Pinout](../DevDocs/media/firebeetle_esp_wroom_32_pinout.png)
 
 ### Mit Komponenten
-![FireBeetle ESP WROOM 32 - Pinout](./DevDocs/media/miro_pinout_plan.png)
+![FireBeetle ESP WROOM 32 - Pinout](../DevDocs/media/miro_pinout_plan.png)
 
 ## Gehäuse
 Das Gehäuse kann in [OnShape](https://cad.onshape.com/documents/e09c03e3f038d8f4d3313e7c/w/14c21061c9193615a201d46b/e/6a487c004af487d85a03bcde) bearbeitet werden.
-![OnShape Gehäuse](./DevDocs/media/onshape_cad_case.png)
+![OnShape Gehäuse](../DevDocs/media/onshape_cad_case.png)
