@@ -14,6 +14,7 @@ class GAL {
         static ST7789 display;
         return display;
     }
+    rotation_t current_rotation = ROT_0;
 
   public:
     GAL() = delete;

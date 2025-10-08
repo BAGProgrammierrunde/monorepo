@@ -21,6 +21,10 @@ void Game::loop() {
 
         // Update ground array here
     }
+    
+    GAL::draw(cactus_1, 90, 38, -shift, BACKGROUND, FOREGROUND, 2);
+    GAL::draw(cactus_1, 90, 38, 180 + -shift, BACKGROUND, FOREGROUND, 2);
+    GAL::draw(cactus_1, 90, 38, 360 + -shift, BACKGROUND, FOREGROUND, 2);
 
     GAL::draw(cactus_1, 90, 38, -shift, BACKGROUND, FOREGROUND, 2);
     GAL::draw(cactus_1, 90, 38, 180 + -shift, BACKGROUND, FOREGROUND, 2);
