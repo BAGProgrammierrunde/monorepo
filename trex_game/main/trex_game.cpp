@@ -1,43 +1,21 @@
+#include "button.h"
 #include "gal.h"
 #include "game.h"
-#include "button.h"
 
+#include <esp_err.h>
 #include <esp_log.h>
 #include <esp_timer.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <hal/wdt_hal.h>
-#include <esp_err.h>
 
 #define TAG "TRexGame"
 
-TaskHandle_t mainTaskHandle    = NULL;
+TaskHandle_t mainTaskHandle = NULL;
 TaskHandle_t gameTaskHandle = NULL;
-TaskHandle_t displayTaskHandle = NULL;
 
 void printCurrentCoreInfo(const char* name) {
     ESP_LOGI(TAG, "%s task is running on core: %d", name, xPortGetCoreID());
-}
-
-void displayTask(void* pvParameters) {
-    printCurrentCoreInfo("Display");
-    while (true) {
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        GAL::send_active_buffer();
-        // vTaskDelay(1);
-        xTaskNotifyGive(mainTaskHandle);
-    }
-}
-
-void createDisplayTask() {
-    xTaskCreatePinnedToCore(displayTask,        // Task function
-                            "Display",          // Task name
-                            10000,              // Stack size (in words)
-                            NULL,               // Task parameters (optional)
-                            1,                  // Task priority
-                            &displayTaskHandle, // Task handle (optional)
-                            0                   // Core ID (0 or 1)
-    );
 }
 
 void gameTask(void* pvParameters) {
@@ -57,11 +35,11 @@ void gameTask(void* pvParameters) {
 void createGameTask() {
     xTaskCreatePinnedToCore(gameTask,        // Task function
                             "Game",          // Task name
-                            10000,              // Stack size (in words)
-                            NULL,               // Task parameters (optional)
-                            1,                  // Task priority
+                            10000,           // Stack size (in words)
+                            NULL,            // Task parameters (optional)
+                            10,              // Task priority
                             &gameTaskHandle, // Task handle (optional)
-                            1                   // Core ID (0 or 1)
+                            1                // Core ID (0 or 1)
     );
 }
 
@@ -89,16 +67,13 @@ extern "C" void app_main() {
     GAL::fill_background(BLACK);
     GAL::switch_frame_buffers();
 
-    createDisplayTask();
     createGameTask();
 
     while (true) {
-        xTaskNotifyGive(displayTaskHandle);
         xTaskNotifyGive(gameTaskHandle);
 
-        ulTaskNotifyTake(pdFALSE, portMAX_DELAY);
-        // vTaskDelay(1);
-        // taskYIELD();
+        GAL::send_active_buffer();
+
         ulTaskNotifyTake(pdFALSE, portMAX_DELAY);
 
         GAL::switch_frame_buffers();
