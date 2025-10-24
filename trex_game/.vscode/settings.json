@@ -1,8 +1,7 @@
 {
   "C_Cpp.intelliSenseEngine": "default",
   "idf.flashType": "UART",
-  "idf.portWin": "COM4",
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32s3"
-}
+  }
 }
