@@ -7,7 +7,14 @@ In dem Projekt entwickeln wir gemeinsam an einem Gerät, was durch die Integrati
 
 ## Anleitung
 Dies ist unser Weg das Projekt aufzusetzen. Du kannst natürlich frei einen anderen wählen, so ist aber unser Workflow:
-1. https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/windows-setup.html
+1. In Visual Studio Code die Extensions "C/C++" und "ESP-IDF" von "Microsoft" und "Espressif Systems" herunterladen
+2. Im geöffnetem Willkommensfenster der ESP-IDF Extension ("ESP-IDF Setup") die "Express" Installation auswählen und anschließend die gegebenen Optionen wie gewünscht ausfüllen (am besten aber bei der Versionsauswahl die neuste auswählen (aktuell 5.5.1)) und auf "Install" klicken.
+(Falls es sich bei dir nicht geöffnet hat, kannst du es aufrufen indem du auf den neu erschienenen ESP-IDF Reiter links in der Seitenleiste von VS Code klickst, und dann im Explorer links "Commands/Advanced" ausklappst und die erste Option "Configure ESP-IDF Extension" anklickst.)
+3. Nach der Installation (die schon etwas dauern kann), kannst du dieses Github Repository hier klonen. Dazu musst du einfach in VS Code links auf den Reiter "Source Control" (oder alternativ oben zum File Explorer) gehen und nach dem Klicken auf "Clone Repository" den entsprechenden Link von Github einfügen und deinen gewünschten Zielordner fürs Klonen auswählen. (Achtung!: Hierfür ist vorausgesetzt dass du Git auf deinem Gerät installiert und mit VS Code verbunden hast. Wenn du es nicht alleine hinkriegst, kannst du uns sehr gerne fragen und wir helfen dir dann dabei das zusammen für dich einzurichten :).)
+4. Nun, egal ob sich der Repo Ordner schon als Workspace in VS Code geöffnet hat oder nicht, gehe oben links in der Ecke auf "File", dann auf "Open Folder" und wähle, im geklonten Repository, den Ordner "trex_game" aus.
+5. So. Jetzt sollte endlich alles klar sein und du kannst unten in der Leiste von Visual Studio auf das Schraubenschlüssel-Icon zum "Builden" des Projektes mit der ESP-IDF klicken und abwarten.
+6. Jetzt solltest du startklar sein im Projekt rumzuprobieren! Mit angeschlossenem Mikrocontroller kannst du unten auf das Flammen-Icon klicken und deinen Code testen. Bei Fragen oder Problemen aller Art wende dich super gerne an uns. Dann können wir dir helfen dass es bei dir genauso einwandfrei läuft wie es das auch sollte. Viel Spaß! :D
+
 
 # OUTDATED:
 
@@ -19,7 +26,7 @@ Dies ist unser Weg das Projekt aufzusetzen. Du kannst natürlich frei einen ande
 - [Quellcode](./DevDocs/schild/README.md)
 
 ## [Code](./DevDocs/schild/README.md)
-Unter main befindet sich der Code.
+Code in den Ordnern main und trex-game (& OLD).
 
 ## [Schaltplan](./DevDocs/schaltplan/README.md)
 TODO
@@ -43,7 +50,7 @@ TODO "..." entfernen
 |Kabel|...||
 |Joystick|Joystick Modul|[Beispiel](https://www.conrad.de/de/p/joy-it-joystick-modul-881921103.html)|
 
-## ESP32 S3 R8
+## ESP32 S3 N16R8
 
 
 ### Mit Komponenten
