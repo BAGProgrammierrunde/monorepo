@@ -32,7 +32,7 @@ void Game::loop() {
         nextStep = 0;
     }
 
-    GAL::draw(nextStep < 6 ? dino_rightstep : dino_leftstep, 34, 36, 10, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
+    GAL::draw(nextStep < 6 ? dino_rightstep : dino_leftstep, 34, 36, 10, FOREGROUND_COLOR, BACKGROUND_COLOR, 2, true);
     
     // GAL::draw(cactus_1, 90, 38, 270 + -shift, BACKGROUND, FOREGROUND, 1);
     // GAL::draw(cactus_1, 90, 38, 360 + -shift, BACKGROUND, FOREGROUND, 1);

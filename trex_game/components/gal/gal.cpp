@@ -69,7 +69,7 @@ void IRAM_ATTR GAL::fill_background(uint16_t color) {
     display().setFrame(color);
 }
 
-void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int verticalScroll, uint16_t fg, uint16_t bg, int scale) {
+void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int verticalScroll, uint16_t fg, uint16_t bg, int scale, bool renderForegroundColorOnly) {
     constexpr int DST_W = 320, DST_H = 240;
     if (!sprite || srcWidth <= 0 || srcHeight <= 0 || scale <= 0)
         return;
@@ -118,7 +118,9 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
             for (int s = 0; s < scale; ++s) {
                 int di = d + s * DST_W;
                 for (int i = 0; i < left_w; ++i) {
-                    disp.setPixel(di++, c);
+                    if (!renderForegroundColorOnly || c != bg) {
+                        disp.setPixel(di++, c);
+                    }
                 }
             }
             d_base += left_w;
@@ -129,7 +131,9 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
             for (int s = 0; s < scale; ++s) {
                 int di = d + s * DST_W;
                 for (int r = 0; r < scale; ++r) {
-                    disp.setPixel(di++, c);
+                    if (!renderForegroundColorOnly || c != bg) {
+                        disp.setPixel(di++, c);
+                    }
                 }
             }
             d_base += scale;
@@ -137,12 +141,13 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
         if (right_w) {
             const int sx     = sx_start_full + full_cols;
             const uint16_t c = bit_at(sx) ? fg : bg;
-
             int d = d_base;
             for (int s = 0; s < scale; ++s) {
                 int di = d + s * DST_W;
                 for (int i = 0; i < right_w; ++i) {
-                    disp.setPixel(di++, c);
+                    if (!renderForegroundColorOnly || c != bg) {
+                        disp.setPixel(di++, c);
+                    }
                 }
             }
         }

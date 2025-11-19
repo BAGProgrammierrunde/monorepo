@@ -24,7 +24,7 @@ class GAL {
     static void fill_background(uint16_t color);
     static void draw_pixels(uint16_t color, uint16_t count);
     static void draw(const uint8_t* sprite, int srcWidth, int srcHeight, int verticalScroll, uint16_t foregroundColor,
-                     uint16_t backgroundColor, int scale);
+                     uint16_t backgroundColor, int scale, bool renderForegroundColorOnly = false);
     static void rotate(rotation_t rotation);
     static void switch_frame_buffers();
     static void send_active_buffer();
