@@ -1,13 +1,12 @@
-#include "button.h"
-#include "gal.h"
-#include "game.h"
-
+#include <engine.h>
 #include <esp_err.h>
 #include <esp_log.h>
 #include <esp_timer.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <hal/wdt_hal.h>
+
+#include "game/game.h"
 
 #define TAG "TRexGame"
 
