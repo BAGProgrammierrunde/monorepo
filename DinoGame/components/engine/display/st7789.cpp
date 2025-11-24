@@ -3,7 +3,7 @@
 #include <array>
 #include <driver/gpio.h>
 #include <esp_log.h>
-#include <string.h>
+#include <cstring>
 
 #define TAG "ST7789"
 

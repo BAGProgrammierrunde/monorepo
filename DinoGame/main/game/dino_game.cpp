@@ -1,20 +1,20 @@
-#include "game.h"
+#include "dino_game.h"
 
 #include <engine.h>
 
+#include "assets/dino.h"
+#include "assets/ground.h"
 #include "esp_log.h"
-#include "ground.h"
-#include "dino.h"
 
 #define TAG "Game"
 
 #define BACKGROUND_COLOR WHITE
 #define FOREGROUND_COLOR SWAP16(0x7BEF)
 
-void Game::init() {
+void DinoGame::init() {
 }
 
-void Game::loop() {
+void DinoGame::loop() {
     GAL::fill_background(BACKGROUND_COLOR);
 
     if (++shift > 180) {
