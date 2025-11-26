@@ -69,7 +69,8 @@ void IRAM_ATTR GAL::fill_background(uint16_t color) {
     display().setFrame(color);
 }
 
-void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int verticalScroll, uint16_t fg, uint16_t bg, int scale, bool renderForegroundColorOnly) {
+void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int verticalScroll, uint16_t fg, uint16_t bg, int scale,
+                         bool renderForegroundColorOnly) {
     constexpr int DST_W = 320, DST_H = 240;
     if (!sprite || srcWidth <= 0 || srcHeight <= 0 || scale <= 0)
         return;
@@ -97,15 +98,15 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
     const int right_w   = remaining - full_cols * scale;
 
     const int sx_start_full = (src_scaled_start / scale) + (left_w ? 1 : 0);
-    auto& disp = display();
+    auto& disp              = display();
 
     for (int sy = 0; sy < srcHeight; ++sy) {
         const int y0 = off_y + sy * scale;
         if (y0 < 0 || (y0 + (scale - 1)) >= DST_H)
             continue;
-        int d_base = y0 * DST_W + first_dest_x;
+        int d_base             = y0 * DST_W + first_dest_x;
         const int row_bit_base = sy * srcWidth;
-        auto bit_at = [&](int sx) -> bool {
+        auto bit_at            = [&](int sx) -> bool {
             const int bit_index   = row_bit_base + sx;
             const int byte_idx    = bit_index >> 3;      // /8
             const int bit_in_byte = 7 - (bit_index & 7); // %8 und invertiert
@@ -114,7 +115,7 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
         if (left_w) {
             const int sx     = src_scaled_start / scale;
             const uint16_t c = bit_at(sx) ? fg : bg;
-            int d = d_base;
+            int d            = d_base;
             for (int s = 0; s < scale; ++s) {
                 int di = d + s * DST_W;
                 for (int i = 0; i < left_w; ++i) {
@@ -127,7 +128,7 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
         }
         for (int k = 0, sx = sx_start_full; k < full_cols; ++k, ++sx) {
             const uint16_t c = bit_at(sx) ? fg : bg;
-            int d = d_base;
+            int d            = d_base;
             for (int s = 0; s < scale; ++s) {
                 int di = d + s * DST_W;
                 for (int r = 0; r < scale; ++r) {
@@ -141,7 +142,7 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
         if (right_w) {
             const int sx     = sx_start_full + full_cols;
             const uint16_t c = bit_at(sx) ? fg : bg;
-            int d = d_base;
+            int d            = d_base;
             for (int s = 0; s < scale; ++s) {
                 int di = d + s * DST_W;
                 for (int i = 0; i < right_w; ++i) {
@@ -154,7 +155,8 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
     }
 }
 
-void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWidth, int srcHeight, int x, int y, uint16_t fg, uint16_t bg, int scale, bool renderForegroundColorOnly) {
+void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWidth, int srcHeight, int x, int y, uint16_t fg, uint16_t bg,
+                            int scale, bool renderForegroundColorOnly) {
     constexpr int DST_W = 320, DST_H = 240;
     if (!sprite || srcWidth <= 0 || srcHeight <= 0 || scale <= 0)
         return;
@@ -182,24 +184,30 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
     const int right_w   = remaining - full_cols * scale;
 
     const int sx_start_full = (src_scaled_start / scale) + (left_w ? 1 : 0);
-    auto& disp = display();
+    auto& disp              = display();
 
     for (int sy = 0; sy < srcHeight; ++sy) {
         const int y0 = off_y + sy * scale;
         if (y0 < 0 || (y0 + (scale - 1)) >= DST_H)
             continue;
+
         int d_base = y0 * DST_W + first_dest_x;
+
+        // Anzahl Bits pro Zeile im Sprite (unverändert)
         const int row_bit_base = sy * srcWidth;
+
         auto bit_at = [&](int sx) -> bool {
-            const int bit_index   = row_bit_base + sx;
-            const int byte_idx    = bit_index >> 3;      // /8
-            const int bit_in_byte = 7 - (bit_index & 7); // %8 und invertiert
+            // NEU: startBitIndex einrechnen
+            const int bit_index   = startBitIndex + row_bit_base + sx;
+            const int byte_idx    = bit_index >> 3;      // / 8
+            const int bit_in_byte = 7 - (bit_index & 7); // % 8, invertiert
             return (sprite[byte_idx] >> bit_in_byte) & 0x1;
         };
+
         if (left_w) {
             const int sx     = src_scaled_start / scale;
             const uint16_t c = bit_at(sx) ? fg : bg;
-            int d = d_base;
+            int d            = d_base;
             for (int s = 0; s < scale; ++s) {
                 int di = d + s * DST_W;
                 for (int i = 0; i < left_w; ++i) {
@@ -210,9 +218,10 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
             }
             d_base += left_w;
         }
+
         for (int k = 0, sx = sx_start_full; k < full_cols; ++k, ++sx) {
             const uint16_t c = bit_at(sx) ? fg : bg;
-            int d = d_base;
+            int d            = d_base;
             for (int s = 0; s < scale; ++s) {
                 int di = d + s * DST_W;
                 for (int r = 0; r < scale; ++r) {
@@ -223,10 +232,11 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
             }
             d_base += scale;
         }
+
         if (right_w) {
             const int sx     = sx_start_full + full_cols;
             const uint16_t c = bit_at(sx) ? fg : bg;
-            int d = d_base;
+            int d            = d_base;
             for (int s = 0; s < scale; ++s) {
                 int di = d + s * DST_W;
                 for (int i = 0; i < right_w; ++i) {
@@ -256,4 +266,8 @@ void GAL::switch_frame_buffers() {
 
 void GAL::send_active_buffer() {
     display().send_active_buffer();
+}
+
+void GAL::set_fullscreen() {
+    display().set_address_window(0, 0, LCD_HEIGHT - 1, LCD_WIDTH - 1);
 }

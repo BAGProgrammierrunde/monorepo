@@ -30,4 +30,5 @@ class GAL {
     static void rotate(rotation_t rotation);
     static void switch_frame_buffers();
     static void send_active_buffer();
+    static void set_fullscreen();
 };

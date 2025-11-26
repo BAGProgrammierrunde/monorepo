@@ -3,8 +3,6 @@
 #include "game/game.h"
 
 #include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#include <hal/wdt_hal.h>
 
 class System {
 private:
@@ -18,5 +16,4 @@ private:
 public:
     void init(Game &pGame);
     void run();
-
 };

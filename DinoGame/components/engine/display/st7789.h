@@ -6,10 +6,10 @@
 #define LCD_HEIGHT 320
 
 typedef enum {
-    ROT_0      = 0, // 0°
-    ROT_90_CW  = 1, // 90° im Uhrzeigersinn
-    ROT_180    = 2, // 180°
-    ROT_270_CW = 3, // 270° im Uhrzeigersinn (aka 90° CCW)
+    ROT_0      = 0,
+    ROT_90_CW  = 1,
+    ROT_180    = 2,
+    ROT_270_CW = 3,
 } rotation_t;
 
 class ST7789 {

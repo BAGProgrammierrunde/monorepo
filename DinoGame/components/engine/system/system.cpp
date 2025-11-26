@@ -12,9 +12,9 @@
 TaskHandle_t System::mainTaskHandle = nullptr;
 TaskHandle_t System::gameTaskHandle = nullptr;
 
-void System::init(Game &pGame) {
+void System::init(Game& pGame) {
     ESP_LOGI(TAG, "Initializing..");
-    game = &pGame;
+    game           = &pGame;
     mainTaskHandle = xTaskGetCurrentTaskHandle();
 
     // DISCUSS where should we initialize GAL?
@@ -34,9 +34,6 @@ void System::run() {
     ESP_LOGI(TAG, "Run..");
     createGameTask();
 
-    int frames         = 0;
-    int64_t start_time = esp_timer_get_time();
-
     while (true) {
         xTaskNotifyGive(System::gameTaskHandle);
 
@@ -45,24 +42,6 @@ void System::run() {
         ulTaskNotifyTake(pdFALSE, portMAX_DELAY);
 
         GAL::switch_frame_buffers();
-
-        Button btn1 = Button(GPIO_NUM_13);
-        Button btn2 = Button(GPIO_NUM_14);
-
-        frames++;
-        int64_t now = esp_timer_get_time();
-        if (now - start_time >= 1000000) {
-            ESP_LOGI(TAG, "FPS: %d ", frames);
-            frames     = 0;
-            start_time = now;
-
-            if (btn1.isPressed()) {
-                ESP_LOGI(TAG, "Button 1 pressed");
-            }
-            if (btn2.isPressed()) {
-                ESP_LOGI(TAG, "Button 2 pressed");
-            }
-        }
     }
 }
 
@@ -71,14 +50,21 @@ void System::createGameTask() {
 }
 
 void System::gameTask(void* pvParameters) {
-    auto *game = static_cast<Game*>(pvParameters);
+    Button btn1 = Button(GPIO_NUM_13);
+    Button btn2 = Button(GPIO_NUM_14);
+    auto* game  = static_cast<Game*>(pvParameters);
     game->init();
+    Scene* scene = game->start();
+
     // TODO Remove game.loop and replace by game.init for a starting screen
-    game->loop();
+    uint64_t lastTime = esp_timer_get_time();
     GAL::switch_frame_buffers();
+
     while (true) {
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        game->loop();
+        uint64_t currentTime = esp_timer_get_time();
+        scene->update((currentTime - lastTime) / 1000000.f, btn1.isPressed());
+        lastTime = currentTime;
         xTaskNotifyGive(System::mainTaskHandle);
     }
 }

@@ -61,11 +61,14 @@ void ST7789::send_active_buffer() {
     size_t total_words = LCD_WIDTH * LCD_HEIGHT;
     gpio_set_level(PIN_NUM_DC, 1);
     while (total_words > 0) {
+        // TODO Check if branchless is faster
         size_t chunk_words = total_words > (MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE) ? (MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE) : total_words;
+
+        // size_t chunk_words2 = (size_t[2]){(MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE), total_words}[total_words > (MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE)];
 
         t[queued] = {
             .length    = chunk_words * DISPLAY_PIXEL_SIZE * 8,
-            .user      = (void*)1,
+            .user      = (void*) 1,
             .tx_buffer = active_frame_buffer + offset,
         };
 
