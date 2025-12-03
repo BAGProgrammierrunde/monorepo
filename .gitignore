@@ -104,3 +104,4 @@ kicad/console/console-backups/*
 *.log
 *.raw
 .svg2shenzhen-cache
+DinoGame/.clangd
