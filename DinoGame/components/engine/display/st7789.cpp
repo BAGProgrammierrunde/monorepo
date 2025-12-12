@@ -12,7 +12,7 @@
 #define PIN_NUM_CS   GPIO_NUM_10
 #define PIN_NUM_DC   GPIO_NUM_17
 #define PIN_NUM_RST  GPIO_NUM_18
-#define PIN_NUM_BCKL GPIO_NUM_8
+#define PIN_NUM_BCKL GPIO_NUM_8 //unused/not available
 
 #define CLOCK_SPEED_HZ (80 * 1000 * 1000)
 
