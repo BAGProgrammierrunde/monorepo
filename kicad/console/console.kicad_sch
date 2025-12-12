@@ -1533,6 +1533,7 @@
 		(stroke
 			(width 0)
 			(type default)
+			(color 152 0 255 1)
 		)
 		(uuid "184c7e4b-9236-4309-9153-2ee2753cfc16")
 	)
@@ -1564,6 +1565,7 @@
 		(stroke
 			(width 0)
 			(type default)
+			(color 152 0 255 1)
 		)
 		(uuid "25567310-31f9-4a28-90d1-3e8cad375b2d")
 	)
