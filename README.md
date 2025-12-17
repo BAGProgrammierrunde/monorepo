@@ -1,4 +1,4 @@
-![Device Skizze](../DevDocs/media/device_skizze.png)
+![Device Skizze](DevDocs/media/device_skizze.png)
 
 # BAG Programmierrunde - Monorepo
 
