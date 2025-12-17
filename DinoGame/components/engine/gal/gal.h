@@ -27,6 +27,7 @@ class GAL {
                      uint16_t backgroundColor, int scale, bool renderForegroundColorOnly = false);
     static void draw_at(const uint8_t* sprite, int startBitIndex, int srcWidth, int srcHeight, int x, int y, uint16_t fg, uint16_t bg, int scale,
                           bool renderForegroundColorOnly = false);
+    static void draw_bytes_at(float pPosX, float pPosY, float pTextureWidth, float pTextureHeight, float pScaleX, float pScaleY, const uint8_t* pTexture, uint16_t pFgColor, uint16_t pBgColor, bool pIgnoreBg = false);
     static void rotate(rotation_t rotation);
     static void switch_frame_buffers();
     static void send_active_buffer();

@@ -34,14 +34,30 @@ void System::run() {
     ESP_LOGI(TAG, "Run..");
     createGameTask();
 
+    int64_t frameTime = esp_timer_get_time();
+    int64_t deltaMicros = 0;
+    int64_t deltaLow = -1;
+    int64_t deltaHigh = -1;
+
     while (true) {
         xTaskNotifyGive(System::gameTaskHandle);
-
         GAL::send_active_buffer();
-
         ulTaskNotifyTake(pdFALSE, portMAX_DELAY);
-
         GAL::switch_frame_buffers();
+
+        int64_t prevFrameTime = frameTime;
+        frameTime = esp_timer_get_time();
+        deltaMicros = frameTime - prevFrameTime;
+
+        bool print = (prevFrameTime % 1000000 > frameTime % 1000000);
+        if (deltaLow == -1 || deltaMicros < deltaLow) deltaLow = deltaMicros;
+        else if (deltaHigh == -1 || deltaMicros > deltaHigh) deltaHigh = deltaMicros;
+
+        if (print) {
+            ESP_LOGI(TAG, "Frametime: [Low: %.4f ms | High: %.4f ms]", deltaLow / 1000.f, deltaHigh / 1000.f);
+            deltaLow = -1;
+            deltaHigh = -1;
+        }
     }
 }
 
