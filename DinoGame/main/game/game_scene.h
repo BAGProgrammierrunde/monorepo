@@ -2,9 +2,11 @@
 
 #include "system/scene.h"
 
-class game_scene : public Scene {
+#include <cstdint>
+
+class GameScene : public Scene {
 private:
-    int score = 0;
+    uint64_t startTime = 0;
     int shift = 0;
     int nextStep = 0;
     float currentY = 0;
@@ -13,6 +15,10 @@ private:
     bool showPlayTitle = true;
 
     bool isGrounded();
+    float getSurvivalSecs();
+    void handleStartingScreen();
+    void updateJumpValues(float deltaTime, bool buttonPressed);
 public:
+    GameScene();
     Scene* update(float deltaTime, bool buttonPressed) override;
 };

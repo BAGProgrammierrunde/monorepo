@@ -6,6 +6,6 @@ void DinoGame::init() {
 }
 
 Scene* DinoGame::start() {
-    game_scene* scene = new game_scene();
+    GameScene* scene = new GameScene();
     return scene;
 }
