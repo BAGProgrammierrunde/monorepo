@@ -1,5 +1,3 @@
-![Device Skizze](DevDocs/media/device_skizze.png)
-
 # BAG Programmierrunde - Monorepo
 
 Hier findest du alle relevanten Dateien und Links rund um unser ESP32 Mikrocontroller-Projekt.
