@@ -12,7 +12,7 @@ private:
     float currentY = 0;
     float velocity = 0;
 
-    bool showPlayTitle = true;
+    bool showPlayTitle = false;
 
     bool isGrounded();
     float getSurvivalSecs();

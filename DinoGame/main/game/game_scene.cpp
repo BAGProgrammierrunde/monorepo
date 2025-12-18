@@ -19,7 +19,7 @@ constexpr float speedMultiplier = 2.f;
 
 const int ground = 240 - 36 - 9;
 
-const uint8_t* groundTextures[] = { cactus_0, cactus_1, cactus_1 };
+const uint8_t* groundTextures[] = { cactus_2, cactus_2, cactus_2 };
 const unsigned int groundTextureCount = sizeof(groundTextures) / sizeof(groundTextures[0]);
 
 GameScene::GameScene() {
