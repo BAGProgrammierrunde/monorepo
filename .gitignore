@@ -58,9 +58,6 @@ OLD/schild/platformio-local.ini
 
 backups/*
 
-
-
-
 #kicad
 # Adapted from:
 # https://github.com/github/gitignore/blob/master/KiCad.gitignore
@@ -105,3 +102,6 @@ kicad/console/console-backups/*
 *.raw
 .svg2shenzhen-cache
 DinoGame/.clangd
+
+# MacOS specific files
+.DS_Store
