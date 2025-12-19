@@ -4,6 +4,9 @@
 # VS Code specific configuration
 .vscode/
 
+# Visual Studio specific configuration
+.vs/
+
 .pytest_cache/
 __pycache__/
 
