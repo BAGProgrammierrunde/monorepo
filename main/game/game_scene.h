@@ -1,7 +1,6 @@
 #pragma once
 
-#include "system/scene.h"
-
+#include <engine.h>
 #include <cstdint>
 
 class GameScene : public Scene {
