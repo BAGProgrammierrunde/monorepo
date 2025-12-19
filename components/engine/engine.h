@@ -1,6 +1,5 @@
 #pragma once
 
-#include "game/game.h"
 #include "system/Scene.h"
 #include "system/system.h"
 #include "display/st7789.h"

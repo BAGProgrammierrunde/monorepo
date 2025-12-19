@@ -26,7 +26,7 @@ GameScene::GameScene() {
     startTime = esp_timer_get_time();
 }
 
-Scene* GameScene::update(float deltaTime, bool buttonPressed) {
+void GameScene::update(float deltaTime, bool buttonPressed) {
     float survivalSecs = getSurvivalSecs();
 
     GAL::fill_background(BACKGROUND_COLOR);
@@ -72,8 +72,6 @@ Scene* GameScene::update(float deltaTime, bool buttonPressed) {
 
     float y = ((240.f - 36.f * 2.f) - 9.f) - currentY;
     GAL::draw_at(nextStep < 6 ? dino_rightstep : dino_leftstep, 0, 34, 36, 10, y, FOREGROUND_COLOR, BACKGROUND_COLOR, 2, true);
-
-    return nullptr;
 }
 
 bool GameScene::isGrounded() {

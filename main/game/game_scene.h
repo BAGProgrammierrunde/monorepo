@@ -20,5 +20,5 @@ private:
     void updateJumpValues(float deltaTime, bool buttonPressed);
 public:
     GameScene();
-    Scene* update(float deltaTime, bool buttonPressed) override;
+    void update(float deltaTime, bool buttonPressed) override;
 };

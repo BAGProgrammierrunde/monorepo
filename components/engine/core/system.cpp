@@ -8,13 +8,8 @@
 
 #define TAG "System"
 
-// DISCUSS correct here?
-TaskHandle_t System::mainTaskHandle = nullptr;
-TaskHandle_t System::gameTaskHandle = nullptr;
-
-void System::init(Game& pGame) {
+void System::init() {
     ESP_LOGI(TAG, "Initializing..");
-    game           = &pGame;
     mainTaskHandle = xTaskGetCurrentTaskHandle();
 
     // DISCUSS where should we initialize GAL?
@@ -30,8 +25,9 @@ void System::init(Game& pGame) {
     GAL::switch_frame_buffers();
 }
 
-void System::run() {
+void System::run(Scene* pScene) {
     ESP_LOGI(TAG, "Run..");
+    scene = pScene;
     createGameTask();
 
     int64_t frameTime = esp_timer_get_time();
@@ -62,15 +58,13 @@ void System::run() {
 }
 
 void System::createGameTask() {
-    xTaskCreatePinnedToCore(gameTask, "Game", 10000, game, 10, &System::gameTaskHandle, 1);
+    xTaskCreatePinnedToCore(gameTask, "Game", 10000, scene, 10, &System::gameTaskHandle, 1);
 }
 
 void System::gameTask(void* pvParameters) {
     Button btn1 = Button(GPIO_NUM_13);
     Button btn2 = Button(GPIO_NUM_14);
-    auto* game  = static_cast<Game*>(pvParameters);
-    game->init();
-    Scene* scene = game->start();
+    Scene* scene  = static_cast<Scene*>(pvParameters);
 
     // TODO Remove game.loop and replace by game.init for a starting screen
     uint64_t lastTime = esp_timer_get_time();

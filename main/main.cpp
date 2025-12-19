@@ -1,12 +1,11 @@
 #include <engine.h>
 
-#include "game/dino_game.h"
+#include "game/game_scene.h"
 
 #define TAG "Main"
 
 extern "C" void app_main() {
-    System system;
-    DinoGame dinoGame;
-    system.init(dinoGame);
-    system.run();
+    GameScene gameScene;
+    System::init();
+    System::run(&gameScene);
 }
