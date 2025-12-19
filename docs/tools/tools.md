@@ -1,26 +1,29 @@
-# Commands
+# Tools
+
+## Font Generation
+
+Im Ordner `font_generation` befindet sich ein Python Script, mit welchem Fonts für unser ESP Projekt erstellen werden
+können.
+
+
+## ESP-IDF in der Konsole ausführen
+
+Um die ESP-IDF in der Konsole zum Laufen zu bringen, kannst du folgenden Befehl nutzen:
 
 Windows:
 
 ```cmd
-cd /
-cd dev/tools/esp-idf-v5.4.2
-export.bat
-
-cd /
-cd dev/projects/esp32/dinasour_game
-
-idf.py build flash monitor
+./tools/idf.bat
 ```
 
 Mac:
 
 ```
-cd ~/esp/esp-idf/
+source ~/esp/esp-idf/export.sh
+```
 
-source export.sh
+Danach für Build, Flash und Monitor:
 
-cd ~/projects/github/BAGProgrammierrunde/monorepo/trex_game
-
+```cmd
 idf.py build flash monitor
 ```
