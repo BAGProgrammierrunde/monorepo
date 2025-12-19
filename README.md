@@ -3,8 +3,23 @@
 Hier findest du alle relevanten Dateien und Links rund um unser ESP32 Mikrocontroller-Projekt.
 In dem Projekt entwickeln wir gemeinsam an einem Gerät, was durch die Integration zahlreicher Komponenten wie Display(s), Buttons, Joysticks, Buzzer, LEDs, Potentiometer, Schalter, Akkus, und eigentlich alle auf die wir so Lust haben, ein breites Spektrum an Funktionalitäten hat und mit dem wir herumexperimentieren und verschiedenste Programme dafür schreiben und Hardwareprobleme lösen :D.
 
+
+# Inhaltsverzeichnis
+
+<!-- TOC -->
+* [BAG Programmierrunde - Monorepo](#bag-programmierrunde---monorepo)
+* [Inhaltsverzeichnis](#inhaltsverzeichnis)
+  * [Anleitung](#anleitung)
+  * [Pinout](#pinout)
+  * [TODOs](#todos)
+  * [Technische offene Fragen](#technische-offene-fragen)
+  * [MIT License](#mit-license)
+<!-- TOC -->
+
 ## Anleitung
+
 Dies ist unser Weg das Projekt aufzusetzen. Du kannst natürlich frei einen anderen wählen, so ist aber unser Workflow:
+
 1. In Visual Studio Code die Extensions "C/C++" und "ESP-IDF" von "Microsoft" und "Espressif Systems" herunterladen
 2. Im geöffnetem Willkommensfenster der ESP-IDF Extension ("ESP-IDF Setup") die "Express" Installation auswählen und anschließend die gegebenen Optionen wie gewünscht ausfüllen (am besten aber bei der Versionsauswahl die neuste auswählen (aktuell 5.5.1)) und auf "Install" klicken.
 (Falls es sich bei dir nicht geöffnet hat, kannst du es aufrufen indem du auf den neu erschienenen ESP-IDF Reiter links in der Seitenleiste von VS Code klickst, und dann im Explorer links "Commands/Advanced" ausklappst und die erste Option "Configure ESP-IDF Extension" anklickst.)
@@ -16,3 +31,64 @@ Dies ist unser Weg das Projekt aufzusetzen. Du kannst natürlich frei einen ande
 10. Jetzt solltest du startklar sein im Projekt rumzuprobieren! Mit angeschlossenem Mikrocontroller kannst du unten auf das Flammen-Icon klicken und deinen Code testen. Bei Fragen oder Problemen aller Art wende dich super gerne an uns. Dann können wir dir helfen dass es bei dir genauso einwandfrei läuft wie es das auch sollte. Viel Spaß! :D
 
 (Zusätzlicher Tipp: Falls es aus unerklärlichen Gründen mal nicht builden und laufen sollte, lösche den "build" Ordner und versuche es ein paar mal erneut zu bauen. Hat uns öfter geholfen :).)
+
+
+## Pinout
+
+[ESP32-S3-DevKitC-1 v1.1](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide_v1.1.html)
+
+![ESP32-S3-DevKitC-1 Pinout](docs/media/esp32-s3_devkitc-1_pinlayout_v1.1.jpg)
+
+## TODOs
+
+- [x] weißen Kasten um den Dino entfernen
+- [ ] Button Integration
+- [ ] Springen
+- [ ] Score
+- [ ] Hitbox / Kollision von Kaktus und Dino ermitteln
+- [ ] Game Over Bildschirm
+- [ ] dynamisch wechselnder Hintergrund
+- [ ] mit Button erneutes Spiel starten
+- [ ] Start Bildschirm
+- [ ] Sternenhimmel / Wolken
+- [ ] Flugsaurier
+- [ ] Ducken (voraussetzung dass wir einen 2. Button haben)
+- [ ] Scoreboard
+- [ ] Power-Ups
+- [ ] Kombination aus Springen und Ducken
+- [ ] Dino schwimmt
+- [ ] Verschiedene Tiere
+- [ ] was anderes als Kakteen
+- [ ] Leveleditor für den PC / Windows
+
+## Technische offene Fragen
+
+- [ ] Bit-wise Pixel Memory -> Byte-wise Pixel Memory
+- [ ] Game + Scene vs. nur Game vs. nur Scene
+
+
+<br>
+
+___
+
+## MIT License
+
+Copyright (c) 2024 BAGProgrammierrunde
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
