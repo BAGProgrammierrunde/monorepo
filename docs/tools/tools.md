@@ -10,19 +10,21 @@ können.
 
 Um die ESP-IDF in der Konsole zum Laufen zu bringen, kannst du folgenden Befehl nutzen:
 
-Windows:
+### Windows:
 
 ```cmd
-./tools/idf.bat
+./docs/tools/idf.bat
 ```
 
-Mac:
+### Mac:
 
 ```
-source ~/esp/esp-idf/export.sh
+./docs/tools/idf.sh
 ```
 
-Danach für Build, Flash und Monitor:
+Bei Problemen mit Permissions einmalig `chmod +x idf.sh`
+
+### Build Flash Monitor
 
 ```cmd
 idf.py build flash monitor
