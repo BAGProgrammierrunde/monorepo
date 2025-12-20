@@ -11,27 +11,26 @@ gemeinsam an einem Gerät, worauf als kleines Projekt zum Anfangen das [Dino-Spi
 * [Technische offene Fragen](#technische-offene-fragen)
 * [License](#mit-license)
 
+<br>
 
 ## Hardware Komponenten
-
 - ESP32-S3-DevKitC-1 N16R8
 - 2.8" TFT LCD 240x320 ST7789
 - ein Switch / Button
 
+<br>
 
-## Anleitung
-
+# Anleitung
 Das ist ein einfacher Weg, das Projekt bei dir einzurichten. Wir machen es hauptsächlich so, du kannst natürlich aber auch frei einen anderen wählen.
 
-### Benötigte Programme:
-
+## 0. Benötigte Programme
 Für diesen Weg müsstest du dir diese Programme einmal herunterladen und installieren:
 - Visual Studio Code: https://code.visualstudio.com/
 - Git: https://git-scm.com/
 
+<br>
 
-### Schritt für Schritt Einrichtung:
-
+## 1. Schritt für Schritt Einrichtung
 Hierfür kann ab jetzt alles von VS Code aus direkt eingrichtet werden.
 1. Nachdem du VS Code gestartet hast, klicke links auf den Reiter `Extensions`, suche nach folgenden Erweiterungen und installiere sie:
    - `C/C++` von Microsoft
@@ -61,56 +60,50 @@ Hierfür kann ab jetzt alles von VS Code aus direkt eingrichtet werden.
    - Nachdem du das Gerät ausgewählt hast, wirst du aufgefordert einen Chip auszuwählen. Diese Auswahl einfach mit einem Escape oder Klick außerhalb des Dialoges
 
 Bei Fragen oder Problemen aller Art melde dich super gerne bei uns. Wir helfen dir gerne weiter! :D
-
 Und nun viel Spaß mit deinem eingerichteten Projekt! (Weitere Infos und Erklärungen zum wirklichen Laufen lassen findest du hier drunter)
 
+<br>
 
-### Projekt kompilieren / bauen
+## 2. Das Projekt auf den ESP laden und laufen lassen
 
-Um das Projekt zu bauen, kannst du ganz unten in VS Code auf das Schraubenschlüssel-Icon (Build Project) klicken. Dabei
-wird der Code kompiliert und ein Image (Betriebssystem + ESP Code + unser Code) erstellt. Hierbei findest du heraus, ob
-der Code in eine für den ESP verständliche Sprache umgewandelt werden kann. Du brauchst hierfür *keinen* ESP - es wird
-auch nichts übertragen, wenn einer angeschlossen ist.
-
-
-### Projekt auf den ESP übertragen (flashen)
-
-Um das Projekt auf den ESP zu übertragen, kannst du ganz unten in VS Code auf das Blitz-Icon (Flash Device) klicken. Vor
-dem Übertragen muss das Projekt mindestens einmal gebaut worden sein. Es wird immer der zuletzt gebaute Stand übertragen
-- nicht nachträglich geänderter Code.
+### a. Projekt kompilieren / bauen
+Um das Projekt zu bauen, kannst du ganz unten in VS Code auf das Schraubenschlüssel Icon (`Build Project`) klicken. Dabei
+wird der Code kompiliert und ein Image (Betriebssystem + ESP Bibliothek Code + unser Code) erstellt. Hierbei findest du heraus, ob
+dein Code noch jegliche Fehler hat und ob er in eine für den ESP verständliche Sprache umgewandelt werden kann.
+Du brauchst hierfür **keinen** ESP. Es würde hier auch nichts übertragen werden, selbst wenn einer angeschlossen wäre.
 
 
-### ESP monitoren
+### b. Projekt auf den ESP übertragen (flashen)
+Um das Projekt auf den ESP zu übertragen, kannst du ganz unten in VS Code auf das Blitz Icon (`Flash Device`) klicken. Vor
+dem Übertragen muss das Projekt mindestens einmal wie im vorherigen Schritt gebaut worden sein. Es wird immer der zuletzt
+gebaute Stand übertragen. Nicht etwa nachträglich geänderter Code.
 
-Um den ESP zu monitoren, kannst du ganz unten in VS Code auf das Bildschirm-Icon (Monitor Device) klicken. Monitoren
-bedeutet, dass dir die Ausgaben (unter anderem Fehler) von deinem ESP auf deinem Computer angezeigt werden.
 
+### c. ESP Ausgaben erhalten
+Um Text Ausgaben die im Code veranlasst werden (durch das ausprinten von z.B. Variablen, etc.) und andere hilfreiche Informationen
+wie Laufzeit Fehler vom ESP zu sehen, kannst du ganz unten in VS Code auf das Bildschirm Icon (`Monitor Device`) klicken.
 Hinweis: Während du das Monitoring aktiv hast, kannst du keinen Code auf den ESP übertragen. Schließe zuerst den Prozess
 über das Mülltonnen-Icon.
 
 
-### Projekt bauen, flashen und monitoren (meistens empfohlen)
+### abc. Projekt bauen, flashen und monitoren (eigentlich immer empfohlen)
+Wenn du eine Änderung am Code gemacht hast und diese direkt auf den ESP übertragen und die Ausgabe starten möchtest, gibt es auch
+einen eigenen Button der alles oben aufgeführte kombiniert. Hierfür ganz unten in VS Code einfach auf das Flammen Icon
+(`ESP-IDF: Build, Flash and Monitor`) klicken. Dabei wird das Projekt kompiliert, auf den ESP übertragen und das Monitoring aktiviert.
 
-Wenn du eine Änderung am Code gemacht hast und diese direkt auf den ESP übertragen möchtest, gibt es auch einen eigenen
-Button der alles kombiniert. Hierfür ganz unten in VS Code auf das Flammen-Icon (ESP-IDF: Build, Flash and Monitor)
-klicken. Dabei wird das Projekt kompiliert, auf den ESP übertragen und das Monitoring aktiviert.
 
+## 3. Tipps
+Falls es aus unerklärlichen Gründen mal nicht builden und laufen sollte, lösche den `build` Ordner (auch ein paar Mal) und versuche das
+Projekt erneut zu bauen. Das hat uns öfter geholfen :).
 
-### Zusätzlicher Tipp
-
-Falls es aus unerklärlichen Gründen mal nicht builden und laufen sollte, lösche den `build` Ordner und versuche das
-Projekt erneut zu bauen. Das hat uns öfter geholfen. :)
-
+___
 
 ## Pinout
-
 [ESP32-S3-DevKitC-1 v1.1](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide_v1.1.html)
-
 ![ESP32-S3-DevKitC-1 Pinout](docs/media/esp32-s3_devkitc-1_pinlayout_v1.1.jpg)
 
 
 ## TODOs
-
 - [x] weißen Kasten um den Dino entfernen
 - [ ] Button Integration
 - [ ] Springen
@@ -132,10 +125,8 @@ Projekt erneut zu bauen. Das hat uns öfter geholfen. :)
 - [ ] Leveleditor für den PC / Windows
 
 ## Technische offene Fragen
-
 - [ ] Bit-wise Pixel Memory -> Byte-wise Pixel Memory
 - [ ] Game + Scene vs. nur Game vs. nur Scene
-
 
 <br>
 
