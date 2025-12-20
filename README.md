@@ -1,7 +1,7 @@
 # BAG Programmierrunde - Monorepo
 
 Hier findest du alle relevanten Dateien und Links rund um unser ESP32 Mikrocontroller-Projekt. Im Projekt entwickeln wir
-gemeinsam an einem Gerät, worauf das [Dino-Spiel](https://de.wikipedia.org/wiki/Dino-Spiel) gespielt werden können soll.
+gemeinsam an einem Gerät, worauf als kleines Projekt zum Anfangen das [Dino-Spiel](https://de.wikipedia.org/wiki/Dino-Spiel) gespielt werden können soll.
 
 
 * [Hardware Komponenten](#hardware-komponenten)
@@ -14,62 +14,55 @@ gemeinsam an einem Gerät, worauf das [Dino-Spiel](https://de.wikipedia.org/wiki
 
 ## Hardware Komponenten
 
-- ESP32-S3-DevKitC-1 N16/R8
+- ESP32-S3-DevKitC-1 N16R8
 - 2.8" TFT LCD 240x320 ST7789
 - ein Switch / Button
 
 
 ## Anleitung
 
-Dies ist ein einfacher Weg, das Projekt bei dir einzurichten. Du kannst natürlich aber auch frei einen anderen wählen.
+Das ist ein einfacher Weg, das Projekt bei dir einzurichten. Wir machen es hauptsächlich so, du kannst natürlich aber auch frei einen anderen wählen.
 
-### Welche Programme werden benötigt:
+### Benötigte Programme:
 
-- VS Code (Visual Studio Code https://code.visualstudio.com/)
-- Git (https://git-scm.com/)
-
-Diese müssen heruntergeladen und installiert werden.
+Für diesen Weg müsstest du dir diese Programme einmal herunterladen und installieren:
+- Visual Studio Code: https://code.visualstudio.com/
+- Git: https://git-scm.com/
 
 
 ### Schritt für Schritt Einrichtung:
 
-1. in VS Code links auf den Reiter `Extensions` klicken und folgende Erweiterungen installieren:
+Hierfür kann ab jetzt alles von VS Code aus direkt eingrichtet werden.
+1. Nachdem du VS Code gestartet hast, klicke links auf den Reiter `Extensions`, suche nach folgenden Erweiterungen und installiere sie:
    - `C/C++` von Microsoft
    - `ESP-IDF` von Espressif Systems
-2. hat sich das Willkommensfenster von ESP-IDF geöffnet? dann weiter bei `3.`, falls es sich nicht geöffnet hat:
-    - auf der linken Seite auf das neue ESP Icon klicken
-    - in der Liste ganz unten `Advanced` aufklappen
-    - auf den ersten Eintrag `Configure ESP-IDF Extension` klicken
-3. im geöffnetem Willkommensfenster der ESP-IDF Extension:
-   - die `Express` Installation auswählen
-   - bei der Versionsauswahl die neuste Version auswählen (aktuell 5.5.1)
-   - auf `Install` klicken
-4. darauf warten, dass die Installation abgeschlossen ist (kann schon etwas dauern)
-5. in VS Code links auf den Reiter `Source Control` klicken
-   - `Clone Repository` auswählen
-   - folgende URL eintragen: https://github.com/BAGProgrammierrunde/monorepo.git
-   - gewünschten Zielordner fürs Klonen auswählen
-   - falls du aufgefordert wirst dich bei GitHub einzuloggen, gebe deine Logindaten ein
-   - wenn du noch kein GitHub Account hast, melde dich hier an: https://github.com/signup
-6. nach dem erfolgreichen Öffnen des Projektes den `.vscode` Ordner löschen (wenn vorhanden)
-7. in VS Code links auf den Reiter auf das ESP Icon klicken
-    - in der Liste ganz unten `Advanced` aufklappen
-    - auf den Eintrag `Add .vscode subdirectory files` klicken
-    - damit werden alle wichtigen Einstellungen für VS Code erstellt
-8. in der Leiste ganz unten in VS Code sollte folgendes eingestellt sein:
-   - neben dem Feld `ESP-IDF v5.x.x` und dem Stern sollte `UART` stehen
-   - wenn bei dir hier JTAG oder etwas anderes steht, klicke einmal auf den Text und wähle `UART` aus
-   - im Feld daneben sollte der richtige COM-Port stehen, wo dein ESP angeschlossen ist
-   - klicke auch hier einmal auf das COM Feld und wähle den richtigen Port aus der sich öffnenden Liste aus (hier sollte
-   einer esp im Namen haben)
-   - neben dem COM Port sollte als Gerät `esp32s3` ausgwählt sein
-   - zum Ändern, einmal darauf klicken
-   - nachdem ein Gerät ausgewählt wurde, wird man aufgefordert einen Chip auszuwählen - die Auswahl kann mit Escape
-   übersprungen werden
+2. Wenn sich ein Willkommensfenster von ESP-IDF geöffnet hat, kannst du direkt bei Schritt `3.` weiter machen. Ansonsten:
+    - Klicke in der linken Seitenleiste auf den neuen ESP Reiter
+    - Klappe in der Liste ganz unten `Advanced` auf
+    - Klicke hier einfach auf den ersten Eintrag `Configure ESP-IDF Extension`
+3. Jetzt im geöffneten Willkommensfenster der ESP-IDF Extension:
+   - Die `Express` Installation auswählen
+   - Bei der Versionsauswahl die neuste Version auswählen (aktuell 5.5.1)
+   - Und schließlich auf `Install` klicken
+4. Nun einfach warten bis die Installation abgeschlossen ist (das kann schon etwas dauern)
+5. Klicke jetzt in VS Code links auf den Reiter `Source Control`
+   - Wähle hier `Clone Repository` aus
+   - Trage im aufkommenden Dialogfeld dann folgende URL ein: https://github.com/BAGProgrammierrunde/monorepo.git
+   - Wähle darauf den gewünschten Zielordner fürs Prokekt aus
+   - Falls du aufgefordert wirst dich bei GitHub einzuloggen, mach das ;). (Wenn du noch kein GitHub Account hast, kannst du dich hier anmelden: https://github.com/signup)
+6. Nach dem erfolgreichen Öffnen des Projektes, wieder im Explorer, bitte (wenn vorhanden) den `.vscode` Ordner löschen
+7. Weiter jetzt in der linken Seitenleiste wieder auf den Reiter ESP gehen und dort:
+    - In der Liste ganz unten den Reiter `Advanced` aufklappen
+    - Und dann auf den Eintrag `Add .vscode subdirectory files` klicken
+8. In der Leiste ganz unten in VS Code sollte dann nur noch folgendes eingestellt sein:
+   - Neben dem Feld `ESP-IDF v5.x.x` und dem Stern sollte `UART` stehen, wenn bei dir `JTAG` oder sonstiges steht, einfach anklicken und richtig auswählen
+   - Im Feld daneben sollte der richtige COM-Port stehen, wo dein ESP angeschlossen ist (wird normalerweise automatisch gesetzt wenn du deinen ESP an den PC anschließt, klick am besten aber trotzdem einmal drauf und schau ob hinter der Zahl des COM Ports in grau irgendetwas mit esp steht. Sonst wähl natürlich den aus bei dem es steht)
+   - Neben dem COM Port weiter sollte als Gerät genau `esp32s3` ausgwählt sein
+   - Nachdem du das Gerät ausgewählt hast, wirst du aufgefordert einen Chip auszuwählen. Diese Auswahl einfach mit einem Escape oder Klick außerhalb des Dialoges
 
-Bei Fragen oder Problemen aller Art wende dich super gerne an uns. Wir helfen dir gerne weiter! :)
+Bei Fragen oder Problemen aller Art melde dich super gerne bei uns. Wir helfen dir gerne weiter! :D
 
-Viel Spaß mit deinem eingerichteten Projekt.
+Und nun viel Spaß mit deinem eingerichteten Projekt! (Weitere Infos und Erklärungen zum wirklichen Laufen lassen findest du hier drunter)
 
 
 ### Projekt kompilieren / bauen
