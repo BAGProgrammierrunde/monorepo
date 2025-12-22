@@ -6,14 +6,14 @@
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "gal/gal.h"
+#include "dino.cpp"
 
 #include <cmath>
 #include <string>
 
 #define TAG "Game"
 
-#define BACKGROUND_COLOR WHITE
-#define FOREGROUND_COLOR SWAP16(0x7BEF)
+
 
 constexpr float speedMultiplier = 2.f;
 
@@ -35,7 +35,7 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
     if (showPlayTitle) {
         handleStartingScreen();
     } else {
-        updateJumpValues(deltaTime, buttonPressed);
+        Dino::jump(deltaTime, buttonPressed);
     }
 
     // --- every 3 seconds 180 pixels
@@ -65,18 +65,10 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
     // GAL::draw_bytes_at(10, 80, 90, 38, 2, 2, cactus_2, FOREGROUND_COLOR, BACKGROUND_COLOR);
     // GAL::draw_bytes_at(190, 100, 90, 38, 2, 2, cactus_2, FOREGROUND_COLOR, BACKGROUND_COLOR);
 
-    nextStep++;
-    if (nextStep == 12) {
-        nextStep = 0;
-    }
-
-    float y = ((240.f - 36.f * 2.f) - 9.f) - currentY;
-    GAL::draw_at(nextStep < 6 ? dino_rightstep : dino_leftstep, 0, 34, 36, 10, y, FOREGROUND_COLOR, BACKGROUND_COLOR, 2, true);
+    
 }
 
-bool GameScene::isGrounded() {
-    return (currentY <= 0);
-}
+
 
 float GameScene::getSurvivalSecs() {
     return (esp_timer_get_time() - startTime) / 1000000.f;
@@ -97,20 +89,24 @@ void GameScene::handleStartingScreen() {
     }
 }
 
-void GameScene::updateJumpValues(float deltaTime, bool buttonPressed) {
-    if (isGrounded()) {
-        if (buttonPressed) {
-            velocity = 9;
-            currentY += velocity * deltaTime;
-            ESP_LOGI(TAG, "Jump!");
-        }
-    } else {
-        velocity -= 27.f * deltaTime;
-        currentY += velocity;
+// void GameScene::updateJumpValues(float deltaTime, bool buttonPressed) {
+//     if (isGrounded()) {
+//         if (buttonPressed) {
+//             velocity = 9;
+//             currentY += velocity * deltaTime;
+//             ESP_LOGI(TAG, "Jump!");
+//         }
+//     } else {
+//         velocity -= 27.f * deltaTime;
+//         currentY += velocity;
 
-        if (isGrounded()) {
-            currentY = 0;
-            velocity = 0;
-        }
-    }
-}
+//         if (isGrounded()) {
+//             currentY = 0;
+//             velocity = 0;
+//         }
+//     }
+// }
+
+// bool GameScene::isGrounded() {
+//     return (currentY <= 0);
+// }
