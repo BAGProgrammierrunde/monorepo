@@ -12,7 +12,6 @@
 #define PIN_NUM_CS   GPIO_NUM_10
 #define PIN_NUM_DC   GPIO_NUM_17
 #define PIN_NUM_RST  GPIO_NUM_18
-#define PIN_NUM_BCKL GPIO_NUM_8 //unused/not available
 
 #define CLOCK_SPEED_HZ (80 * 1000 * 1000)
 
@@ -155,9 +154,6 @@ void ST7789::st7789_init() {
     st7789_send_cmd(0x11);
     vTaskDelay(pdMS_TO_TICKS(120));
     st7789_send_cmd(0x29);
-
-    gpio_set_direction(PIN_NUM_BCKL, GPIO_MODE_OUTPUT);
-    gpio_set_level(PIN_NUM_BCKL, 1);
 
     set_address_window(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
 }
