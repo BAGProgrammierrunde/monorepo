@@ -20,10 +20,10 @@ constexpr float speedMultiplier = 2.f;
 
 const int ground = 240 - 36 - 9;
 
-const uint8_t* groundTextures[] = { cactus_2, cactus_2, cactus_2 };
+const uint8_t* groundTextures[]       = { cactus_2, cactus_2, cactus_2 };
 const unsigned int groundTextureCount = sizeof(groundTextures) / sizeof(groundTextures[0]);
 
-GameScene::GameScene() {
+void GameScene::start() {
     startTime = esp_timer_get_time();
 }
 
@@ -45,11 +45,11 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
 
     // --- every 3 seconds 180 pixels
     float loopSpeed = 3.f;
-    float texWidth = 180.f;
+    float texWidth  = 180.f;
     for (int i = 0; i < groundTextureCount; i++)
-        GAL::draw_bytes_at(LCD_HEIGHT - (std::fmodf(survivalSecs * loopSpeed + i, groundTextureCount) * texWidth), 240 - 38 * 2 - 9, 90, 38, 1, 1, groundTextures[i], FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
+        GAL::draw_bytes_at(LCD_HEIGHT - (std::fmodf(survivalSecs * loopSpeed + i, groundTextureCount) * texWidth), 240 - 38 * 2 - 9, 90, 38,
+                           1, 1, groundTextures[i], FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
     // ---
-
 
     if (++shift > 180) {
         shift = 0;
@@ -78,17 +78,17 @@ float GameScene::getSurvivalSecs() {
 }
 
 void GameScene::handleStartingScreen() {
-    const int scale = 4;
-    const std::string_view title = "Start Dino Game";
+    const int scale                  = 4;
+    const std::string_view title     = "Start Dino Game";
     const std::string_view startText = "Press Button to Start";
     for (int x = 0; x < title.length(); x++) {
-        GAL::draw_at(font, ((int) title[x] - 33) * 18, font_width, font_height, 20 + (x * 4 * scale
-            ), 30, FOREGROUND_COLOR, BACKGROUND_COLOR, scale, true);
+        GAL::draw_at(font, ((int)title[x] - 33) * 18, font_width, font_height, 20 + (x * 4 * scale), 30, FOREGROUND_COLOR, BACKGROUND_COLOR,
+                     scale, true);
     }
 
     for (int x = 0; x < startText.length(); x++) {
-        GAL::draw_at(font, ((int) title[x] - 33) * 18, font_width, font_height, 20 + (x * 4 * scale
-            ), 130, FOREGROUND_COLOR, BACKGROUND_COLOR, scale, true);
+        GAL::draw_at(font, ((int)title[x] - 33) * 18, font_width, font_height, 20 + (x * 4 * scale), 130, FOREGROUND_COLOR,
+                     BACKGROUND_COLOR, scale, true);
     }
 }
 

@@ -4,13 +4,11 @@
 #include <cstdint>
 #include "dino.h"
 
-
-
 class GameScene : public Scene {
-private:
+  private:
     uint64_t startTime = 0;
     int shift = 0;
-    
+
     // float currentY = 0;
     // float velocity = 0;
 
@@ -21,7 +19,8 @@ private:
 
     float getSurvivalSecs();
     void handleStartingScreen();
-public:
-    GameScene();
+
+  public:
+    void start() override;
     void update(float deltaTime, bool buttonPressed) override;
 };

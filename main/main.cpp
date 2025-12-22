@@ -6,7 +6,6 @@
 #define TAG "Main"
 
 extern "C" void app_main() {
-    GameScene gameScene;
     System::init();
-    System::run(&gameScene);
+    System::start<GameScene>();
 }

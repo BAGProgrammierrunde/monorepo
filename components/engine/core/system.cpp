@@ -25,15 +25,14 @@ void System::init() {
     GAL::switch_frame_buffers();
 }
 
-void System::run(Scene* pScene) {
-    ESP_LOGI(TAG, "Run..");
-    scene = pScene;
+void System::start() {
+    ESP_LOGI(TAG, "Starting..");
     createGameTask();
 
-    int64_t frameTime = esp_timer_get_time();
+    int64_t frameTime   = esp_timer_get_time();
     int64_t deltaMicros = 0;
-    int64_t deltaLow = -1;
-    int64_t deltaHigh = -1;
+    int64_t deltaLow    = -1;
+    int64_t deltaHigh   = -1;
 
     while (true) {
         xTaskNotifyGive(System::gameTaskHandle);
@@ -42,29 +41,30 @@ void System::run(Scene* pScene) {
         GAL::switch_frame_buffers();
 
         int64_t prevFrameTime = frameTime;
-        frameTime = esp_timer_get_time();
-        deltaMicros = frameTime - prevFrameTime;
+        frameTime             = esp_timer_get_time();
+        deltaMicros           = frameTime - prevFrameTime;
 
         bool print = (prevFrameTime % 1000000 > frameTime % 1000000);
-        if (deltaLow == -1 || deltaMicros < deltaLow) deltaLow = deltaMicros;
-        else if (deltaHigh == -1 || deltaMicros > deltaHigh) deltaHigh = deltaMicros;
+        if (deltaLow == -1 || deltaMicros < deltaLow)
+            deltaLow = deltaMicros;
+        else if (deltaHigh == -1 || deltaMicros > deltaHigh)
+            deltaHigh = deltaMicros;
 
         if (print) {
             ESP_LOGI(TAG, "Frametime: [Low: %.4f ms | High: %.4f ms]", deltaLow / 1000.f, deltaHigh / 1000.f);
-            deltaLow = -1;
+            deltaLow  = -1;
             deltaHigh = -1;
         }
     }
 }
 
 void System::createGameTask() {
-    xTaskCreatePinnedToCore(gameTask, "Game", 10000, scene, 10, &System::gameTaskHandle, 1);
+    xTaskCreatePinnedToCore(gameTask, "Game", 10000, nullptr, 10, &System::gameTaskHandle, 1);
 }
 
 void System::gameTask(void* pvParameters) {
     Button btn1 = Button(GPIO_NUM_13);
     Button btn2 = Button(GPIO_NUM_14);
-    Scene* scene  = static_cast<Scene*>(pvParameters);
 
     // TODO Remove game.loop and replace by game.init for a starting screen
     uint64_t lastTime = esp_timer_get_time();
@@ -73,7 +73,16 @@ void System::gameTask(void* pvParameters) {
     while (true) {
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
         uint64_t currentTime = esp_timer_get_time();
-        scene->update((currentTime - lastTime) / 1000000.f, btn1.isPressed());
+        if (delayedSceneSwitchFunc.has()) {
+            delayedSceneSwitchFunc();
+            delayedSceneSwitchFunc.clear();
+        }
+        assert(scene.has());
+        if (scene.has()) {
+            scene->update((currentTime - lastTime) / 1000000.f, btn1.isPressed());
+        } else {
+            ESP_LOGW(TAG, "No active scene set; skipping update");
+        }
         lastTime = currentTime;
         xTaskNotifyGive(System::mainTaskHandle);
     }
