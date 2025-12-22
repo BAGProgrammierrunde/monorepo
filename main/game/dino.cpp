@@ -19,6 +19,7 @@ float currentY = 0;
 float velocity = 0;
 
 int nextStep = 0;
+bool buttonPressed = false;
 
 void Dino::jump(float deltaTime, bool buttonPressed) {
     if (isGrounded()) {

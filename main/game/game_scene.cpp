@@ -33,11 +33,14 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
     GAL::fill_background(BACKGROUND_COLOR);
 
 
-    if (showPlayTitle) {
+    if (!buttonPressed && showPlayTitle) {
         handleStartingScreen();
-    } else {
+    } else if (buttonPressed) {
         dino.jump(deltaTime, buttonPressed);
+        showPlayTitle = false;
     }
+
+    dino.nextStepUpdate();
 
     // --- every 3 seconds 180 pixels
     float loopSpeed = 3.f;

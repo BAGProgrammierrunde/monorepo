@@ -16,7 +16,7 @@ private:
 
     Dino dino;
 
-    bool showPlayTitle = false;
+    bool showPlayTitle = true;
 
 
     float getSurvivalSecs();
