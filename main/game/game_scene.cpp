@@ -32,14 +32,15 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
 
     GAL::fill_background(BACKGROUND_COLOR);
 
-
+    //Start Bildschrim
     if (!buttonPressed && showPlayTitle) {
         handleStartingScreen();
     } else if (buttonPressed) {
-        dino.jump(deltaTime, buttonPressed);
         showPlayTitle = false;
     }
 
+    //Dino Jump und update
+    dino.jump(deltaTime, buttonPressed);
     dino.nextStepUpdate();
 
     // --- every 3 seconds 180 pixels
@@ -68,8 +69,6 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
 
     // GAL::draw_bytes_at(10, 80, 90, 38, 2, 2, cactus_2, FOREGROUND_COLOR, BACKGROUND_COLOR);
     // GAL::draw_bytes_at(190, 100, 90, 38, 2, 2, cactus_2, FOREGROUND_COLOR, BACKGROUND_COLOR);
-
-    
 }
 
 
