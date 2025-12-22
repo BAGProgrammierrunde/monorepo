@@ -49,6 +49,7 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
     for (int i = 0; i < groundTextureCount; i++)
         GAL::draw_bytes_at(LCD_HEIGHT - (std::fmodf(survivalSecs * loopSpeed + i, groundTextureCount) * texWidth), 240 - 38 * 2 - 9, 90, 38,
                            1, 1, groundTextures[i], FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
+                           2, 2, groundTextures[i], FOREGROUND_COLOR, BACKGROUND_COLOR);
     // ---
 
     if (++shift > 180) {
