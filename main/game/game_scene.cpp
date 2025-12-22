@@ -6,7 +6,8 @@
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "gal/gal.h"
-#include "dino.cpp"
+#include "dino.h"
+#include "assets/color.h"
 
 #include <cmath>
 #include <string>
@@ -35,7 +36,7 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
     if (showPlayTitle) {
         handleStartingScreen();
     } else {
-        Dino::jump(deltaTime, buttonPressed);
+        dino.jump(deltaTime, buttonPressed);
     }
 
     // --- every 3 seconds 180 pixels

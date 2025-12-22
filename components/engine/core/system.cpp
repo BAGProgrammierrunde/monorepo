@@ -2,7 +2,6 @@
 
 #include "gal/gal.h"
 #include "input/button.h"
-#include "game/dino.cpp"
 
 #include <esp_log.h>
 #include <esp_timer.h>
@@ -24,9 +23,6 @@ void System::init() {
     GAL::switch_frame_buffers();
     GAL::fill_background(BLACK);
     GAL::switch_frame_buffers();
-
-    Dino dino;
-    dino.jump();
 }
 
 void System::run(Scene* pScene) {

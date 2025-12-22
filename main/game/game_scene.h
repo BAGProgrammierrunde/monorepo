@@ -2,6 +2,9 @@
 
 #include <engine.h>
 #include <cstdint>
+#include "dino.h"
+
+
 
 class GameScene : public Scene {
 private:
@@ -11,10 +14,10 @@ private:
     // float currentY = 0;
     // float velocity = 0;
 
+    Dino dino;
+
     bool showPlayTitle = false;
 
-    #define BACKGROUND_COLOR WHITE
-    #define FOREGROUND_COLOR SWAP16(0x7BEF)
 
     float getSurvivalSecs();
     void handleStartingScreen();

@@ -2,6 +2,7 @@
 
 #include "game/game_scene.h"
 
+
 #define TAG "Main"
 
 extern "C" void app_main() {
