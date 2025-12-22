@@ -19,6 +19,7 @@ font_color = (0, 0, 0)
 
 font_file = 'font_3x6_2.bmp'
 
+
 def pixels_to_c(pixels, x, y):
     bits = []
     for col in range(y, y + character_height):
@@ -26,6 +27,7 @@ def pixels_to_c(pixels, x, y):
             bit = 1 if pixels[row, col] == font_color else 0
             bits.append(bit)
     return bits
+
 
 def bits_to_c(bits):
     bytes_list = []
@@ -74,9 +76,10 @@ def bits_to_c(bits):
 
     return header
 
+
 def generate():
     img = Image.open(font_file)
-    pixels = img.load() # create the pixel map
+    pixels = img.load()
 
     all_bits = []
 
@@ -88,6 +91,7 @@ def generate():
 
     header = bits_to_c(all_bits)
     print(header)
+
 
 if __name__ == "__main__":
     print('\n')
