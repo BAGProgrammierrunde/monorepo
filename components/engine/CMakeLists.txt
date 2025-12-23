@@ -1,6 +1,8 @@
 idf_component_register(
         SRCS
+        "display/driver.cpp"
         "display/st7789.cpp"
+        "display/display.cpp"
         "gal/gal.cpp"
         "input/button.cpp"
         "core/scene.cpp"
