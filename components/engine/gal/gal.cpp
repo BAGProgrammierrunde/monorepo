@@ -5,13 +5,12 @@
 #include <algorithm>
 #include <cmath>
 
-#include "display/display.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
 
 #define TAG "GAL"
 
-void GAL::init(uint16_t pWidth, uint16_t pHeight, Display* pDisplay) {
+void GAL::init(uint16_t pWidth, uint16_t pHeight, ST7789* pDisplay) {
     width  = pWidth;
     height = pHeight;
     display = pDisplay;
@@ -361,21 +360,21 @@ void IRAM_ATTR GAL::draw_pixels(uint16_t color, uint16_t count) {
     }
 }
 
-void GAL::setOrientation(ST7789::orientation_t orientation) {
+void GAL::rotate(rotation_t rotation) {
     // TODO this works only for 90 and 270 cw rotation
     const uint16_t tmpWidth = width;
     width = height;
     height = tmpWidth;
-    display->setOrientation(orientation, width, height);
+    display->rotate(rotation, width, height);
 }
 void GAL::switch_frame_buffers() {
-    display->switchFrameBuffers();
+    display->switch_frame_buffers();
 }
 
 void GAL::send_active_buffer() {
-    display->sendActiveBuffer();
+    display->send_active_buffer();
 }
 
-// void GAL::set_fullscreen() {
-//     display->setAddressWindow(0, 0, width - 1, height - 1);
-// }
+void GAL::set_fullscreen() {
+    display->set_address_window(0, 0, width - 1, height - 1);
+}
