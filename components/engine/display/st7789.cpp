@@ -1,9 +1,10 @@
 #include "st7789.h"
 
+#include "esp_heap_caps.h"
 #include <array>
+#include <cstring>
 #include <driver/gpio.h>
 #include <esp_log.h>
-#include <cstring>
 
 #define TAG "ST7789"
 
@@ -63,11 +64,12 @@ void ST7789::send_active_buffer() {
         // TODO Check if branchless is faster
         size_t chunk_words = total_words > (MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE) ? (MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE) : total_words;
 
-        // size_t chunk_words2 = (size_t[2]){(MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE), total_words}[total_words > (MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE)];
+        // size_t chunk_words2 = (size_t[2]){(MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE), total_words}[total_words > (MAX_CHUNK_BYTES /
+        // DISPLAY_PIXEL_SIZE)];
 
         t[queued] = {
             .length    = chunk_words * DISPLAY_PIXEL_SIZE * 8,
-            .user      = (void*) 1,
+            .user      = (void*)1,
             .tx_buffer = active_frame_buffer + offset,
         };
 
@@ -180,9 +182,14 @@ void ST7789::spi_init() {
 
 void ST7789::init_buffers() {
     ESP_LOGI(TAG, "BUFFER_SIZE = %d", DISPLAY_BUFFER_SIZE);
-    ESP_LOGI(TAG, "Free heap: %d", heap_caps_get_free_size(MALLOC_CAP_DMA));
+    ESP_LOGI(TAG, "Free heap: %d", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+    size_t freePsram    = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+    size_t largestPsram = heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
+    ESP_LOGI("ProgramScene", "PSRAM free: %u bytes, largest block: %u bytes", static_cast<unsigned>(freePsram),
+             static_cast<unsigned>(largestPsram));
     for (int i = 0; i < 2; ++i) {
-        frame_buffers[i] = static_cast<uint16_t*>(heap_caps_malloc(DISPLAY_BUFFER_SIZE, MALLOC_CAP_DMA));
+        frame_buffers[i] = static_cast<uint16_t*>(heap_caps_malloc(DISPLAY_BUFFER_SIZE, MALLOC_CAP_DMA | MALLOC_CAP_SPIRAM));
+        ESP_LOGI(TAG, "Free heap: %d", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
         if (!frame_buffers[i]) {
             ESP_LOGE(TAG, "Failed to allocate buffer %d", i);
             assert(frame_buffers[i]);

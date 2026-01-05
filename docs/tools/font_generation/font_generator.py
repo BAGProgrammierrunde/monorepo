@@ -9,15 +9,15 @@ grid_width = 12
 grid_height = 11
 grid_line = 1
 grid_padding = 1
-character_width = 3
-character_height = 6
+character_width = 5
+character_height = 7
 
 width = grid_width * (2 * grid_padding + grid_line + character_width) + grid_line
 height = grid_height * (2 * grid_padding + grid_line + character_height) + grid_line
 
 font_color = (0, 0, 0)
 
-font_file = 'font_3x6_2.bmp'
+font_file = 'data/fonts/font_5x7.bmp'
 
 
 def pixels_to_c(pixels, x, y):

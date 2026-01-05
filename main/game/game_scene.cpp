@@ -1,6 +1,5 @@
 #include "game_scene.h"
 
-#include "assets/dino.h"
 #include "assets/font.h"
 #include "assets/ground.h"
 #include "esp_log.h"
@@ -13,8 +12,6 @@
 #include <string>
 
 #define TAG "Game"
-
-
 
 constexpr float speedMultiplier = 2.f;
 
@@ -32,14 +29,14 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
 
     GAL::fill_background(BACKGROUND_COLOR);
 
-    //Start Bildschrim
+    // Start Bildschrim
     if (!buttonPressed && showPlayTitle) {
         handleStartingScreen();
     } else if (buttonPressed) {
         showPlayTitle = false;
     }
 
-    //Dino Jump und update
+    // Dino Jump und update
     dino.jump(deltaTime, buttonPressed);
     dino.nextStepUpdate();
 
@@ -48,7 +45,6 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
     float texWidth  = 180.f;
     for (int i = 0; i < groundTextureCount; i++)
         GAL::draw_bytes_at(LCD_HEIGHT - (std::fmodf(survivalSecs * loopSpeed + i, groundTextureCount) * texWidth), 240 - 38 * 2 - 9, 90, 38,
-                           1, 1, groundTextures[i], FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
                            2, 2, groundTextures[i], FOREGROUND_COLOR, BACKGROUND_COLOR);
     // ---
 
@@ -57,22 +53,7 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
 
         // Update ground array here
     }
-
-    const uint8_t* texture[] = { cactus_0, cactus_1, cactus_1 };
-
-    // GAL::draw_at(texture[0], 0, 90, 38, -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
-    // GAL::draw_at(texture[1], 0, 90, 38, 180 + -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
-    // GAL::draw_at(texture[2], 0, 90, 38, 360 + -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
-
-    // GAL::draw(cactus_1, 90, 38, -shift, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
-    // GAL::draw(cactus_1, 90, 38, 180 + -shift, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
-    // GAL::draw(cactus_1, 90, 38, 360 + -shift, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
-
-    // GAL::draw_bytes_at(10, 80, 90, 38, 2, 2, cactus_2, FOREGROUND_COLOR, BACKGROUND_COLOR);
-    // GAL::draw_bytes_at(190, 100, 90, 38, 2, 2, cactus_2, FOREGROUND_COLOR, BACKGROUND_COLOR);
 }
-
-
 
 float GameScene::getSurvivalSecs() {
     return (esp_timer_get_time() - startTime) / 1000000.f;
@@ -83,34 +64,16 @@ void GameScene::handleStartingScreen() {
     const std::string_view title     = "Start Dino Game";
     const std::string_view startText = "Press Button to Start";
     for (int x = 0; x < title.length(); x++) {
-        GAL::draw_at(font, ((int)title[x] - 33) * 18, font_width, font_height, 20 + (x * 4 * scale), 30, FOREGROUND_COLOR, BACKGROUND_COLOR,
+        int characterBitIndex = static_cast<int>(title[x]) - 33;
+        if (characterBitIndex < 0) continue;
+        GAL::draw_at(font, characterBitIndex * 18, font_width, font_height, 20 + (x * (font_width  + 1) * scale), 30, FOREGROUND_COLOR, BACKGROUND_COLOR,
                      scale, true);
     }
 
     for (int x = 0; x < startText.length(); x++) {
-        GAL::draw_at(font, ((int)title[x] - 33) * 18, font_width, font_height, 20 + (x * 4 * scale), 130, FOREGROUND_COLOR,
+        int characterBitIndex = static_cast<int>(title[x]) - 33;
+        if (characterBitIndex < 0) continue;
+        GAL::draw_at(font, characterBitIndex * 18, font_width, font_height, 20 + (x * (font_width  + 1) * scale), 130, FOREGROUND_COLOR,
                      BACKGROUND_COLOR, scale, true);
     }
 }
-
-// void GameScene::updateJumpValues(float deltaTime, bool buttonPressed) {
-//     if (isGrounded()) {
-//         if (buttonPressed) {
-//             velocity = 9;
-//             currentY += velocity * deltaTime;
-//             ESP_LOGI(TAG, "Jump!");
-//         }
-//     } else {
-//         velocity -= 27.f * deltaTime;
-//         currentY += velocity;
-
-//         if (isGrounded()) {
-//             currentY = 0;
-//             velocity = 0;
-//         }
-//     }
-// }
-
-// bool GameScene::isGrounded() {
-//     return (currentY <= 0);
-// }

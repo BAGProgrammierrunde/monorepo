@@ -5,6 +5,7 @@
 
 #include <esp_log.h>
 #include <esp_timer.h>
+#include <climits>
 
 #define TAG "System"
 
@@ -31,8 +32,9 @@ void System::start() {
 
     int64_t frameTime   = esp_timer_get_time();
     int64_t deltaMicros = 0;
-    int64_t deltaLow    = -1;
-    int64_t deltaHigh   = -1;
+    int64_t deltaLow    = LLONG_MAX;
+    int64_t deltaHigh   = LLONG_MIN;
+    int16_t frames      = 0;
 
     while (true) {
         xTaskNotifyGive(System::gameTaskHandle);
@@ -45,15 +47,18 @@ void System::start() {
         deltaMicros           = frameTime - prevFrameTime;
 
         bool print = (prevFrameTime % 1000000 > frameTime % 1000000);
-        if (deltaLow == -1 || deltaMicros < deltaLow)
+        if (deltaMicros < deltaLow)
             deltaLow = deltaMicros;
-        else if (deltaHigh == -1 || deltaMicros > deltaHigh)
+        else if (deltaMicros > deltaHigh)
             deltaHigh = deltaMicros;
 
+        frames++;
+
         if (print) {
-            ESP_LOGI(TAG, "Frametime: [Low: %.4f ms | High: %.4f ms]", deltaLow / 1000.f, deltaHigh / 1000.f);
-            deltaLow  = -1;
-            deltaHigh = -1;
+            ESP_LOGI(TAG, "Frametime: %dfps [Low: %.4f ms | High: %.4f ms]", frames, deltaLow / 1000.f, deltaHigh / 1000.f);
+            deltaLow  = LLONG_MAX;
+            deltaHigh = LLONG_MIN;
+            frames    = 0;
         }
     }
 }

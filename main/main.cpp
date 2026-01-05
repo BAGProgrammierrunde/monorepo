@@ -1,7 +1,6 @@
-#include <engine.h>
-
 #include "game/game_scene.h"
 
+#include <engine.h>
 
 #define TAG "Main"
 
