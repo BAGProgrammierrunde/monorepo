@@ -12,9 +12,8 @@ void System::init() {
     ESP_LOGI(TAG, "Initializing..");
     mainTaskHandle = xTaskGetCurrentTaskHandle();
 
-    auto* display = new ST7789();
-    display->init();
-    GAL::init(displayWidth, displayHeight, display);
+    // DISCUSS where should we initialize GAL?
+    GAL::init();
 
     // DISCUSS Here or in game or in device?
     GAL::rotate(ROT_90_CW);

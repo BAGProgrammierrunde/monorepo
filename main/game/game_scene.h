@@ -4,7 +4,7 @@
 #include <cstdint>
 #include "dino.h"
 
-class GameScene final : public Scene {
+class GameScene : public Scene {
   private:
     uint64_t startTime = 0;
     int shift = 0;

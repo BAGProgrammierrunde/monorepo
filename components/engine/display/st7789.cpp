@@ -1,9 +1,9 @@
 #include "st7789.h"
 
 #include <array>
-#include <cstring>
 #include <driver/gpio.h>
 #include <esp_log.h>
+#include <cstring>
 
 #define TAG "ST7789"
 
@@ -15,12 +15,18 @@
 
 #define CLOCK_SPEED_HZ (80 * 1000 * 1000)
 
+#define MAX_CHUNK_BYTES    30720
+#define DISPLAY_PIXEL_SIZE 2
+
+#define DISPLAY_BUFFER_SIZE (LCD_WIDTH * LCD_HEIGHT * DISPLAY_PIXEL_SIZE)
+
 void ST7789::setPixel(int index, uint16_t color) {
     next_frame_buffer[index] = color;
 }
 
 void ST7789::setFrame(uint16_t color) {
-    std::fill_n(next_frame_buffer, screenSize, color);
+    const size_t n = LCD_WIDTH * LCD_HEIGHT;
+    std::fill_n(next_frame_buffer, n, color);
 }
 
 void ST7789::init() {
@@ -37,8 +43,8 @@ void IRAM_ATTR ST7789::spi_post_cb(spi_transaction_t* trans) {
     spi_ready = true;
 }
 
-void ST7789::rotate(rotation_t rotation, uint16_t width, uint16_t height) {
-    st7789_set_rotation(rotation, false, width, height);
+void ST7789::rotate(rotation_t rotation) {
+    st7789_set_rotation(rotation, false, LCD_WIDTH, LCD_HEIGHT, 0, 0);
 }
 
 void ST7789::switch_frame_buffers() {
@@ -51,15 +57,17 @@ void ST7789::send_active_buffer() {
     size_t offset = 0;
     spi_transaction_t t[5];
     int queued         = 0;
-    size_t total_words = screenSize;
+    size_t total_words = LCD_WIDTH * LCD_HEIGHT;
     gpio_set_level(PIN_NUM_DC, 1);
     while (total_words > 0) {
         // TODO Check if branchless is faster
-        size_t chunk_words = total_words > maxChunkPixels ? maxChunkPixels : total_words;
+        size_t chunk_words = total_words > (MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE) ? (MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE) : total_words;
+
+        // size_t chunk_words2 = (size_t[2]){(MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE), total_words}[total_words > (MAX_CHUNK_BYTES / DISPLAY_PIXEL_SIZE)];
 
         t[queued] = {
-            .length    = chunk_words * pixelByteSize * 8,
-            .user      = reinterpret_cast<void*>(1),
+            .length    = chunk_words * DISPLAY_PIXEL_SIZE * 8,
+            .user      = (void*) 1,
             .tx_buffer = active_frame_buffer + offset,
         };
 
@@ -87,7 +95,7 @@ void ST7789::st7789_send_data(const void* data, int len) {
     if (len == 0)
         return;
 
-    spi_transaction_t t = { .length = static_cast<uint16_t>(len * 8), .user = reinterpret_cast<void*>(1), .tx_buffer = data };
+    spi_transaction_t t = { .length = (uint16_t)(len * 8), .user = (void*)1, .tx_buffer = data };
     gpio_set_level(PIN_NUM_DC, 1);
     ESP_ERROR_CHECK(spi_device_transmit(spi, &t));
 }
@@ -112,13 +120,18 @@ void ST7789::set_address_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t 
     st7789_send_cmd(0x2C);
 }
 
-void ST7789::st7789_set_rotation(uint8_t rot, bool use_bgr, uint16_t width, uint16_t height) {
+void ST7789::st7789_set_rotation(uint8_t rot, bool use_bgr, uint16_t w, uint16_t h, uint16_t x_off, uint16_t y_off) {
     static const uint8_t ROT2MAD[4] = { 0x00, 0x60, 0xC0, 0xA0 };
     uint8_t mad                     = ROT2MAD[rot & 3] | (use_bgr ? 0x08 : 0); // D3=RGB/BGR
     st7789_send_cmd(0x36);
     st7789_send_data(&mad, 1);
 
-    set_address_window(0, 0,  width - 1, height - 1);
+    // Breite/Höhe für 90/270 tauschen
+    uint16_t dw = (rot & 1) ? h : w;
+    uint16_t dh = (rot & 1) ? w : h;
+
+    // Fenster inkl. panel-spezifischer Offsets setzen
+    set_address_window(x_off, y_off, x_off + dw - 1, y_off + dh - 1);
 }
 
 void ST7789::st7789_init() {
@@ -142,8 +155,7 @@ void ST7789::st7789_init() {
     vTaskDelay(pdMS_TO_TICKS(120));
     st7789_send_cmd(0x29);
 
-    // TODO width / height should not be static -> move to paramters from GAL
-    set_address_window(0, 0,  240 - 1, 320 - 1);
+    set_address_window(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
 }
 
 void ST7789::spi_init() {
@@ -152,7 +164,7 @@ void ST7789::spi_init() {
                                 .sclk_io_num     = PIN_NUM_CLK,
                                 .quadwp_io_num   = -1,
                                 .quadhd_io_num   = -1,
-                                .max_transfer_sz = maxChunkBytes };
+                                .max_transfer_sz = MAX_CHUNK_BYTES };
     ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO));
 
     spi_device_interface_config_t devcfg = {
@@ -167,10 +179,10 @@ void ST7789::spi_init() {
 }
 
 void ST7789::init_buffers() {
-    ESP_LOGI(TAG, "BUFFER_SIZE = %d", bufferSize);
+    ESP_LOGI(TAG, "BUFFER_SIZE = %d", DISPLAY_BUFFER_SIZE);
     ESP_LOGI(TAG, "Free heap: %d", heap_caps_get_free_size(MALLOC_CAP_DMA));
     for (int i = 0; i < 2; ++i) {
-        frame_buffers[i] = static_cast<uint16_t*>(heap_caps_malloc(bufferSize, MALLOC_CAP_DMA));
+        frame_buffers[i] = static_cast<uint16_t*>(heap_caps_malloc(DISPLAY_BUFFER_SIZE, MALLOC_CAP_DMA));
         if (!frame_buffers[i]) {
             ESP_LOGE(TAG, "Failed to allocate buffer %d", i);
             assert(frame_buffers[i]);
