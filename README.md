@@ -60,7 +60,7 @@ Hierfür kann ab jetzt alles von VS Code aus direkt eingrichtet werden.
 5. Klicke jetzt in VS Code links auf den Reiter `Source Control`
     - Wähle hier `Clone Repository` aus
     - Trage im aufkommenden Dialogfeld dann folgende URL ein: https://github.com/BAGProgrammierrunde/monorepo.git
-    - Wähle darauf den gewünschten Zielordner fürs Prokekt aus
+    - Wähle darauf den gewünschten Zielordner fürs Projekt aus und öffne das Projekt.
     - Falls du aufgefordert wirst dich bei GitHub einzuloggen, mach das ;). (Wenn du noch kein GitHub Account hast,
       kannst du dich hier anmelden: https://github.com/signup)
 6. Nach dem erfolgreichen Öffnen des Projektes, wieder im Explorer, bitte (wenn vorhanden) den `.vscode` Ordner löschen
