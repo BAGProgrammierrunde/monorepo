@@ -1,0 +1,4 @@
+#pragma once
+
+#define BACKGROUND_COLOR WHITE
+#define FOREGROUND_COLOR SWAP16(0x7BEF)

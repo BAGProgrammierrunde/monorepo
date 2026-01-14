@@ -1,73 +1,35 @@
-# Prerequisites
-*.d
+# JetBrains specific configuration
+.idea/
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# VS Code specific configuration
+.vscode/
 
-# Linker output
-*.ilk
-*.map
-*.exp
+# Visual Studio specific configuration
+.vs/
 
-# Precompiled Headers
-*.gch
-*.pch
+.pytest_cache/
+__pycache__/
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+# esp-idf built binaries
+build/
+build_*_*/
+sdkconfig*
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+# idf-ci build run output
+build_summary_*.xml
+app_info_*.txt
+size_info_*.txt
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+# pytest-embedded log folder
+pytest_embedded_log/
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-/schaltplan/schaltplan/~schaltplan.kicad_sch.lck
-OLD/schild/platformio-local.ini
-
-# JetBrains idea folder
-.idea
+# idf-component-manager output
+dependencies.lock
 
 backups/*
 
-
-
-
-#kicad
-# Adapted from:
-# https://github.com/github/gitignore/blob/master/KiCad.gitignore
-
-# For PCBs designed using KiCad: http://www.kicad-pcb.org/
-# Format documentation: http://kicad-pcb.org/help/file-formats/
-
+# KiCad
+# Adapted from: https://github.com/github/gitignore/blob/master/KiCad.gitignore
 # Temporary files
 *.000
 *.bak
@@ -82,26 +44,6 @@ _autosave-*
 *-save.pro
 *-save.kicad_pcb
 fp-info-cache
-/build
-kicad/console/console-backups/*
 
-# Netlist files (exported from Eeschema)
-*.net
-
-# Autorouter files (exported from Pcbnew)
-*.dsn
-*.ses
-
-# Footprint association file (exported from Pcbnew)
-*.cmp
-
-# Exported BOM files
-*.xml
-*.csv
-*.tsv
-
-# Misc
-*.log
-*.raw
-.svg2shenzhen-cache
-DinoGame/.clangd
+# MacOS specific files
+.DS_Store
