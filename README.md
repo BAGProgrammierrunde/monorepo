@@ -68,14 +68,14 @@ Hierfür kann ab jetzt alles von VS Code aus direkt eingrichtet werden.
     - In der Liste ganz unten den Reiter `Advanced` aufklappen
     - Und dann auf den Eintrag `Add .vscode subdirectory files` klicken
 8. In der Leiste ganz unten in VS Code sollte dann nur noch folgendes eingestellt sein:
-    - Neben dem Feld `ESP-IDF v5.x.x` und dem Stern sollte `UART` stehen, wenn bei dir `JTAG` oder sonstiges steht,
-      einfach anklicken und richtig auswählen
+    - Neben dem Feld `ESP-IDF v5.x.x` und dem Stern sollte `UART` stehen, wenn bei dir `JTAG`, sonstiges steht oder nichts  
+      steht, einfach auf den Stern klicken und `UART` auswählen.
     - Im Feld daneben sollte der richtige COM-Port stehen, wo dein ESP angeschlossen ist (wird normalerweise automatisch
       gesetzt wenn du deinen ESP an den PC anschließt, klick am besten aber trotzdem einmal drauf und schau ob hinter
       der Zahl des COM Ports in grau irgendetwas mit esp steht. Sonst wähl natürlich den aus bei dem es steht)
     - Neben dem COM Port weiter sollte als Gerät genau `esp32s3` ausgwählt sein
     - Nachdem du das Gerät ausgewählt hast, wirst du aufgefordert einen Chip auszuwählen. Diese Auswahl einfach mit
-      einem Escape oder Klick außerhalb des Dialoges
+      einem Escape oder Klick außerhalb des Dialoges schließen
 
 Bei Fragen oder Problemen aller Art melde dich super gerne bei uns. Wir helfen dir gerne weiter! :D
 Und nun viel Spaß mit deinem eingerichteten Projekt!
