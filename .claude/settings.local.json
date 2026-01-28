@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nButton Integration als abgeschlossen markiert\n\nDie Button-Integration wurde erfolgreich implementiert und die entsprechende Checkbox in der README.md als erledigt markiert. Die .claude/ Konfigurationsdateien für Claude Code wurden hinzugefügt.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

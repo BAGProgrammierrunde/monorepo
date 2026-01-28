@@ -127,7 +127,7 @@ und versuche das Projekt erneut zu bauen. Das hat uns öfter geholfen :).
 TODO Check includes
 
 - [x] weißen Kasten um den Dino entfernen
-- [ ] Button Integration
+- [x] Button Integration
 - [ ] Springen
 - [ ] Score
 - [ ] Hitbox / Kollision von Kaktus und Dino ermitteln
