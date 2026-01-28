@@ -4,109 +4,140 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a monorepo for the BAG Programmierrunde ESP32 microcontroller project. The main focus is developing firmware for an ESP32-based handheld gaming device with multiple hardware components (displays, buttons, joysticks, buzzers, LEDs, potentiometers, etc.). The primary active project is **DinoGame**, a T-Rex runner game implementation.
+This is a monorepo for the BAG Programmierrunde ESP32 microcontroller project. The project is developing firmware for an ESP32-S3 based handheld gaming device with an ST7789 LCD display and button inputs. The current implementation is a T-Rex runner game (Dino Game).
 
 ## Repository Structure
 
-- **DinoGame/**: Main active firmware project for ESP32-S3
-  - `main/`: Application entry point and game-specific code
-    - `main.cpp`: Entry point that initializes System and DinoGame
-    - `game/`: Game-specific implementation (DinoGame, GameScene)
-  - `components/engine/`: Reusable engine subsystems (component library)
-    - `display/`: ST7789 display driver
-    - `gal/`: Graphics abstraction layer
-    - `input/`: Button input handling
-    - `system/`: Core system (Scene, Game abstractions, FreeRTOS tasks)
-    - `game/`: Game interface definitions
-  - `scripts/`: Python utilities (font generation tools)
-  - `docs/`: Documentation
-  - `build/`: Generated build artifacts (not tracked)
-  - `sdkconfig`: ESP-IDF configuration (tracked)
+The repository root contains the active project:
 
-- **main/**: Separate older project using different structure
-- **Hardware/**: PCB designs and schematics
-  - `kicad/`: KiCad project files for the console PCB
-  - `case/`: Physical case designs
-- **OLD/**: Archived code
-- **DevDocs/**: Development documentation and command references
+- **components/engine/**: Reusable game engine component library
+  - `core/`: System initialization, scene management, FreeRTOS task orchestration
+  - `display/`: ST7789 LCD driver and display abstraction
+  - `gal/`: Graphics abstraction layer (GAL) for rendering primitives
+  - `input/`: Button input handling with debouncing
+  - `engine.h`: Single include header that exposes all engine APIs
+
+- **main/**: Application entry point and game implementation
+  - `main.cpp`: Entry point (`app_main()`) that initializes System and starts GameScene
+  - `game/`: Game-specific code (GameScene, Dino, assets)
+  - `CMakeLists.txt`: Registers main component with engine dependency
+
+- **build/**: Generated build artifacts (gitignored)
+- **sdkconfig**: ESP-IDF configuration (tracked in git)
+- **docs/**: Documentation and hardware specs
+- **DinoGame/**: Legacy directory structure (no longer active)
+- **.clang-format**: Code style configuration
 
 ## Build System and Commands
 
-The project uses ESP-IDF (Espressif IoT Development Framework) with CMake.
-
-### Setup Requirements
-- ESP-IDF v5.4+ (currently v5.5.1 recommended)
-- Target chip: **ESP32-S3**
-- Development in Visual Studio Code with ESP-IDF extension
+The project uses ESP-IDF (Espressif IoT Development Framework) v5.5.1 with CMake and the ESP32-S3 target chip. Development is done in Visual Studio Code with the ESP-IDF extension.
 
 ### Essential Commands
 
-All commands should be run from the `DinoGame/` directory after activating ESP-IDF environment.
+All commands run from the **repository root** (not DinoGame/):
 
-**Windows:**
-```cmd
-cd DinoGame
-idf.bat  # Activates ESP-IDF environment (custom wrapper)
-idf.py build
-idf.py flash
-idf.py monitor
-idf.py flash monitor  # Combined flash and monitor
-```
-
-**Mac/Linux:**
+**Build the project:**
 ```bash
-source ~/esp/esp-idf/export.sh  # Activate ESP-IDF
-cd DinoGame
 idf.py build
-idf.py flash
-idf.py monitor
-idf.py flash monitor
 ```
 
-### Other Useful Commands
-- `idf.py set-target esp32s3` - Set target chip (once per environment)
-- `idf.py clean` - Clean build artifacts when builds get stale
-- `idf.py menuconfig` - Configure project settings (modifies sdkconfig)
+**Flash to ESP32:**
+```bash
+idf.py flash
+```
+
+**Monitor serial output:**
+```bash
+idf.py monitor          # Ctrl+] to exit
+```
+
+**Combined build, flash, and monitor:**
+```bash
+idf.py build flash monitor
+```
+
+**VS Code shortcuts:** The ESP-IDF extension provides toolbar buttons at the bottom of VS Code:
+- Wrench icon: Build Project
+- Lightning icon: Flash Device
+- Monitor icon: Monitor Device
+- Flame icon: Build, Flash and Monitor (recommended workflow)
+
+### Configuration Commands
+
+```bash
+idf.py set-target esp32s3    # Set target chip (run once per environment)
+idf.py menuconfig            # Configure project settings (modifies sdkconfig)
+idf.py clean                 # Clean build artifacts
+```
 
 ### Troubleshooting
-If builds fail unexpectedly, delete the `build/` directory and rebuild. This often resolves caching issues.
+
+If builds fail unexpectedly, delete the `build/` directory and rebuild. This often resolves CMake caching issues.
 
 ## Architecture
 
-### Game Engine Architecture
+The codebase uses a scene-based game engine architecture with clear separation between reusable engine code and game-specific logic.
 
-The codebase follows a component-based architecture with separation between engine and game logic:
+### Core Architecture Components
 
-1. **System Layer** (`components/engine/system/`):
-   - `System`: Manages FreeRTOS tasks, initializes hardware, runs the main game loop
-   - `Scene`: Abstract base class for game states (menu, gameplay, game over, etc.)
-   - `Game`: Abstract base class for game implementations
+**System (components/engine/core/system.h):**
+- Singleton that manages the entire application lifecycle
+- Initializes hardware (display, GAL, input)
+- Creates two FreeRTOS tasks: main task (rendering) and game task (logic/input)
+- Owns the current scene via `PolyValue<Scene>` (type-erased storage)
+- Provides `System::setScene<SceneT>(...)` for scene transitions using delayed execution
 
-2. **Game Implementation** (`main/game/`):
-   - `DinoGame`: Concrete Game class that initializes and starts the T-Rex runner
-   - `GameScene`: Concrete Scene that handles gameplay update loop (delta time, button input)
+**Scene (components/engine/core/scene.h):**
+- Abstract base class for game states (gameplay, menu, game over, etc.)
+- Pure virtual `update(float deltaTime, bool buttonPressed)` called every frame
+- Virtual `start()` called when scene becomes active
+- Scenes are created/destroyed dynamically during transitions
 
-3. **Hardware Abstraction** (`components/engine/`):
-   - `display/`: ST7789 LCD driver (SPI communication)
-   - `gal/`: Graphics primitives and rendering
-   - `input/`: Button debouncing and input handling
+**GAL (Graphics Abstraction Layer):**
+- Double-buffered rendering system
+- Provides drawing primitives: `draw_bytes_at()`, `fill_background()`, `switch_frame_buffers()`
+- Abstracts the ST7789 display hardware
 
 ### Control Flow
-1. `app_main()` in `main.cpp` creates System and DinoGame instances
-2. `System::init(game)` sets up hardware and FreeRTOS tasks
-3. `System::run()` calls `game->start()` to get initial Scene, then loops calling `scene->update(deltaTime, buttonPressed)`
-4. Scenes can return new Scenes to transition between game states
 
-### Adding Engine Modules
+1. **Initialization:** `app_main()` in `main.cpp` calls `System::init()` to set up hardware
+2. **Scene Start:** `System::start<GameScene>()` creates the initial scene and enters main loop
+3. **Dual-Task Architecture:**
+   - **Main task:** Sends frame buffer to display, waits for game task, swaps buffers (render loop)
+   - **Game task:** Updates scene logic with delta time and button state, notifies main task
+4. **Scene Transitions:** Call `System::setScene<NewScene>(args...)` from within any scene's `update()` method. The new scene is constructed at the start of the next frame via `delayedSceneSwitchFunc`
 
-When adding new source files to `components/engine/`, update `components/engine/CMakeLists.txt`:
+### Current Game Implementation
+
+**GameScene (main/game/game_scene.h):**
+- Concrete scene implementing the Dino runner game
+- Manages scrolling ground textures, dino character, and start screen
+- Uses button input for jumping and starting the game
+
+### Adding New Engine Modules
+
+When adding new `.cpp` files to `components/engine/`, register them in `components/engine/CMakeLists.txt`:
+
 ```cmake
 idf_component_register(
     SRCS
+    "display/driver.cpp"
     "display/st7789.cpp"
     "your_new_module/new_file.cpp"  # Add here
     ...
     REQUIRES spi_flash esp_driver_spi esp_driver_gpio esp_timer
+    INCLUDE_DIRS "."
+)
+```
+
+Similarly, when adding game source files to `main/`, register them in `main/CMakeLists.txt`:
+
+```cmake
+idf_component_register(SRCS
+    "main.cpp"
+    "game/game_scene.cpp"
+    "game/your_new_file.cpp"  # Add here
+    REQUIRES esp_timer esp_driver_gpio engine
     INCLUDE_DIRS "."
 )
 ```
@@ -117,40 +148,42 @@ The project uses `.clang-format` configuration:
 - 4-space indentation
 - 140-character line limit
 - Left-aligned pointers (`int* ptr`)
-- PascalCase for classes/types
-- camelCase for functions/methods
-- snake_case for files
+- PascalCase for classes/types (`GameScene`, `System`)
+- camelCase for functions/methods (`updatePlayer`, `getSurvivalSecs`)
+- snake_case for files (`game_scene.cpp`)
 
-Run `clang-format -i <files>` before committing.
+Format code before committing:
+```bash
+clang-format -i path/to/file.cpp
+```
 
 ## Hardware Configuration
 
-- **Target board**: ESP32-S3
-- **Display**: ST7789 LCD (SPI interface)
-- **Communication protocol**: UART (bottom bar in VS Code should show "UART", not JTAG)
-- Pin mappings and peripheral configurations are in `sdkconfig`
+- **Target board**: ESP32-S3-DevKitC-1 N16R8
+- **Display**: 2.8" TFT LCD 240x320 with ST7789 controller (SPI interface)
+- **Buttons**: GPIO 13 and GPIO 14 (see `system.cpp:69-70`)
+- **Display orientation**: Landscape mode (320x240 after rotation)
+- **Communication protocol**: UART for flashing/monitoring (VS Code bottom bar must show "UART", not "JTAG")
 
-When introducing new peripherals, document wiring in `docs/` and use feature flags to keep default builds safe.
+Pin mappings are configured in `sdkconfig`. The complete pinout diagram is in `docs/media/esp32-s3_devkitc-1_pinlayout_v1.1.jpg`.
 
 ## Asset Management
 
-Graphics assets are stored as byte arrays in `main/game/assets/`. The `assets.md` file contains sprite data (e.g., cactus sprites) as `uint8_t` arrays with bit-packed pixel data.
+Graphics assets are stored as byte arrays in `main/game/assets/`:
+- `font.h`: Bitmap font for text rendering
+- `dino.h`: Dino character sprites
+- `ground.h`: Ground obstacle sprites (cactus variants)
+- `color.h`: Color definitions (FOREGROUND_COLOR, BACKGROUND_COLOR)
 
-Python scripts in `scripts/font_generation/` generate font bitmaps for text rendering.
+Assets use bit-packed pixel format compatible with `GAL::draw_bytes_at()`.
 
 ## Development Workflow
 
-1. Make changes in `DinoGame/` directory
-2. Build with `idf.py build`
-3. Flash to connected ESP32 with `idf.py flash`
-4. Monitor serial output with `idf.py monitor` (Ctrl+] to exit)
-5. Watch boot logs and gameplay behavior for validation
+Testing is done directly on hardware:
 
-No formal unit test suite exists yet. Validate on hardware using serial logs and visual inspection.
+1. Make code changes
+2. Build and flash: `idf.py build flash monitor`
+3. Observe serial logs (`ESP_LOGI`, `ESP_LOGW`) and visual output on the LCD
+4. Iterate
 
-## Git Workflow
-
-- Main branch: `main`
-- Keep commit messages imperative and concise
-- The `.vscode/` directory in DinoGame can be regenerated using ESP-IDF extension ("Add .vscode subdirectory files")
-- `build/` directories are gitignored
+The system logs frametime statistics every second for performance monitoring.
