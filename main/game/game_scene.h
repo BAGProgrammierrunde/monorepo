@@ -16,9 +16,11 @@ class GameScene : public Scene {
 
     bool showPlayTitle = true;
 
+    static const uint8_t* randomGroundTexture();
 
     float getSurvivalSecs();
     void handleStartingScreen();
+    void updateGround();
     void drawGround();
 
   public:

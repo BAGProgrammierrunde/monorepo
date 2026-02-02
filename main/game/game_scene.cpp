@@ -3,6 +3,7 @@
 #include "assets/font.h"
 #include "assets/ground.h"
 #include "esp_log.h"
+#include "esp_random.h"
 #include "esp_timer.h"
 #include "gal/gal.h"
 #include "dino.h"
@@ -17,8 +18,7 @@ constexpr float speedMultiplier = 2.f;
 
 const int ground = 240 - 36 - 9;
 
-const uint8_t* groundTextures[]       = { cactus_2, cactus_2, cactus_2 };
-const unsigned int groundTextureCount = sizeof(groundTextures) / sizeof(groundTextures[0]);
+const uint8_t* groundTextures[]       = { cactus_0, cactus_0, cactus_0 };
 
 void GameScene::start() {
     startTime = esp_timer_get_time();
@@ -43,18 +43,26 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
     if (++shift > 180) {
         shift = 0;
 
-        // Update ground array here
+        updateGround();
     }
 
     drawGround();
 }
 
-void GameScene::drawGround() {
-    const uint8_t* texture[] = { cactus_1, cactus_1, cactus_1 };
+const uint8_t* GameScene::randomGroundTexture() {
+    return (esp_random() & 1U) == 0 ? cactus_0 : cactus_1;
+}
 
-    GAL::draw_at(texture[0], 0, 90, 38, -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
-    GAL::draw_at(texture[1], 0, 90, 38, 180 + -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
-    GAL::draw_at(texture[2], 0, 90, 38, 360 + -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
+void GameScene::updateGround() {
+    groundTextures[0] = groundTextures[1];
+    groundTextures[1] = groundTextures[2];
+    groundTextures[2] = randomGroundTexture();
+}
+
+void GameScene::drawGround() {
+    GAL::draw_at(groundTextures[0], 0, 90, 38, -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
+    GAL::draw_at(groundTextures[1], 0, 90, 38, 180 + -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
+    GAL::draw_at(groundTextures[2], 0, 90, 38, 360 + -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
 }
 
 float GameScene::getSurvivalSecs() {
