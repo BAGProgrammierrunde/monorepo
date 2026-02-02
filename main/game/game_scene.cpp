@@ -36,19 +36,7 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
         showPlayTitle = false;
     }
 
-    // Dino Jump und update
-    dino.jump(deltaTime, buttonPressed);
-    dino.nextStepUpdate();
-
-    {
-        char buffer[32];
-        std::snprintf(buffer, sizeof(buffer), "%.0f", survivalSecs * scoreMultiplier);
-        const std::string_view text = buffer;
-        const int scale = 4;
-        const int textWidth = static_cast<int>(text.length()) * (static_cast<int>(font_width) + 1) * scale;
-        const int x = 320 - textWidth - 6;
-        drawText(text, x, 6, scale);
-    }
+    drawScore(survivalSecs);
 
     if (++shift > 180) {
         shift = 0;
@@ -57,6 +45,14 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
     }
 
     drawGround();
+
+    // Dino Jump und update
+    dino.jump(deltaTime, buttonPressed);
+    dino.nextStepUpdate();
+}
+
+void GameScene::drawScore(float survivalSecs) {
+    drawInt(static_cast<int>(survivalSecs * scoreMultiplier), 320 - 6, 6, 4);
 }
 
 const uint8_t* GameScene::randomGroundTexture() {
@@ -81,6 +77,32 @@ void GameScene::drawText(const std::string_view& text, int x, int y, int scale) 
         if (characterBitIndex < 0) continue;
         GAL::draw_at(font, characterBitIndex * 18, font_width, font_height, x + (i * (font_width + 1) * scale), y, FOREGROUND_COLOR, BACKGROUND_COLOR,
                      scale, true);
+    }
+}
+
+void GameScene::drawInt(int value, int x, int y, int scale) {
+    int count = 1;
+    int temp = value;
+    while (temp >= 10) {
+        temp /= 10;
+        ++count;
+    }
+
+    const int step = (static_cast<int>(font_width) + 1) * scale;
+    const int width = (count * step) - scale;
+    const int startX = x - width + 1;
+
+    int divisor = 1;
+    for (int i = 1; i < count; ++i) {
+        divisor *= 10;
+    }
+
+    const int digitOffset = 48 - 33; // '0' in font table
+    for (int i = 0; i < count; ++i) {
+        const int digit = (value / divisor) % 10;
+        const int characterBitIndex = digitOffset + digit;
+        GAL::draw_at(font, characterBitIndex * 18, font_width, font_height, startX + (i * step), y, FOREGROUND_COLOR, BACKGROUND_COLOR, scale, true);
+        divisor /= 10;
     }
 }
 

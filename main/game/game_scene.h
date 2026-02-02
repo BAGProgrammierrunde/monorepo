@@ -23,9 +23,11 @@ class GameScene : public Scene {
     static const uint8_t* randomGroundTexture();
 
     void drawText(const std::string_view& text, int x, int y, int scale);
+    void drawInt(int value, int x, int y, int scale);
 
     float getSurvivalSecs();
     void handleStartingScreen();
+    void drawScore(float survivalSecs);
     void updateGround();
     void drawGround();
 
