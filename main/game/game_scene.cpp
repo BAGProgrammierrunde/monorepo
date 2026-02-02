@@ -9,6 +9,7 @@
 #include "dino.h"
 #include "assets/color.h"
 
+#include <cstdio>
 #include <string>
 
 #define TAG "Game"
@@ -63,25 +64,20 @@ void GameScene::drawGround() {
     GAL::draw_at(groundTextures[2], 0, 90, 38, 360 + -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
 }
 
+void GameScene::drawText(const std::string_view& text, int x, int y, int scale) {
+    for (int i = 0; i < static_cast<int>(text.length()); ++i) {
+        int characterBitIndex = static_cast<int>(text[i]) - 33;
+        if (characterBitIndex < 0) continue;
+        GAL::draw_at(font, characterBitIndex * 18, font_width, font_height, x + (i * (font_width + 1) * scale), y, FOREGROUND_COLOR, BACKGROUND_COLOR,
+                     scale, true);
+    }
+}
+
 float GameScene::getSurvivalSecs() {
     return (esp_timer_get_time() - startTime) / 1000000.f;
 }
 
 void GameScene::handleStartingScreen() {
-    const int scale                  = 4;
-    const std::string_view title     = "Start Dino Game";
-    const std::string_view startText = "Press Button to Start";
-    for (int x = 0; x < title.length(); x++) {
-        int characterBitIndex = static_cast<int>(title[x]) - 33;
-        if (characterBitIndex < 0) continue;
-        GAL::draw_at(font, characterBitIndex * 18, font_width, font_height, 20 + (x * (font_width  + 1) * scale), 30, FOREGROUND_COLOR, BACKGROUND_COLOR,
-                     scale, true);
-    }
-
-    for (int x = 0; x < startText.length(); x++) {
-        int characterBitIndex = static_cast<int>(title[x]) - 33;
-        if (characterBitIndex < 0) continue;
-        GAL::draw_at(font, characterBitIndex * 18, font_width, font_height, 20 + (x * (font_width  + 1) * scale), 130, FOREGROUND_COLOR,
-                     BACKGROUND_COLOR, scale, true);
-    }
+    drawText("Dino Game", 40, 30, 4);
+    drawText("Press Button to Start", 20, 100, 3);
 }

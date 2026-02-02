@@ -2,6 +2,7 @@
 
 #include <engine.h>
 #include <cstdint>
+#include <string_view>
 #include "dino.h"
 
 class GameScene : public Scene {
@@ -20,6 +21,8 @@ class GameScene : public Scene {
     const uint8_t* groundTextures[groundTextureCount] = {};
 
     static const uint8_t* randomGroundTexture();
+
+    void drawText(const std::string_view& text, int x, int y, int scale);
 
     float getSurvivalSecs();
     void handleStartingScreen();
