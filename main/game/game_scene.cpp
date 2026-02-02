@@ -52,7 +52,7 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
 }
 
 void GameScene::drawScore(float survivalSecs) {
-    drawInt(static_cast<int>(survivalSecs * scoreMultiplier), 320 - 6, 6, 4);
+    drawInt(static_cast<int>(survivalSecs * scoreMultiplier), 320 - 10, 10, 4);
 }
 
 const uint8_t* GameScene::randomGroundTexture() {
