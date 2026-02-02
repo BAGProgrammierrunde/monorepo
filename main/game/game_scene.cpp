@@ -40,19 +40,21 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
     dino.jump(deltaTime, buttonPressed);
     dino.nextStepUpdate();
 
-    // --- every 3 seconds 180 pixels
-    float loopSpeed = 3.f;
-    float texWidth  = 180.f;
-    for (int i = 0; i < groundTextureCount; i++)
-        GAL::draw_bytes_at(LCD_HEIGHT - (std::fmodf(survivalSecs * loopSpeed + i, groundTextureCount) * texWidth), 240 - 38 * 2 - 9, 90, 38,
-                           2, 2, groundTextures[i], FOREGROUND_COLOR, BACKGROUND_COLOR);
-    // ---
-
     if (++shift > 180) {
         shift = 0;
 
         // Update ground array here
     }
+
+    drawGround();
+}
+
+void GameScene::drawGround() {
+    const uint8_t* texture[] = { cactus_1, cactus_1, cactus_1 };
+
+    GAL::draw_at(texture[0], 0, 90, 38, -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
+    GAL::draw_at(texture[1], 0, 90, 38, 180 + -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
+    GAL::draw_at(texture[2], 0, 90, 38, 360 + -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
 }
 
 float GameScene::getSurvivalSecs() {

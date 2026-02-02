@@ -19,6 +19,7 @@ class GameScene : public Scene {
 
     float getSurvivalSecs();
     void handleStartingScreen();
+    void drawGround();
 
   public:
     void start() override;
