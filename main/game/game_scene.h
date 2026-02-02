@@ -16,6 +16,9 @@ class GameScene : public Scene {
 
     bool showPlayTitle = true;
 
+    static constexpr unsigned int groundTextureCount = 3;
+    const uint8_t* groundTextures[groundTextureCount] = {};
+
     static const uint8_t* randomGroundTexture();
 
     float getSurvivalSecs();

@@ -9,19 +9,17 @@
 #include "dino.h"
 #include "assets/color.h"
 
-#include <cmath>
 #include <string>
 
 #define TAG "Game"
 
 constexpr float speedMultiplier = 2.f;
 
-const int ground = 240 - 36 - 9;
-
-const uint8_t* groundTextures[]       = { cactus_0, cactus_0, cactus_0 };
-
 void GameScene::start() {
     startTime = esp_timer_get_time();
+    for (unsigned int i = 0; i < groundTextureCount; ++i) {
+        groundTextures[i] = cactus_0;
+    }
 }
 
 void GameScene::update(float deltaTime, bool buttonPressed) {
