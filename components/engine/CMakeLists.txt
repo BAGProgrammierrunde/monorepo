@@ -5,6 +5,6 @@ idf_component_register(
         "input/button.cpp"
         "core/scene.cpp"
         "core/system.cpp"
-        REQUIRES spi_flash esp_driver_spi esp_driver_gpio esp_timer esp_psram
+        REQUIRES spi_flash esp_driver_spi esp_driver_gpio esp_timer
         INCLUDE_DIRS "."
 )

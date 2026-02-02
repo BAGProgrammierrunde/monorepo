@@ -182,14 +182,9 @@ void ST7789::spi_init() {
 
 void ST7789::init_buffers() {
     ESP_LOGI(TAG, "BUFFER_SIZE = %d", DISPLAY_BUFFER_SIZE);
-    ESP_LOGI(TAG, "Free heap: %d", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
-    size_t freePsram    = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
-    size_t largestPsram = heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
-    ESP_LOGI("ProgramScene", "PSRAM free: %u bytes, largest block: %u bytes", static_cast<unsigned>(freePsram),
-             static_cast<unsigned>(largestPsram));
+    ESP_LOGI(TAG, "Free heap: %d", heap_caps_get_free_size(MALLOC_CAP_DMA));
     for (int i = 0; i < 2; ++i) {
-        frame_buffers[i] = static_cast<uint16_t*>(heap_caps_malloc(DISPLAY_BUFFER_SIZE, MALLOC_CAP_DMA | MALLOC_CAP_SPIRAM));
-        ESP_LOGI(TAG, "Free heap: %d", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+        frame_buffers[i] = static_cast<uint16_t*>(heap_caps_malloc(DISPLAY_BUFFER_SIZE, MALLOC_CAP_DMA));
         if (!frame_buffers[i]) {
             ESP_LOGE(TAG, "Failed to allocate buffer %d", i);
             assert(frame_buffers[i]);
