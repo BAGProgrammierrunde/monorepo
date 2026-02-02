@@ -15,6 +15,7 @@
 #define TAG "Game"
 
 constexpr float speedMultiplier = 2.f;
+constexpr float scoreMultiplier = 7.f;
 
 void GameScene::start() {
     startTime = esp_timer_get_time();
@@ -38,6 +39,16 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
     // Dino Jump und update
     dino.jump(deltaTime, buttonPressed);
     dino.nextStepUpdate();
+
+    {
+        char buffer[32];
+        std::snprintf(buffer, sizeof(buffer), "%.0f", survivalSecs * scoreMultiplier);
+        const std::string_view text = buffer;
+        const int scale = 4;
+        const int textWidth = static_cast<int>(text.length()) * (static_cast<int>(font_width) + 1) * scale;
+        const int x = 320 - textWidth - 6;
+        drawText(text, x, 6, scale);
+    }
 
     if (++shift > 180) {
         shift = 0;
