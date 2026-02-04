@@ -9,6 +9,8 @@ Button::Button(gpio_num_t pin) : pin(pin) {
 }
 
 bool Button::isPressed() {
+    return gpio_get_level(pin) == Button::LOW;
+    /* TODO fix debounce code - currently not working
     bool currentReading = (gpio_get_level(pin) == Button::LOW);
     uint64_t currentTime = esp_timer_get_time();
 
@@ -23,4 +25,5 @@ bool Button::isPressed() {
     }
 
     return lastStableState;
+    */
 }
