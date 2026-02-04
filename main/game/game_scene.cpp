@@ -1,15 +1,15 @@
 #include "game_scene.h"
 
+#include "assets/cactus.h"
+#include "assets/color.h"
 #include "assets/font.h"
 #include "assets/ground.h"
+#include "dino.h"
 #include "esp_log.h"
 #include "esp_random.h"
 #include "esp_timer.h"
 #include "gal/gal.h"
-#include "dino.h"
-#include "assets/color.h"
 
-#include <cstdio>
 #include <string>
 
 #define TAG "Game"
@@ -20,7 +20,7 @@ constexpr float scoreMultiplier = 7.f;
 void GameScene::start() {
     startTime = esp_timer_get_time();
     for (unsigned int i = 0; i < groundTextureCount; ++i) {
-        groundTextures[i] = cactus_0;
+        groundTextures[i] = ground_0;
     }
 }
 
@@ -56,7 +56,16 @@ void GameScene::drawScore(float survivalSecs) {
 }
 
 const uint8_t* GameScene::randomGroundTexture() {
-    return (esp_random() & 1U) == 0 ? cactus_0 : cactus_1;
+    switch (esp_random() & 3U) {
+        case 0:
+            return cactus_0;
+        case 1:
+            return cactus_1;
+        case 2:
+            return cactus_2;
+        default:
+            return cactus_3;
+    }
 }
 
 void GameScene::updateGround() {
