@@ -10,9 +10,15 @@
 
 #define TAG "GAL"
 
+orientation_t GAL::current_orientation = PORTRAIT;
+
 void GAL::init() {
     // DISCUSS Feels wrong here - see header file
     display().init();
+}
+
+void GAL::set_orientation(const orientation_t orientation) {
+    current_orientation = orientation;
 }
 
 void IRAM_ATTR GAL::draw_placeholder(uint16_t color) {
@@ -154,30 +160,37 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
 
 void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWidth, int srcHeight, int x, int y, uint16_t fg, uint16_t bg,
                             int scale, bool renderForegroundColorOnly) {
-    constexpr int DST_W = 320, DST_H = 240;
-    if (!sprite || srcWidth <= 0 || srcHeight <= 0 || scale <= 0)
+    if (!sprite || srcWidth <= 0 || srcHeight <= 0 || scale <= 0) {
         return;
+    }
 
-    const int OUT_W = srcWidth * scale;
-    const int OUT_H = srcHeight * scale;
+    const bool landscape = (current_orientation == LANDSCAPE) || (current_orientation == LANDSCAPE_INVERTED);
+    const int dst_w      = landscape ? LCD_HEIGHT : LCD_WIDTH;
+    const int dst_h      = landscape ? LCD_WIDTH : LCD_HEIGHT;
+
+    const int out_w = srcWidth * scale;
+    const int out_h = srcHeight * scale;
 
     const int off_x = x;
     const int off_y = y;
 
-    if (off_y >= DST_H || (off_y + OUT_H) <= 0)
+    if (off_y >= dst_h || (off_y + out_h) <= 0) {
         return;
+    }
 
     int first_dest_x = off_x < 0 ? 0 : off_x;
-    int last_dest_x  = (off_x + OUT_W > DST_W) ? DST_W : (off_x + OUT_W);
+    int last_dest_x  = (off_x + out_w > dst_w) ? dst_w : (off_x + out_w);
     int vis_w        = last_dest_x - first_dest_x;
-    if (vis_w <= 0)
+    if (vis_w <= 0) {
         return;
+    }
 
     const int src_scaled_start   = first_dest_x - off_x;
     const int left_partial_incol = src_scaled_start % scale;
     int left_w                   = (left_partial_incol == 0) ? 0 : (scale - left_partial_incol);
-    if (left_w > vis_w)
+    if (left_w > vis_w) {
         left_w = vis_w;
+    }
 
     int remaining       = vis_w - left_w;
     const int full_cols = remaining / scale;
@@ -187,13 +200,85 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
     auto& disp              = display();
 
     const int first_sy = std::max(0, (-off_y + scale - 1) / scale);
-    const int last_sy  = std::min(srcHeight - 1, (DST_H - scale - off_y) / scale);
-    if (last_sy < first_sy)
+    const int last_sy  = std::min(srcHeight - 1, (dst_h - scale - off_y) / scale);
+    if (last_sy < first_sy) {
         return;
+    }
+
+    if (current_orientation == PORTRAIT) {
+        for (int sy = first_sy; sy <= last_sy; ++sy) {
+            const int y0           = off_y + sy * scale;
+            int d_base             = y0 * dst_w + first_dest_x;
+            const int row_bit_base = startBitIndex + sy * srcWidth;
+
+            auto bit_at = [&](int sx) -> bool {
+                const int bit_index   = row_bit_base + sx;
+                const int byte_idx    = bit_index >> 3;      // / 8
+                const int bit_in_byte = 7 - (bit_index & 7); // % 8, invertiert
+                return (sprite[byte_idx] >> bit_in_byte) & 0x1;
+            };
+
+            auto paint_run = [&](int run_w, uint16_t color) {
+                if (run_w <= 0) {
+                    return;
+                }
+                if (renderForegroundColorOnly && color == bg) {
+                    d_base += run_w;
+                    return;
+                }
+                int d = d_base;
+                for (int s = 0; s < scale; ++s) {
+                    int di = d + s * dst_w;
+                    for (int i = 0; i < run_w; ++i) {
+                        disp.setPixel(di++, color);
+                    }
+                }
+                d_base += run_w;
+            };
+
+            if (left_w) {
+                const uint16_t c = bit_at(src_scaled_start / scale) ? fg : bg;
+                paint_run(left_w, c);
+            }
+
+            for (int k = 0, sx = sx_start_full; k < full_cols; ++k, ++sx) {
+                const uint16_t c = bit_at(sx) ? fg : bg;
+                paint_run(scale, c);
+            }
+
+            if (right_w) {
+                const uint16_t c = bit_at(sx_start_full + full_cols) ? fg : bg;
+                paint_run(right_w, c);
+            }
+        }
+        return;
+    }
+
+    auto set_pixel_oriented = [&](int lx, int ly, uint16_t color) {
+        int px = lx;
+        int py = ly;
+        switch (current_orientation) {
+        case PORTRAIT_INVERTED:
+            px = LCD_WIDTH - 1 - lx;
+            py = LCD_HEIGHT - 1 - ly;
+            break;
+        case LANDSCAPE:
+            px = LCD_WIDTH - 1 - ly;
+            py = lx;
+            break;
+        case LANDSCAPE_INVERTED:
+            px = ly;
+            py = LCD_HEIGHT - 1 - lx;
+            break;
+        default:
+            break;
+        }
+        disp.setPixel(py * LCD_WIDTH + px, color);
+    };
 
     for (int sy = first_sy; sy <= last_sy; ++sy) {
         const int y0           = off_y + sy * scale;
-        int d_base             = y0 * DST_W + first_dest_x;
+        int run_x              = first_dest_x;
         const int row_bit_base = startBitIndex + sy * srcWidth;
 
         auto bit_at = [&](int sx) -> bool {
@@ -204,20 +289,21 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
         };
 
         auto paint_run = [&](int run_w, uint16_t color) {
-            if (run_w <= 0)
-                return;
-            if (renderForegroundColorOnly && color == bg) {
-                d_base += run_w;
+            if (run_w <= 0) {
                 return;
             }
-            int d = d_base;
+            if (renderForegroundColorOnly && color == bg) {
+                run_x += run_w;
+                return;
+            }
             for (int s = 0; s < scale; ++s) {
-                int di = d + s * DST_W;
+                const int ly = y0 + s;
                 for (int i = 0; i < run_w; ++i) {
-                    disp.setPixel(di++, color);
+                    const int lx = run_x + i;
+                    set_pixel_oriented(lx, ly, color);
                 }
             }
-            d_base += run_w;
+            run_x += run_w;
         };
 
         if (left_w) {
@@ -381,4 +467,31 @@ void GAL::send_active_buffer() {
 
 void GAL::set_fullscreen() {
     display().set_address_window(0, 0, LCD_HEIGHT - 1, LCD_WIDTH - 1);
+}
+
+void IRAM_ATTR GAL::draw_vertical_line(int x, uint16_t color) {
+    constexpr int screenW = LCD_WIDTH;
+    constexpr int screenH = LCD_HEIGHT;
+    if (x < 0 || x >= screenW) {
+        return;
+    }
+    auto& disp = display();
+    int index  = x;
+    for (int y = 0; y < screenH; ++y) {
+        disp.setPixel(index, color);
+        index += screenW;
+    }
+}
+
+void IRAM_ATTR GAL::draw_horizontal_line(int y, uint16_t color) {
+    constexpr int screenW = LCD_WIDTH;
+    constexpr int screenH = LCD_HEIGHT;
+    if (y < 0 || y >= screenH) {
+        return;
+    }
+    auto& disp = display();
+    int index  = y * screenW;
+    for (int x = 0; x < screenW; ++x) {
+        disp.setPixel(index + x, color);
+    }
 }

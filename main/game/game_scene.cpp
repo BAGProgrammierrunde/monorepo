@@ -1,6 +1,5 @@
 #include "game_scene.h"
 
-#include "assets/cactus.h"
 #include "assets/color.h"
 #include "assets/font.h"
 #include "assets/ground.h"
@@ -20,7 +19,7 @@ constexpr float scoreMultiplier = 7.f;
 void GameScene::start() {
     startTime = esp_timer_get_time();
     for (unsigned int i = 0; i < groundTextureCount; ++i) {
-        groundTextures[i] = ground_0;
+        groundTextures[i] = &grounds[0];
     }
 }
 
@@ -38,8 +37,10 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
 
     drawScore(survivalSecs);
 
-    if (++shift > 180) {
-        shift = 0;
+    // shift += survivalSecs / 100.f + 1;
+
+    if (++shift >= 90) {
+        shift = shift % 90;
 
         updateGround();
     }
@@ -55,50 +56,56 @@ void GameScene::drawScore(float survivalSecs) {
     drawInt(static_cast<int>(survivalSecs * scoreMultiplier), 320 - 10, 10, 4);
 }
 
-const uint8_t* GameScene::randomGroundTexture() {
-    switch (esp_random() & 3U) {
-        case 0:
-            return cactus_0;
-        case 1:
-            return cactus_1;
-        case 2:
-            return cactus_2;
-        default:
-            return cactus_3;
-    }
+const ground_t* GameScene::randomCactus() {
+    return &grounds[esp_random() % 4 + 2];
+}
+
+const ground_t* GameScene::randomGround() {
+    return &grounds[esp_random() & 1U];
+}
+
+const ground_t* GameScene::randomCactusOrGround(int cactusChance) {
+    return esp_random() % 101 < cactusChance ? randomCactus() : randomGround();
 }
 
 void GameScene::updateGround() {
-    groundTextures[0] = groundTextures[1];
-    groundTextures[1] = groundTextures[2];
-    groundTextures[2] = randomGroundTexture();
+    int count = 0;
+    for (unsigned int i = 0; i < groundTextureCount - 1; ++i) {
+        groundTextures[i] = groundTextures[i + 1];
+        if (groundTextures[i]->isCactus) {
+            ++count;
+        }
+    }
+    groundTextures[groundTextureCount - 1] = randomCactusOrGround(count == 0 ? 100 : count == 1 ? 75 : 0);
 }
 
 void GameScene::drawGround() {
-    GAL::draw_at(groundTextures[0], 0, 90, 38, -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
-    GAL::draw_at(groundTextures[1], 0, 90, 38, 180 + -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
-    GAL::draw_at(groundTextures[2], 0, 90, 38, 360 + -shift, 240 - 38 * 2 - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, 2);
+    constexpr int scale = 1;
+    for (int i = 0; i < groundTextureCount; ++i) {
+        GAL::draw_at(groundTextures[i]->texture, 0, 90, 38, i * 90 - shift, 240 - 38 * scale - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, scale, true);
+    }
 }
 
 void GameScene::drawText(const std::string_view& text, int x, int y, int scale) {
     for (int i = 0; i < static_cast<int>(text.length()); ++i) {
         int characterBitIndex = static_cast<int>(text[i]) - 33;
-        if (characterBitIndex < 0) continue;
-        GAL::draw_at(font, characterBitIndex * 18, font_width, font_height, x + (i * (font_width + 1) * scale), y, FOREGROUND_COLOR, BACKGROUND_COLOR,
-                     scale, true);
+        if (characterBitIndex < 0)
+            continue;
+        GAL::draw_at(font, characterBitIndex * 18, font_width, font_height, x + (i * (font_width + 1) * scale), y, FOREGROUND_COLOR,
+                     BACKGROUND_COLOR, scale, true);
     }
 }
 
 void GameScene::drawInt(int value, int x, int y, int scale) {
     int count = 1;
-    int temp = value;
+    int temp  = value;
     while (temp >= 10) {
         temp /= 10;
         ++count;
     }
 
-    const int step = (static_cast<int>(font_width) + 1) * scale;
-    const int width = (count * step) - scale;
+    const int step   = (static_cast<int>(font_width) + 1) * scale;
+    const int width  = (count * step) - scale;
     const int startX = x - width + 1;
 
     int divisor = 1;
@@ -108,9 +115,10 @@ void GameScene::drawInt(int value, int x, int y, int scale) {
 
     const int digitOffset = 48 - 33; // '0' in font table
     for (int i = 0; i < count; ++i) {
-        const int digit = (value / divisor) % 10;
+        const int digit             = (value / divisor) % 10;
         const int characterBitIndex = digitOffset + digit;
-        GAL::draw_at(font, characterBitIndex * 18, font_width, font_height, startX + (i * step), y, FOREGROUND_COLOR, BACKGROUND_COLOR, scale, true);
+        GAL::draw_at(font, characterBitIndex * 18, font_width, font_height, startX + (i * step), y, FOREGROUND_COLOR, BACKGROUND_COLOR,
+                     scale, true);
         divisor /= 10;
     }
 }

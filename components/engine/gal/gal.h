@@ -14,22 +14,25 @@ class GAL {
         static ST7789 display;
         return display;
     }
-    rotation_t current_rotation = ROT_0;
+    static orientation_t current_orientation;
 
   public:
     GAL() = delete;
 
     static void init();
+    static void set_orientation(orientation_t orientation);
     static void draw_placeholder(uint16_t color);
     static void fill_background(uint16_t color);
     static void draw_pixels(uint16_t color, uint16_t count);
     static void draw(const uint8_t* sprite, int srcWidth, int srcHeight, int verticalScroll, uint16_t foregroundColor,
                      uint16_t backgroundColor, int scale, bool renderForegroundColorOnly = false);
     static void draw_at(const uint8_t* sprite, int startBitIndex, int srcWidth, int srcHeight, int x, int y, uint16_t fg, uint16_t bg, int scale,
-                          bool renderForegroundColorOnly = false);
+                        bool renderForegroundColorOnly = false);
     static void draw_bytes_at(float pPosX, float pPosY, float pTextureWidth, float pTextureHeight, float pScaleX, float pScaleY, const uint8_t* pTexture, uint16_t pFgColor, uint16_t pBgColor, bool pIgnoreBg = false);
     static void rotate(rotation_t rotation);
     static void switch_frame_buffers();
     static void send_active_buffer();
     static void set_fullscreen();
+    static void draw_vertical_line(int x, uint16_t color);
+    static void draw_horizontal_line(int y, uint16_t color);
 };
