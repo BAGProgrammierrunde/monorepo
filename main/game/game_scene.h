@@ -10,17 +10,16 @@ class GameScene : public Scene {
     uint64_t startTime = 0;
     int shift = 0;
 
-    // float currentY = 0;
-    // float velocity = 0;
-
     Dino dino;
 
     bool showPlayTitle = true;
 
-    static constexpr unsigned int groundTextureCount = 3;
-    const uint8_t* groundTextures[groundTextureCount] = {};
+    static constexpr unsigned int groundTextureCount = 5;
+    const ground_t* groundTextures[groundTextureCount] = {};
 
-    static const uint8_t* randomGroundTexture();
+    static const ground_t* randomCactus();
+    static const ground_t* randomGround();
+    static const ground_t* randomCactusOrGround(int cactusChance);
 
     void drawText(const std::string_view& text, int x, int y, int scale);
     void drawInt(int value, int x, int y, int scale);

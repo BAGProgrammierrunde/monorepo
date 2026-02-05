@@ -12,6 +12,13 @@ typedef enum {
     ROT_270_CW = 3,
 } rotation_t;
 
+typedef enum {
+    PORTRAIT      = 0,
+    LANDSCAPE  = 1,
+    PORTRAIT_INVERTED    = 2,
+    LANDSCAPE_INVERTED = 3,
+} orientation_t;
+
 class ST7789 {
   private:
     uint16_t* active_frame_buffer = nullptr;

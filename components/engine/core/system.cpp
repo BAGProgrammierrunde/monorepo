@@ -17,7 +17,8 @@ void System::init() {
     GAL::init();
 
     // DISCUSS Here or in game or in device?
-    GAL::rotate(ROT_90_CW);
+    // GAL::rotate(ROT_90_CW);
+    GAL::set_orientation(LANDSCAPE);
 
     // DISCUSS Clears the buffers - here or in GAL or in display?
     GAL::fill_background(BLACK);

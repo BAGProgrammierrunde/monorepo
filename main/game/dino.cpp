@@ -1,16 +1,8 @@
 #pragma once
 #include "dino.h"
 #include "assets/color.h"
-#include "assets/font.h"
-#include "assets/ground.h"
 #include "esp_log.h"
-#include "esp_timer.h"
-#include "gal/gal.h"
 
-#include <cmath>
-#include <string>
-
-#include <cstdint>
 #include <engine.h>
 
 #define TAG "Game"
@@ -48,7 +40,7 @@ void Dino::nextStepUpdate() {
     if (nextStep == 12) {
         nextStep = 0;
     }
-
-    float y = ((240.f - 36.f * 2.f) - 9.f) - currentY;
-    GAL::draw_at(nextStep < 6 ? dino_rightstep : dino_leftstep, 0, 34, 36, 10, y, FOREGROUND_COLOR, BACKGROUND_COLOR, 2, true);
+    constexpr float scale = 1.f;
+    float y = ((240.f - 36.f * scale) - 9.f) - currentY;
+    GAL::draw_at(nextStep < 6 ? dino_rightstep : dino_leftstep, 0, 34, 36, 10, y, FOREGROUND_COLOR, BACKGROUND_COLOR, scale, true);
 }
