@@ -5,7 +5,7 @@
 #include <string_view>
 #include "dino.h"
 
-class GameScene : public Scene {
+class GameScene final : public Scene {
   private:
     uint64_t startTime = 0;
     int shift = 0;

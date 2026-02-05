@@ -9,17 +9,16 @@
 
 class GAL {
   private:
-    static ST7789& display() {
-        // DISCUSS Display should be instantiated in other place
-        static ST7789 display;
-        return display;
-    }
+    static inline ST7789* display;
+    static inline rotation_t current_rotation = ROT_0;
+    static inline uint16_t width;
+    static inline uint16_t height;
     static orientation_t current_orientation;
 
   public:
     GAL() = delete;
 
-    static void init();
+    static void init(uint16_t pWidth, uint16_t pHeight, ST7789* pDisplay);
     static void set_orientation(orientation_t orientation);
     static void draw_placeholder(uint16_t color);
     static void fill_background(uint16_t color);
