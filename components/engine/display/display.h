@@ -6,8 +6,11 @@
 
 class Display {
   private:
+    // TODO pixelByteSize depends on st7789
     static constexpr uint8_t pixelByteSize = 2;
+    // TODO screenSize depends on device (specific connected display hardware)
     static constexpr uint32_t screenSize = 240 * 320;
+    // TODO bufferSize depends on see above
     static constexpr uint32_t bufferSize = screenSize * pixelByteSize;
 
     // TODO Should driver be a value, pointer or reference?

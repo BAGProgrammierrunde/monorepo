@@ -17,11 +17,11 @@ void System::init() {
     // TODO pointer / heap?
     auto* display = new Display();
     display->init();
-    GAL::init(displayWidth, displayHeight, display);
+    GAL::init(display, displayWidth, displayHeight, LANDSCAPE);
 
     // DISCUSS Here or in game or in device?
-    GAL::setOrientation(ST7789::orientation_t::landscape);
-    GAL::set_orientation(LANDSCAPE);
+    // GAL::setOrientation(ST7789::orientation_t::landscape);
+    // GAL::set_orientation(LANDSCAPE_INVERTED);
 
     // DISCUSS Clears the buffers - here or in GAL or in display?
     GAL::fill_background(BLACK);

@@ -11,16 +11,29 @@
 
 #define TAG "GAL"
 
-orientation_t GAL::current_orientation = PORTRAIT;
-
-void GAL::init(uint16_t pWidth, uint16_t pHeight, Display* pDisplay) {
-    width  = pWidth;
-    height = pHeight;
-    display = pDisplay;
+void GAL::init(Display* pDisplay, const uint16_t pWidth, const uint16_t pHeight, orientation_t orientation) {
+    display             = pDisplay;
+    width               = pWidth;
+    height              = pHeight;
+    current_orientation = orientation;
 }
 
 void GAL::set_orientation(const orientation_t orientation) {
+    if (current_orientation == orientation)
+        return;
+
+    if (((current_orientation == PORTRAIT || current_orientation == PORTRAIT_INVERTED) &&
+         (orientation == LANDSCAPE || orientation == LANDSCAPE_INVERTED)) ||
+        ((current_orientation == LANDSCAPE || current_orientation == LANDSCAPE_INVERTED) &&
+         (orientation == PORTRAIT || orientation == PORTRAIT_INVERTED))) {
+        const uint16_t tmpWidth = width;
+        width                   = height;
+        height                  = tmpWidth;
+    }
+
     current_orientation = orientation;
+    ESP_LOGD(TAG, "Orientation changed to %d", orientation);
+    ESP_LOGD(TAG, "Display size: %dx%d", width, height);
 }
 
 void IRAM_ATTR GAL::draw_placeholder(uint16_t color) {
@@ -74,7 +87,6 @@ void IRAM_ATTR GAL::fill_background(uint16_t color) {
 
 void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int verticalScroll, uint16_t fg, uint16_t bg, int scale,
                          bool renderForegroundColorOnly) {
-    constexpr int DST_W = 320, DST_H = 240;
     if (!sprite || srcWidth <= 0 || srcHeight <= 0 || scale <= 0)
         return;
 
@@ -82,10 +94,10 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
     const int OUT_H = srcHeight * scale;
 
     const int off_x = verticalScroll;
-    const int off_y = (DST_H - OUT_H) - 9;
+    const int off_y = (height - OUT_H) - 9;
 
     int first_dest_x = off_x < 0 ? 0 : off_x;
-    int last_dest_x  = (off_x + OUT_W > DST_W) ? DST_W : (off_x + OUT_W);
+    int last_dest_x  = (off_x + OUT_W > width) ? width : (off_x + OUT_W);
     int vis_w        = last_dest_x - first_dest_x;
     if (vis_w <= 0)
         return;
@@ -96,16 +108,16 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
     if (left_w > vis_w)
         left_w = vis_w;
 
-    int remaining       = vis_w - left_w;
-    const int full_cols = remaining / scale;
-    const int right_w   = remaining - full_cols * scale;
+    int remaining           = vis_w - left_w;
+    const int full_cols     = remaining / scale;
+    const int right_w       = remaining - full_cols * scale;
     const int sx_start_full = (src_scaled_start / scale) + (left_w ? 1 : 0);
 
     for (int sy = 0; sy < srcHeight; ++sy) {
         const int y0 = off_y + sy * scale;
-        if (y0 < 0 || (y0 + (scale - 1)) >= DST_H)
+        if (y0 < 0 || (y0 + (scale - 1)) >= height)
             continue;
-        int d_base             = y0 * DST_W + first_dest_x;
+        int d_base             = y0 * width + first_dest_x;
         const int row_bit_base = sy * srcWidth;
         auto bit_at            = [&](int sx) -> bool {
             const int bit_index   = row_bit_base + sx;
@@ -118,7 +130,7 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
             const uint16_t c = bit_at(sx) ? fg : bg;
             int d            = d_base;
             for (int s = 0; s < scale; ++s) {
-                int di = d + s * DST_W;
+                int di = d + s * width;
                 for (int i = 0; i < left_w; ++i) {
                     if (!renderForegroundColorOnly || c != bg) {
                         display->setPixel(di++, c);
@@ -131,7 +143,7 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
             const uint16_t c = bit_at(sx) ? fg : bg;
             int d            = d_base;
             for (int s = 0; s < scale; ++s) {
-                int di = d + s * DST_W;
+                int di = d + s * width;
                 for (int r = 0; r < scale; ++r) {
                     if (!renderForegroundColorOnly || c != bg) {
                         display->setPixel(di++, c);
@@ -145,7 +157,7 @@ void IRAM_ATTR GAL::draw(const uint8_t* sprite, int srcWidth, int srcHeight, int
             const uint16_t c = bit_at(sx) ? fg : bg;
             int d            = d_base;
             for (int s = 0; s < scale; ++s) {
-                int di = d + s * DST_W;
+                int di = d + s * width;
                 for (int i = 0; i < right_w; ++i) {
                     if (!renderForegroundColorOnly || c != bg) {
                         display->setPixel(di++, c);
@@ -162,22 +174,18 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
         return;
     }
 
-    const bool landscape = (current_orientation == LANDSCAPE) || (current_orientation == LANDSCAPE_INVERTED);
-    const int dst_w      = landscape ? height : width;
-    const int dst_h      = landscape ? width : height;
-
     const int out_w = srcWidth * scale;
     const int out_h = srcHeight * scale;
 
     const int off_x = x;
     const int off_y = y;
 
-    if (off_y >= dst_h || (off_y + out_h) <= 0) {
+    if (off_y >= height || (off_y + out_h) <= 0) {
         return;
     }
 
     int first_dest_x = off_x < 0 ? 0 : off_x;
-    int last_dest_x  = (off_x + out_w > dst_w) ? dst_w : (off_x + out_w);
+    int last_dest_x  = (off_x + out_w > width) ? width : (off_x + out_w);
     int vis_w        = last_dest_x - first_dest_x;
     if (vis_w <= 0) {
         return;
@@ -190,20 +198,50 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
         left_w = vis_w;
     }
 
-    int remaining       = vis_w - left_w;
-    const int full_cols = remaining / scale;
-    const int right_w   = remaining - full_cols * scale;
+    int remaining           = vis_w - left_w;
+    const int full_cols     = remaining / scale;
+    const int right_w       = remaining - full_cols * scale;
     const int sx_start_full = (src_scaled_start / scale) + (left_w ? 1 : 0);
-    const int first_sy = std::max(0, (-off_y + scale - 1) / scale);
-    const int last_sy  = std::min(srcHeight - 1, (dst_h - scale - off_y) / scale);
+    const int first_sy      = std::max(0, (-off_y + scale - 1) / scale);
+    const int last_sy       = std::min(srcHeight - 1, (height - scale - off_y) / scale);
     if (last_sy < first_sy) {
         return;
     }
 
+    const int fb_w = std::min(width, height);
+    const int fb_h = std::max(width, height);
+
+    auto set_pixel_oriented = [&](int lx, int ly, uint16_t color) {
+        int px = lx;
+        int py = ly;
+        switch (current_orientation) {
+        case PORTRAIT:
+            break;
+        case PORTRAIT_INVERTED:
+            px = fb_w - 1 - lx;
+            py = fb_h - 1 - ly;
+            break;
+        case LANDSCAPE:
+            px = fb_w - 1 - ly;
+            py = lx;
+            break;
+        case LANDSCAPE_INVERTED:
+            px = ly;
+            py = fb_h - 1 - lx;
+            break;
+        default:
+            break;
+        }
+
+        if ((unsigned)px < (unsigned)fb_w && (unsigned)py < (unsigned)fb_h) {
+            display->setPixel(py * fb_w + px, color);
+        }
+    };
+
     if (current_orientation == PORTRAIT) {
         for (int sy = first_sy; sy <= last_sy; ++sy) {
             const int y0           = off_y + sy * scale;
-            int d_base             = y0 * dst_w + first_dest_x;
+            int d_base             = y0 * width + first_dest_x;
             const int row_bit_base = startBitIndex + sy * srcWidth;
 
             auto bit_at = [&](int sx) -> bool {
@@ -223,7 +261,7 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
                 }
                 int d = d_base;
                 for (int s = 0; s < scale; ++s) {
-                    int di = d + s * dst_w;
+                    int di = d + s * width;
                     for (int i = 0; i < run_w; ++i) {
                         display->setPixel(di++, color);
                     }
@@ -249,28 +287,6 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
         return;
     }
 
-    auto set_pixel_oriented = [&](int lx, int ly, uint16_t color) {
-        int px = lx;
-        int py = ly;
-        switch (current_orientation) {
-        case PORTRAIT_INVERTED:
-            px = width - 1 - lx;
-            py = height - 1 - ly;
-            break;
-        case LANDSCAPE:
-            px = width - 1 - ly;
-            py = lx;
-            break;
-        case LANDSCAPE_INVERTED:
-            px = ly;
-            py = height - 1 - lx;
-            break;
-        default:
-            break;
-        }
-        display->setPixel(py * width + px, color);
-    };
-
     for (int sy = first_sy; sy <= last_sy; ++sy) {
         const int y0           = off_y + sy * scale;
         int run_x              = first_dest_x;
@@ -292,10 +308,8 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
                 return;
             }
             for (int s = 0; s < scale; ++s) {
-                const int ly = y0 + s;
                 for (int i = 0; i < run_w; ++i) {
-                    const int lx = run_x + i;
-                    set_pixel_oriented(lx, ly, color);
+                    set_pixel_oriented(run_x + i, y0 + s, color);
                 }
             }
             run_x += run_w;
@@ -374,8 +388,9 @@ void IRAM_ATTR GAL::draw_bytes_at(float pPosX, float pPosY, float pTextureWidth,
     // {
     //     for (unsigned int texX = 0; texX < pTextureWidth * pScaleX; texX++)
     //     {
-    //         if (pTexture[coordsToIndex(std::round(texX / pScaleX), std::round(texY / pScaleY), pTextureWidth)] != 0xff) display->setPixel(posIndex + texY * LCD_HEIGHT + texX, pFgColor);
-    //         else if (!pIgnoreBg) display->setPixel(posIndex + texY * LCD_HEIGHT + texX, pBgColor);
+    //         if (pTexture[coordsToIndex(std::round(texX / pScaleX), std::round(texY / pScaleY), pTextureWidth)] != 0xff)
+    //         display->setPixel(posIndex + texY * LCD_HEIGHT + texX, pFgColor); else if (!pIgnoreBg) display->setPixel(posIndex + texY *
+    //         LCD_HEIGHT + texX, pBgColor);
     //     }
     // }
 
@@ -385,19 +400,19 @@ void IRAM_ATTR GAL::draw_bytes_at(float pPosX, float pPosY, float pTextureWidth,
     float texYMax = (pPosY + pTextureHeight * pScaleY <= height ? pTextureHeight * pScaleY : (pPosY + pTextureHeight * pScaleY) - height);
     float texXMin = (pPosX >= 0 ? 0 : -pPosX);
     float texXMax = (pPosX + pTextureWidth * pScaleX <= width ? pTextureWidth * pScaleX : (pPosX + pTextureWidth * pScaleX) - width);
-    for (unsigned int texY = texYMin; texY < texYMax; texY++)
-    {
-        for (unsigned int texX = texXMin; texX < texXMax; texX++)
-        {
-            if (pTexture[coordsToIndex(std::round(((float)texX) / pScaleX), std::round(((float)texY) / pScaleY), pTextureWidth)] != 0xff) display->setPixel(posIndex + texY * width + texX, pFgColor);
-            else if (!pIgnoreBg) display->setPixel(posIndex + texY * width + texX, pBgColor);
+    for (unsigned int texY = texYMin; texY < texYMax; texY++) {
+        for (unsigned int texX = texXMin; texX < texXMax; texX++) {
+            if (pTexture[coordsToIndex(std::round(((float)texX) / pScaleX), std::round(((float)texY) / pScaleY), pTextureWidth)] != 0xff)
+                display->setPixel(posIndex + texY * width + texX, pFgColor);
+            else if (!pIgnoreBg)
+                display->setPixel(posIndex + texY * width + texX, pBgColor);
         }
     }
 }
 
 /*
 void IRAM_ATTR GAL::draw_bytes_at(int pX, int pY, int pTextureWidth, int pTextureHeight, int pScale, const uint8_t* pTexture, uint16_t
-pFgColor, uint16_t pBgColor, bool pIgnoreBg) { constexpr int DST_W = LCD_HEIGHT; constexpr int DST_H = LCD_WIDTH;
+pFgColor, uint16_t pBgColor, bool pIgnoreBg) { constexpr int width = LCD_HEIGHT; constexpr int height = LCD_WIDTH;
 
     if (!pTexture || pTextureWidth <= 0 || pTextureHeight <= 0 || pScale <= 0)
         return;
@@ -407,11 +422,11 @@ pFgColor, uint16_t pBgColor, bool pIgnoreBg) { constexpr int DST_W = LCD_HEIGHT;
     for (int texY = 0; texY < pTextureHeight; ++texY) {
         const int dstY0 = pY + texY * pScale;
         const int dstY1 = dstY0 + pScale;
-        if (dstY0 >= DST_H || dstY1 <= 0)
+        if (dstY0 >= height || dstY1 <= 0)
             continue;
 
         const int yStart = std::max(dstY0, 0);
-        const int yEnd   = std::min(dstY1, DST_H);
+        const int yEnd   = std::min(dstY1, height);
 
         for (int texX = 0; texX < pTextureWidth; ++texX) {
             const uint8_t texVal = pTexture[texY * pTextureWidth + texX];
@@ -421,11 +436,11 @@ pFgColor, uint16_t pBgColor, bool pIgnoreBg) { constexpr int DST_W = LCD_HEIGHT;
 
             const int dstX0 = pX + texX * pScale;
             const int dstX1 = dstX0 + pScale;
-            if (dstX0 >= DST_W || dstX1 <= 0)
+            if (dstX0 >= width || dstX1 <= 0)
                 continue;
 
             const int xStart = std::max(dstX0, 0);
-            const int xEnd   = std::min(dstX1, DST_W);
+            const int xEnd   = std::min(dstX1, width);
             const uint16_t c = drawFg ? pFgColor : pBgColor;
 
             for (int dy = yStart; dy < yEnd; ++dy) {
@@ -447,13 +462,6 @@ void IRAM_ATTR GAL::draw_pixels(uint16_t color, uint16_t count) {
     }
 }
 
-void GAL::setOrientation(ST7789::orientation_t orientation) {
-    // TODO this works only for 90 and 270 cw rotation
-    const uint16_t tmpWidth = width;
-    width = height;
-    height = tmpWidth;
-    display->setOrientation(orientation, width, height);
-}
 void GAL::switch_frame_buffers() {
     display->switchFrameBuffers();
 }
@@ -462,15 +470,11 @@ void GAL::send_active_buffer() {
     display->sendActiveBuffer();
 }
 
-// void GAL::set_fullscreen() {
-//     display->setAddressWindow(0, 0, width - 1, height - 1);
-// }
-
 void IRAM_ATTR GAL::draw_vertical_line(int x, uint16_t color) {
     if (x < 0 || x >= width) {
         return;
     }
-    int index  = x;
+    int index = x;
     for (int y = 0; y < height; ++y) {
         display->setPixel(index, color);
         index += width;
@@ -481,7 +485,7 @@ void IRAM_ATTR GAL::draw_horizontal_line(int y, uint16_t color) {
     if (y < 0 || y >= height) {
         return;
     }
-    int index  = y * width;
+    int index = y * width;
     for (int x = 0; x < width; ++x) {
         display->setPixel(index + x, color);
     }

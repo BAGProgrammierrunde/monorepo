@@ -8,9 +8,9 @@
 
 class System {
   private:
-    // The width and height should remain in the system until the complete device code has been separated
-    static constexpr unsigned int displayWidth  = 240;
-    static constexpr unsigned int displayHeight = 320;
+    // TODO the width and height should remain in the system until the complete device code has been separated
+    static constexpr unsigned int displayWidth  = 320;
+    static constexpr unsigned int displayHeight = 240;
 
     static inline TaskHandle_t mainTaskHandle = nullptr;
     static inline TaskHandle_t gameTaskHandle = nullptr;
