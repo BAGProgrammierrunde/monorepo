@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include "display/display.h"
 #include "gal/gal.h"
 #include "input/button.h"
 
@@ -13,12 +14,14 @@ void System::init() {
     ESP_LOGI(TAG, "Initializing..");
     mainTaskHandle = xTaskGetCurrentTaskHandle();
 
-    // DISCUSS where should we initialize GAL?
-    GAL::init();
+    // TODO pointer / heap?
+    auto* display = new Display();
+    display->init();
+    GAL::init(display, displayWidth, displayHeight, LANDSCAPE);
 
     // DISCUSS Here or in game or in device?
-    // GAL::rotate(ROT_90_CW);
-    GAL::set_orientation(LANDSCAPE);
+    // GAL::setOrientation(ST7789::orientation_t::landscape);
+    // GAL::set_orientation(LANDSCAPE_INVERTED);
 
     // DISCUSS Clears the buffers - here or in GAL or in display?
     GAL::fill_background(BLACK);

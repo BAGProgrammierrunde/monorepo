@@ -2,16 +2,6 @@
 
 #include <driver/spi_master.h>
 
-#define LCD_WIDTH  240
-#define LCD_HEIGHT 320
-
-typedef enum {
-    ROT_0      = 0,
-    ROT_90_CW  = 1,
-    ROT_180    = 2,
-    ROT_270_CW = 3,
-} rotation_t;
-
 typedef enum {
     PORTRAIT      = 0,
     LANDSCAPE  = 1,
@@ -19,36 +9,32 @@ typedef enum {
     LANDSCAPE_INVERTED = 3,
 } orientation_t;
 
+// TODO Put pin configuration into template parameters
 class ST7789 {
   private:
-    uint16_t* active_frame_buffer = nullptr;
-    uint16_t* next_frame_buffer   = nullptr;
-
-    uint16_t* frame_buffers[2] = {};
+    static constexpr uint8_t pixelByteSize = 2;
+    static constexpr uint32_t screenSize = 240 * 320;
+    static constexpr uint32_t bufferSize = screenSize * pixelByteSize;
+    static constexpr uint16_t maxChunkPixels = 15360;
+    static constexpr uint16_t maxChunkBytes = maxChunkPixels * pixelByteSize;
 
     spi_device_handle_t spi = nullptr;
 
-    int rotation = ROT_0;
-
-    void init_buffers();
-    void spi_init();
-    void st7789_init();
-    void st7789_set_rotation(uint8_t rot, bool use_bgr, uint16_t w, uint16_t h, uint16_t x_off, uint16_t y_off);
+    void initSPI();
 
   public:
-    void setPixel(int index, uint16_t color);
-    void setFrame(uint16_t color);
+    typedef enum {
+        portrait  = 0,
+        landscape = 1,
+        // DISCUSS naming
+        portrait_rotated  = 2,
+        landscape_rotated = 3,
+    } orientation_t;
+
     void init();
-    void spi_post_cb(spi_transaction_t* trans);
-    void draw_vertical_line(int x, uint16_t color);
-    void draw_color(uint16_t color);
-    void draw_cactus_1();
-    void draw_placeholder_test(uint16_t color);
-    void draw_pixels(uint16_t color, uint16_t count);
-    void rotate(rotation_t rotation);
-    void switch_frame_buffers();
-    void send_active_buffer();
-    void st7789_send_cmd(uint8_t cmd);
-    void st7789_send_data(const void* data, int len);
-    void set_address_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
+    void setOrientation(orientation_t orientation, bool useBgr, uint16_t width, uint16_t height);
+    void setAddressWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
+    void sendDataQueued(uint16_t* data);
+    void sendCmd(uint8_t cmd);
+    void sendData(const void* data, int len);
 };
