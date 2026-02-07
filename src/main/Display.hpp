@@ -21,6 +21,29 @@ private:
     uint16_t* frameBuffer[2];
     bool curFrameBuffer; // Currently rendered to, other is currently sent to display
 
+    void sendCmd(uint8_t pCmd) {
+        spi_transaction_t t = {
+            .length = 8,
+            .user = (void*)0,
+            .tx_buffer = &pCmd
+        };
+        gpio_set_level(pinDC, 0);
+        spi_device_transmit(spi, &t);
+    }
+
+    void sendData(const void* pData, int pLength) {
+        if (pLength > 0)
+        {
+            spi_transaction_t t = {
+                .length = (uint16_t)(pLength * 8),
+                .user = (void*)1,
+                .tx_buffer = pData
+            };
+            gpio_set_level(pinDC, 1);
+            spi_device_transmit(spi, &t);
+        }
+    }
+
 public:
     Display(gpio_num_t pPinSDA, gpio_num_t pPinSCK, gpio_num_t pPinCS, gpio_num_t pPinDC, gpio_num_t pPinRST) {
         pinSDA = pPinSDA; // MOSI
@@ -47,14 +70,14 @@ public:
         spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO);
 
         spi_device_interface_config_t devcfg = {
-            .mode           = 0,
+            .mode = 0,
             .clock_speed_hz = spiClockSpeedHz,
-            .spics_io_num   = pinCS,
-            .queue_size     = 5,
+            .spics_io_num = pinCS,
+            .queue_size = 5
         };
 
         gpio_set_direction(pinDC, GPIO_MODE_OUTPUT);
-        ESP_ERROR_CHECK(spi_bus_add_device(SPI2_HOST, &devcfg, &spi));
+        spi_bus_add_device(SPI2_HOST, &devcfg, &spi);
 
         // ST7789 init:
         gpio_set_direction(pinRST, GPIO_MODE_OUTPUT);
@@ -63,125 +86,94 @@ public:
         gpio_set_level(pinRST, 1);
         vTaskDelay(pdMS_TO_TICKS(100));
 
-        st7789_send_cmd(0x36);
-        uint8_t data1[] = { 0x00 };
-        st7789_send_data(data1, sizeof(data1));
+        sendCmd(0x36);
+        uint8_t data1[] = {0x00};
+        sendData(data1, sizeof(data1));
 
-        st7789_send_cmd(0x3A);
-        uint8_t data2[] = { 0x05 };
-        st7789_send_data(data2, sizeof(data2));
+        sendCmd(0x3A);
+        uint8_t data2[] = {0x05};
+        sendData(data2, sizeof(data2));
 
-        //if(displayInversion) st7789_send_cmd(0x21);
+        //if(displayInversion) sendCmd(0x21);
 
-        st7789_send_cmd(0x11);
+        sendCmd(0x11);
         vTaskDelay(pdMS_TO_TICKS(120));
-        st7789_send_cmd(0x29);
+        sendCmd(0x29);
 
-        set_address_window(0, 0, width - 1, height - 1);
+        setAddressWindow(0, 0, width - 1, height - 1);
     }
 
-    void st7789_send_cmd(uint8_t cmd) {
-        spi_transaction_t t = { .length = 8, .user = (void*)0, .tx_buffer = &cmd };
-        gpio_set_level(pinDC, 0);
-        spi_device_transmit(spi, &t);
-    }
-
-    void st7789_send_data(const void* data, int len) {
-        if (len == 0) return;
-
-        spi_transaction_t t = { .length = (uint16_t)(len * 8), .user = (void*)1, .tx_buffer = data };
-        gpio_set_level(pinDC, 1);
-        ESP_ERROR_CHECK(spi_device_transmit(spi, &t));
-    }
-
-    void set_address_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
+    void setAddressWindow(uint16_t pX1, uint16_t pY1, uint16_t pX2, uint16_t pY2) {
         uint8_t data[4];
 
-        st7789_send_cmd(0x2A);
-        data[0] = x0 >> 8;
-        data[1] = x0 & 0xFF;
-        data[2] = x1 >> 8;
-        data[3] = x1 & 0xFF;
-        st7789_send_data(data, 4);
+        sendCmd(0x2A);
+        data[0] = pX1 >> 8;
+        data[1] = pX1 & 0xFF;
+        data[2] = pX2 >> 8;
+        data[3] = pX2 & 0xFF;
+        sendData(data, 4);
 
-        st7789_send_cmd(0x2B);
-        data[0] = y0 >> 8;
-        data[1] = y0 & 0xFF;
-        data[2] = y1 >> 8;
-        data[3] = y1 & 0xFF;
-        st7789_send_data(data, 4);
+        sendCmd(0x2B);
+        data[0] = pY1 >> 8;
+        data[1] = pY1 & 0xFF;
+        data[2] = pY2 >> 8;
+        data[3] = pY2 & 0xFF;
+        sendData(data, 4);
 
-        st7789_send_cmd(0x2C);
+        sendCmd(0x2C);
     }
 
     void switchFrameBuffers() {
         curFrameBuffer = !curFrameBuffer;
     }
 
-    void send_active_buffer() {
+    void sendActiveBuffer() {
         size_t offset = 0;
         spi_transaction_t t[5];
-        int queued         = 0;
+        int queued = 0;
         size_t total_words = width * height;
         gpio_set_level(pinDC, 1);
-        while (total_words > 0) {
-            // TODO Check if branchless is faster
-            size_t chunk_words = total_words > (maxBufferChunkSendBytes / pixelBytes) ? (maxBufferChunkSendBytes / pixelBytes) : total_words;
 
-            // size_t chunk_words2 = (size_t[2]){(maxBufferChunkSendBytes / DISPLAY_PIXEL_SIZE), total_words}[total_words > (maxBufferChunkSendBytes /
-            // DISPLAY_PIXEL_SIZE)];
+        while (total_words > 0)
+        {
+            // TODO Check if branchless is faster
+            size_t chunk_words = (total_words > maxBufferChunkSendBytes / pixelBytes ? maxBufferChunkSendBytes / pixelBytes : total_words);
+            //size_t chunk_words2 = (size_t[2]){(maxBufferChunkSendBytes / DISPLAY_PIXEL_SIZE), total_words}[total_words > (maxBufferChunkSendBytes / DISPLAY_PIXEL_SIZE)];
 
             t[queued] = {
-                .length    = chunk_words * pixelBytes * 8,
-                .user      = (void*)1,
-                .tx_buffer = frameBuffer[!curFrameBuffer] + offset,
+                .length = chunk_words * pixelBytes * 8,
+                .user = (void*)1,
+                .tx_buffer = frameBuffer[!curFrameBuffer] + offset
             };
 
-            ESP_ERROR_CHECK(spi_device_queue_trans(spi, &t[queued], portMAX_DELAY));
+            spi_device_queue_trans(spi, &t[queued], portMAX_DELAY);
 
             offset += chunk_words;
             total_words -= chunk_words;
             queued++;
         }
-        for (int i = 0; i < queued; ++i) {
+
+        for (int i = 0; i < queued; i++)
+        {
             spi_transaction_t* rtrans;
-            ESP_ERROR_CHECK(spi_device_get_trans_result(spi, &rtrans, portMAX_DELAY));
+            spi_device_get_trans_result(spi, &rtrans, portMAX_DELAY);
         }
     }
 
     // RENDERING
 
-    void fill(uint16_t color) {
-        const size_t n = width * height;
-        std::fill_n(frameBuffer[curFrameBuffer], n, color);
+    void fill(uint16_t pColor) {
+        std::fill_n(frameBuffer[curFrameBuffer], width * height, pColor);
     }
 
-    void setPixel(int index, uint16_t color) {
-        frameBuffer[curFrameBuffer][index] = color;
+    void setPixel(unsigned int pIndex, uint16_t pColor) {
+        frameBuffer[curFrameBuffer][pIndex] = pColor;
     }
 
-    void IRAM_ATTR draw_vertical_line(int x, uint16_t color) {
-        constexpr int screenW = width;
-        constexpr int screenH = height;
-        if (x < 0 || x >= screenW) {
-            return;
-        }
-        int index  = x;
-        for (int y = 0; y < screenH; ++y) {
-            setPixel(index, color);
-            index += screenW;
-        }
+    void IRAM_ATTR drawVerticalLine(int pX, uint16_t pColor) {
+        if (pX >= 0 && pX < width) for (int y = 0; y < height; y++) setPixel(pX + y * width, pColor);
     }
-
-    void IRAM_ATTR draw_horizontal_line(int y, uint16_t color) {
-        constexpr int screenW = width;
-        constexpr int screenH = height;
-        if (y < 0 || y >= screenH) {
-            return;
-        }
-        int index  = y * screenW;
-        for (int x = 0; x < screenW; ++x) {
-            setPixel(index + x, color);
-        }
+    void IRAM_ATTR drawHorizontalLine(int pY, uint16_t pColor) {
+        if (pY >= 0 && pY < height) for (int x = 0; x < width; x++) setPixel(x + pY * width, pColor);
     }
 };
