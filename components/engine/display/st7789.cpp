@@ -3,7 +3,6 @@
 #include "display.h"
 
 #include <array>
-#include <cstring>
 #include <driver/gpio.h>
 #include <esp_log.h>
 
@@ -47,6 +46,7 @@ void ST7789::init() {
 
 // TODO Change snake case to camel case yo
 // TODO Check if parameters may be const
+// TODO add info about tearing of display driver module design
 void ST7789::setOrientation(orientation_t orientation, bool useBgr, uint16_t width, uint16_t height) {
     static constexpr uint8_t ROT2MAD[4] = { 0x00, 0x60, 0xC0, 0xA0 };
     const uint8_t mad                     = ROT2MAD[orientation & 3] | (useBgr ? 0x08 : 0); // D3=RGB/BGR
