@@ -1,0 +1,9 @@
+menu "Project specific config"
+    menu "Display"
+        config DISPLAY_INVERSION
+                bool "Inversion"
+                default n
+                help
+                    If all colors are inverted switch this configuration
+    endmenu
+endmenu
