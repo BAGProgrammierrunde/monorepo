@@ -1,7 +1,5 @@
-#define SWAP16(x) (((uint16_t)(x) << 8) | ((uint16_t)(x) >> 8))
-#define WHITE SWAP16(0xFFFF)
-#define BLACK SWAP16(0x0000)
-#define RED SWAP16(0xF800)
+#pragma once
+
 
 class Display {
 private:

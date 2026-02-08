@@ -6,6 +6,7 @@
 #include <esp_timer.h>
 
 #include "engine/IntervalTimer.hpp"
+#include "engine/Color.hpp"
 #include "main/Display.hpp"
 
 //void mainn(void* pArgs) {}
@@ -21,11 +22,11 @@ extern "C" int app_main() {
     // DISPLAY
     Display display(GPIO_NUM_11, GPIO_NUM_12, GPIO_NUM_10, GPIO_NUM_17, GPIO_NUM_18);
     display.init();
-    display.fill(BLACK);
-    display.drawVerticalLine(160, WHITE);
+    display.fill(Color(0, 0, 0).getRGB565());
+    display.drawVerticalLine(160, Color(255, 255, 255).getRGB565());
     display.switchFrameBuffers();
     display.sendActiveBuffer();
-    display.fill(BLACK);
+    display.fill(Color(0, 0, 0).getRGB565());
 
     // LOOP
     IntervalTimer<int64_t> idfIdleTimer(3*1000*1000);
@@ -44,16 +45,16 @@ extern "C" int app_main() {
                 if (buttonCurPressed)
                 {
                     std::cout << "PRESSED" << std::endl;
-                    display.fill(BLACK);
-                    display.drawHorizontalLine(70, WHITE);
+                    display.fill(Color(0, 0, 0).getRGB565());
+                    display.drawHorizontalLine(70, Color(255, 255, 255).getRGB565());
                     display.switchFrameBuffers();
                     display.sendActiveBuffer();
                 }
                 else
                 {
                     std::cout << "RELEASED\n" << std::endl;
-                    display.fill(BLACK);
-                    display.drawHorizontalLine(140, WHITE);
+                    display.fill(Color(0, 0, 0).getRGB565());
+                    display.drawHorizontalLine(140, Color(255, 255, 255).getRGB565());
                     display.switchFrameBuffers();
                     display.sendActiveBuffer();
                 }
