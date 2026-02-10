@@ -1,7 +1,6 @@
 #include "display.h"
 
 #include <array>
-#include <driver/gpio.h>
 #include <esp_log.h>
 
 #define TAG "ST7789"

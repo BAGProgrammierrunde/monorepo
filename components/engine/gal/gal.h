@@ -1,7 +1,7 @@
 #pragma once
 
-#include "display/st7789.h"
 #include "display/display.h"
+#include "display/st7789.h"
 
 #define SWAP16(x) ((uint16_t)((((uint16_t)(x)) << 8) | (((uint16_t)(x)) >> 8)))
 #define WHITE     SWAP16(0xFFFFu)

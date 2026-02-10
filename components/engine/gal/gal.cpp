@@ -1,13 +1,11 @@
 #include "gal.h"
 
-#include <iostream>
+#include "display/display.h"
 
 #include <algorithm>
 #include <cmath>
-
-#include "display/display.h"
-#include "driver/gpio.h"
-#include "esp_log.h"
+#include <esp_log.h>
+#include <iostream>
 
 #define TAG "GAL"
 

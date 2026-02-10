@@ -1,5 +1,4 @@
 #include "button.h"
-#include <esp_timer.h>
 
 Button::Button(gpio_num_t pin) : pin(pin) {
     gpio_set_direction(pin, GPIO_MODE_INPUT);

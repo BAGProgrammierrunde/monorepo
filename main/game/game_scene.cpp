@@ -4,11 +4,11 @@
 #include "assets/font.h"
 #include "assets/ground.h"
 #include "dino.h"
-#include "esp_log.h"
-#include "esp_random.h"
-#include "esp_timer.h"
-#include "gal/gal.h"
 
+#include <esp_log.h>
+#include <esp_random.h>
+#include <esp_timer.h>
+#include <gal/gal.h>
 #include <string>
 
 #define TAG "Game"

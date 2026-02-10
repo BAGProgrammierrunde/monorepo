@@ -1,9 +1,9 @@
-#pragma once
 #include "dino.h"
+
 #include "assets/color.h"
-#include "esp_log.h"
 
 #include <engine.h>
+#include <esp_log.h>
 
 #define TAG "Game"
 
