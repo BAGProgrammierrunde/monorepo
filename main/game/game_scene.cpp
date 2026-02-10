@@ -16,30 +16,34 @@
 constexpr float speedMultiplier = 2.f;
 constexpr float scoreMultiplier = 7.f;
 
-void GameScene::start() {
+void GameScene::start(Device& device) {
+    m_Device = &device;
     startTime = esp_timer_get_time();
     for (unsigned int i = 0; i < groundTextureCount; ++i) {
         groundTextures[i] = &grounds[0];
     }
 }
 
-void GameScene::update(float deltaTime, bool buttonPressed) {
+void GameScene::update(float deltaTime) {
     float survivalSecs = getSurvivalSecs();
 
     GAL::fill_background(BACKGROUND_COLOR);
 
     // Start Bildschrim
-    if (!buttonPressed && showPlayTitle) {
+    // TODO Add boolean for start screen is visible
+    if (!m_Device->isButtonAPressed() && showPlayTitle) {
         handleStartingScreen();
-    } else if (buttonPressed) {
+    } else if (m_Device->isButtonAPressed()) {
         showPlayTitle = false;
     }
 
     drawScore(survivalSecs);
 
-    // shift += survivalSecs / 100.f + 1;
+    // TODO magic numbers
+    shift += survivalSecs / 50.f + 3;
 
-    if (++shift >= 90) {
+    // TODO magic number
+    if (shift >= 90) {
         shift = shift % 90;
 
         updateGround();
@@ -48,8 +52,15 @@ void GameScene::update(float deltaTime, bool buttonPressed) {
     drawGround();
 
     // Dino Jump und update
-    dino.jump(deltaTime, buttonPressed);
-    dino.nextStepUpdate();
+    dino.handleJump(deltaTime, m_Device->isButtonAPressed());
+    dino.updateStep();
+    if (dino.checkCollision(*m_Device)) {
+        ESP_LOGI(TAG, "Game Over!");
+        // TODO draw dead dino
+        // TODO just for debugging
+        // m_Device->getDisplay().waitASec = true;
+    }
+    dino.drawDino();
 }
 
 void GameScene::drawScore(float survivalSecs) {

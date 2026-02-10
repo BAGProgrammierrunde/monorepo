@@ -234,7 +234,9 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
         }
 
         if ((unsigned)px < (unsigned)fb_w && (unsigned)py < (unsigned)fb_h) {
-            display->setPixel(py * fb_w + px, color);
+            // TODO remove me later - just for debugging
+            if (display->getPixel(py * fb_w + px) != RED)
+                display->setPixel(py * fb_w + px, color);
         }
     };
 
@@ -263,7 +265,9 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
                 for (int s = 0; s < scale; ++s) {
                     int di = d + s * width;
                     for (int i = 0; i < run_w; ++i) {
-                        display->setPixel(di++, color);
+                        // TODO remove me later - just for debugging
+                        if (display->getPixel(di+1) != RED)
+                            display->setPixel(di++, color);
                     }
                 }
                 d_base += run_w;
@@ -342,117 +346,6 @@ constexpr unsigned int indexToCoordY(int pIndex, int pW) {
 constexpr unsigned int indexToCoordX(int pIndex, int pW) {
     return (pIndex % pW);
 }
-
-// void IRAM_ATTR GAL::draw_bytes_at(int pX, int pY, int pTextureWidth, int pTextureHeight, int pScale, const uint8_t* pTexture, uint16_t
-// pFgColor, uint16_t pBgColor, bool pRenderForegroundColorOnly) {
-//     for (int texIndex = 0; texIndex < pTextureWidth * pTextureHeight; texIndex++) {
-//         if (pTexture[texIndex] == 0xff) {
-//             if (!pRenderForegroundColorOnly) {
-//                 int index = coordsToIndex(pX, pY, LCD_HEIGHT) + ((texIndex / pTextureWidth) * LCD_HEIGHT) + (texIndex % pTextureWidth);
-//                 display->setPixel(index, pBgColor);
-//             }
-//         } else {
-//             int index = coordsToIndex(pX, pY, LCD_HEIGHT) + ((texIndex / pTextureWidth) * LCD_HEIGHT) + (texIndex % pTextureWidth);
-//             display->setPixel(index, pFgColor);
-//         }
-//     }
-// }
-
-void IRAM_ATTR GAL::draw_bytes_at(float pPosX, float pPosY, float pTextureWidth, float pTextureHeight, float pScaleX, float pScaleY,
-                                  const uint8_t* pTexture, uint16_t pFgColor, uint16_t pBgColor, bool pIgnoreBg) {
-    /*
-    unsigned int posIndex = coordsToIndex(pPosX, pPosY, LCD_HEIGHT);
-    unsigned int lastTextIndex = pTextureWidth * pScaleX * pTextureHeight * pScaleY;
-    for (unsigned int texIndex = 0; texIndex < lastTextIndex; texIndex++) {
-        if (pTexture[texIndex] != 0xff)
-            display->setPixel(posIndex + indexToCoordY(texIndex, pTextureWidth * pScaleX) / pScaleY * LCD_HEIGHT + indexToCoordX(texIndex,
-    pTextureWidth * pScaleX) / pScaleX, pFgColor); else if (!pIgnoreBg) display->setPixel(posIndex + indexToCoordY(texIndex, pTextureWidth
-    * pScaleX) / pScaleY * LCD_HEIGHT + indexToCoordX(texIndex, pTextureWidth * pScaleX) / pScaleX, pBgColor);
-    }
-    */
-
-    // unsigned int posIndex     = coordsToIndex(pPosX, pPosY, pTextureWidth);
-    // unsigned int lastTexIndex = pTextureWidth * pScaleX * pTextureHeight * pScaleY;
-    // for (unsigned int texIndex = 0; texIndex < lastTexIndex; texIndex++) {
-    //     unsigned int texCoordX = indexToCoordX(texIndex, pTextureWidth * pScaleY);
-    //     unsigned int texCoordY = indexToCoordY(texIndex, pTextureWidth * pScaleX);
-    //
-    //     if (pTexture[coordsToIndex(std::round(texCoordX / pScaleX), std::round(texCoordY / pScaleY), pTextureWidth)] != 0xff)
-    //         display->setPixel(posIndex + texCoordY * LCD_HEIGHT + texCoordX, pFgColor);
-    //     else if (!pIgnoreBg)
-    //         display->setPixel(posIndex + texCoordY * LCD_HEIGHT + texCoordX, pBgColor);
-    // }
-
-    // unsigned int posIndex = coordsToIndex(pPosX, pPosY, LCD_HEIGHT);
-    // for (unsigned int texY = 0; texY < pTextureHeight * pScaleY; texY++)
-    // {
-    //     for (unsigned int texX = 0; texX < pTextureWidth * pScaleX; texX++)
-    //     {
-    //         if (pTexture[coordsToIndex(std::round(texX / pScaleX), std::round(texY / pScaleY), pTextureWidth)] != 0xff)
-    //         display->setPixel(posIndex + texY * LCD_HEIGHT + texX, pFgColor); else if (!pIgnoreBg) display->setPixel(posIndex + texY *
-    //         LCD_HEIGHT + texX, pBgColor);
-    //     }
-    // }
-
-    unsigned int posIndex = coordsToIndex(pPosX, pPosY, width);
-
-    float texYMin = (pPosY >= 0 ? 0 : -pPosY);
-    float texYMax = (pPosY + pTextureHeight * pScaleY <= height ? pTextureHeight * pScaleY : (pPosY + pTextureHeight * pScaleY) - height);
-    float texXMin = (pPosX >= 0 ? 0 : -pPosX);
-    float texXMax = (pPosX + pTextureWidth * pScaleX <= width ? pTextureWidth * pScaleX : (pPosX + pTextureWidth * pScaleX) - width);
-    for (unsigned int texY = texYMin; texY < texYMax; texY++) {
-        for (unsigned int texX = texXMin; texX < texXMax; texX++) {
-            if (pTexture[coordsToIndex(std::round(((float)texX) / pScaleX), std::round(((float)texY) / pScaleY), pTextureWidth)] != 0xff)
-                display->setPixel(posIndex + texY * width + texX, pFgColor);
-            else if (!pIgnoreBg)
-                display->setPixel(posIndex + texY * width + texX, pBgColor);
-        }
-    }
-}
-
-/*
-void IRAM_ATTR GAL::draw_bytes_at(int pX, int pY, int pTextureWidth, int pTextureHeight, int pScale, const uint8_t* pTexture, uint16_t
-pFgColor, uint16_t pBgColor, bool pIgnoreBg) { constexpr int width = LCD_HEIGHT; constexpr int height = LCD_WIDTH;
-
-    if (!pTexture || pTextureWidth <= 0 || pTextureHeight <= 0 || pScale <= 0)
-        return;
-
-    auto& disp = display;
-
-    for (int texY = 0; texY < pTextureHeight; ++texY) {
-        const int dstY0 = pY + texY * pScale;
-        const int dstY1 = dstY0 + pScale;
-        if (dstY0 >= height || dstY1 <= 0)
-            continue;
-
-        const int yStart = std::max(dstY0, 0);
-        const int yEnd   = std::min(dstY1, height);
-
-        for (int texX = 0; texX < pTextureWidth; ++texX) {
-            const uint8_t texVal = pTexture[texY * pTextureWidth + texX];
-            const bool drawFg    = texVal != 0xff;
-            if (!drawFg && pIgnoreBg)
-                continue;
-
-            const int dstX0 = pX + texX * pScale;
-            const int dstX1 = dstX0 + pScale;
-            if (dstX0 >= width || dstX1 <= 0)
-                continue;
-
-            const int xStart = std::max(dstX0, 0);
-            const int xEnd   = std::min(dstX1, width);
-            const uint16_t c = drawFg ? pFgColor : pBgColor;
-
-            for (int dy = yStart; dy < yEnd; ++dy) {
-                int idx = coordsToIndex(xStart, dy, LCD_HEIGHT);
-                for (int dx = xStart; dx < xEnd; ++dx) {
-                    disp.setPixel(idx++, c);
-                }
-            }
-        }
-    }
-}
-*/
 
 void IRAM_ATTR GAL::draw_pixels(uint16_t color, uint16_t count) {
     fill_background(BLACK);

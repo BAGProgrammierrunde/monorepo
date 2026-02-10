@@ -1,32 +1,31 @@
 #pragma once
-#include "assets/color.h"
+
 #include "assets/dino.h"
-#include "assets/font.h"
-#include "assets/ground.h"
-#include "esp_log.h"
-#include "esp_mac.h"
-#include "esp_timer.h"
-#include "gal/gal.h"
 
-#include <cmath>
-#include <string>
-
-#include <cstdint>
 #include <engine.h>
+#include <esp_log.h>
 
 #define TAG "Game"
 
 class Dino {
   private:
-    float currentY = 0;
-    float velocity = 0;
+    static inline float s_Force = 6.f;
+    static inline float s_Gravity = 20.f;
 
-    int nextStep = 0;
+    bool m_Alive = true;
 
-  public:
-    void jump(float deltaTime, bool buttonPressed);
+    int m_CurrentY = 0;
+
+    float m_JumpHeight = 0;
+    float m_Velocity = 0;
+
+    int m_CurrentStep = 0;
 
     bool isGrounded();
 
-    void nextStepUpdate();
+  public:
+    void handleJump(float deltaTime, bool buttonPressed);
+    void updateStep();
+    void drawDino();
+    bool checkCollision(Device& device);
 };

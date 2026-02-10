@@ -1,12 +1,16 @@
 #pragma once
 
-#include <engine.h>
-#include <cstdint>
-#include <string_view>
+#include "assets/ground.h"
 #include "dino.h"
+
+#include <engine.h>
+#include <string_view>
 
 class GameScene final : public Scene {
   private:
+    // TODO maybe hold Device in static global space?
+    // TODO should it be accessible from everywhere
+    Device* m_Device = nullptr;
     uint64_t startTime = 0;
     int shift = 0;
 
@@ -31,6 +35,6 @@ class GameScene final : public Scene {
     void drawGround();
 
   public:
-    void start() override;
-    void update(float deltaTime, bool buttonPressed) override;
+    void start(Device& device) override;
+    void update(float deltaTime) override;
 };

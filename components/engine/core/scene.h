@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Device.h"
+
 class Scene {
   private:
   public:
-    virtual ~Scene() {
-    }
-    virtual void start() {}
-    virtual void update(float deltaTime, bool buttonPressed) = 0;
+    virtual ~Scene() = default;
+    virtual void start(Device& device) {}
+    virtual void update(float deltaTime) = 0;
 };

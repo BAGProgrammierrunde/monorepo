@@ -7,8 +7,9 @@
 # Visual Studio specific configuration
 .vs/
 
-.pytest_cache/
-__pycache__/
+**/.pytest_cache/
+**/__pycache__/
+**/.venv/
 
 # esp-idf built binaries
 build/

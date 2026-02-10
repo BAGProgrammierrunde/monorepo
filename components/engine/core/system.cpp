@@ -14,14 +14,10 @@ void System::init() {
     ESP_LOGI(TAG, "Initializing..");
     mainTaskHandle = xTaskGetCurrentTaskHandle();
 
-    // TODO pointer / heap?
-    auto* display = new Display();
-    display->init();
-    GAL::init(display, displayWidth, displayHeight, LANDSCAPE);
+    device.getDisplay().init();
 
     // DISCUSS Here or in game or in device?
-    // GAL::setOrientation(ST7789::orientation_t::landscape);
-    // GAL::set_orientation(LANDSCAPE_INVERTED);
+    GAL::init(&device.getDisplay(), displayWidth, displayHeight, LANDSCAPE);
 
     // DISCUSS Clears the buffers - here or in GAL or in display?
     GAL::fill_background(BLACK);
@@ -72,9 +68,6 @@ void System::createGameTask() {
 }
 
 void System::gameTask(void* pvParameters) {
-    Button btn1 = Button(GPIO_NUM_13);
-    Button btn2 = Button(GPIO_NUM_14);
-
     // TODO Remove game.loop and replace by game.init for a starting screen
     uint64_t lastTime = esp_timer_get_time();
     GAL::switch_frame_buffers();
@@ -88,7 +81,7 @@ void System::gameTask(void* pvParameters) {
         }
         assert(scene.has());
         if (scene.has()) {
-            scene->update((currentTime - lastTime) / 1000000.f, btn1.isPressed());
+            scene->update((currentTime - lastTime) / 1000000.f);
         } else {
             ESP_LOGW(TAG, "No active scene set; skipping update");
         }

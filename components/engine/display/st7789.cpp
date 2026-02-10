@@ -25,19 +25,19 @@ void ST7789::init() {
     gpio_set_level(PIN_NUM_RST, 1);
     vTaskDelay(pdMS_TO_TICKS(100));
 
-    sendCmd(0x36);
+    sendCmd(ST7789_CMD_MADCTL);
     uint8_t data1[] = { 0x00 };
     sendData(data1, sizeof(data1));
 
-    sendCmd(0x3A);
+    sendCmd(ST7789_CMD_COLMOD);
     uint8_t data2[] = { 0x05 };
     sendData(data2, sizeof(data2));
 #if CONFIG_DISPLAY_INVERSION
-    sendCmd(0x21);
+    sendCmd(ST7789_CMD_INVON);
 #endif
-    sendCmd(0x11);
+    sendCmd(ST7789_CMD_SLPOUT);
     vTaskDelay(pdMS_TO_TICKS(120));
-    sendCmd(0x29);
+    sendCmd(ST7789_CMD_DISPON);
 
     // TODO width / height should not be static -> move to paramters from GAL
     setAddressWindow(0, 0,  240 - 1, 320 - 1);
@@ -50,7 +50,7 @@ void ST7789::init() {
 void ST7789::setOrientation(orientation_t orientation, bool useBgr, uint16_t width, uint16_t height) {
     static constexpr uint8_t ROT2MAD[4] = { 0x00, 0x60, 0xC0, 0xA0 };
     const uint8_t mad                     = ROT2MAD[orientation & 3] | (useBgr ? 0x08 : 0); // D3=RGB/BGR
-    sendCmd(0x36);
+    sendCmd(ST7789_CMD_MADCTL);
     sendData(&mad, 1);
 
     setAddressWindow(0, 0,  width - 1, height - 1);
@@ -59,21 +59,21 @@ void ST7789::setOrientation(orientation_t orientation, bool useBgr, uint16_t wid
 void ST7789::setAddressWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
     uint8_t data[4];
 
-    sendCmd(0x2A);
+    sendCmd(ST7789_CMD_CASET);
     data[0] = x0 >> 8;
     data[1] = x0 & 0xFF;
     data[2] = x1 >> 8;
     data[3] = x1 & 0xFF;
     sendData(data, 4);
 
-    sendCmd(0x2B);
+    sendCmd(ST7789_CMD_RASET);
     data[0] = y0 >> 8;
     data[1] = y0 & 0xFF;
     data[2] = y1 >> 8;
     data[3] = y1 & 0xFF;
     sendData(data, 4);
 
-    sendCmd(0x2C);
+    sendCmd(ST7789_CMD_RAMWR);
 }
 
 // TODO Add parameters for dataLength and chunkSize

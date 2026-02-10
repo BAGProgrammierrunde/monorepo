@@ -12,6 +12,8 @@ class System {
     static constexpr unsigned int displayWidth  = 320;
     static constexpr unsigned int displayHeight = 240;
 
+    static inline Device device;
+
     static inline TaskHandle_t mainTaskHandle = nullptr;
     static inline TaskHandle_t gameTaskHandle = nullptr;
 
@@ -25,16 +27,18 @@ class System {
     static void init();
     static void start();
 
-    template <typename SceneT, typename... Params> static void start(Params... pArgs) {
+    template <typename SceneT, typename... Params>
+    static void start(Params... pArgs) {
         setScene<SceneT>(pArgs...);
         start();
     }
 
-    template <typename SceneT, typename... Params> static void setScene(Params... pConstructorArgs) {
+    template <typename SceneT, typename... Params>
+    static void setScene(Params... pConstructorArgs) {
         delayedSceneSwitchFunc = [pConstructorArgs...]() -> void {
-            scene.clear(); // To ensure current scene is destroyed (destructor-call) before new scene is created (constructor-call below)
+            scene.clear(); // To ensure the current scene is destroyed (destructor-call) before new scene is created (constructor-call below)
             scene.setInPlace(new SceneT(pConstructorArgs...)); // It's okay that uncaptured but static scene obj is used
-            scene->start();
+            scene->start(device);
         };
     }
 };

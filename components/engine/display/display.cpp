@@ -19,6 +19,10 @@ void Display::init() {
     initDriver();
 }
 
+uint16_t Display::getPixel(int index) {
+    return next_frame_buffer[index];
+}
+
 void Display::setPixel(int index, uint16_t color) {
     next_frame_buffer[index] = color;
 }
@@ -39,7 +43,13 @@ void Display::switchFrameBuffers() {
 }
 
 void Display::sendActiveBuffer() {
+    // TODO just for debugging
+    bool tmp = waitASec;
     driver.sendDataQueued(active_frame_buffer);
+    if (tmp) {
+        waitASec = false;
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
 }
 
 void Display::initDriver() {

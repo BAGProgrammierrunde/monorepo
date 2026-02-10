@@ -5,12 +5,12 @@ set(DINO_GAME_ELSE_NEW_ENGINE true)
 set(PROJECT_NAME "Empty")
 
 if (DINO_GAME_ELSE_NEW_ENGINE)
-    # The (official) ESP IDF component variant (baaaad if I'm honest)
+    # The current main project
     set(PROJECT_NAME "dino_game")
 else()
     # The modified variant to use C++'s include features as they were intended and not interfered with by ESP IDF!
     set(COMPONENT_DIRS "$ENV{IDF_PATH}/components" "./componentLinking")
-    set(PROJECT_NAME "main")
+    set(PROJECT_NAME "marlon")
 endif()
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)

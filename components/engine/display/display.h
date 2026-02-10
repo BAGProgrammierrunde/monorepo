@@ -26,10 +26,13 @@ class Display {
 
   public:
     void init();
+    uint16_t getPixel(int index);
     void setPixel(int index, uint16_t color);
     void setFrame(uint16_t color);
     void setOrientation(ST7789::orientation_t orientation, uint16_t width, uint16_t height);
     void switchFrameBuffers();
     // TODO rename send to transmit
     void sendActiveBuffer();
+    // TODO just for debugging
+    bool waitASec = false;
 };

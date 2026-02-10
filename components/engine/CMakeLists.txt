@@ -5,6 +5,7 @@ idf_component_register(
         "display/display.cpp"
         "gal/gal.cpp"
         "input/button.cpp"
+        "core/device.cpp"
         "core/scene.cpp"
         "core/system.cpp"
         REQUIRES esp_driver_spi esp_driver_gpio esp_timer
