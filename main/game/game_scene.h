@@ -12,7 +12,7 @@ class GameScene final : public Scene {
     // TODO should it be accessible from everywhere
     Device* m_Device = nullptr;
     uint64_t startTime = 0;
-    int shift = 0;
+    int m_Shift = 0;
 
     Dino dino;
 
@@ -28,11 +28,12 @@ class GameScene final : public Scene {
     void drawText(const std::string_view& text, int x, int y, int scale);
     void drawInt(int value, int x, int y, int scale);
 
-    float getSurvivalSecs();
-    void handleStartingScreen();
-    void drawScore(float survivalSecs);
-    void updateGround();
-    void drawGround();
+    inline void updateShift(float survivalSeconds);
+    float getSurvivalSeconds();
+    inline void handleStartingScreen();
+    inline void drawScore(float survivalSecs);
+    inline void updateGround();
+    inline void drawGround();
 
   public:
     void start(Device& device) override;

@@ -9,8 +9,9 @@
 
 class Dino {
   private:
-    static inline float s_Force = 6.f;
-    static inline float s_Gravity = 20.f;
+    static constexpr float s_Force = 6.f;
+    static constexpr float s_Gravity = 20.f;
+    static constexpr uint8_t s_DinoScreenOffset = 9;
 
     bool m_Alive = true;
 

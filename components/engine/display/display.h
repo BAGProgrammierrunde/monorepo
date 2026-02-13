@@ -5,11 +5,15 @@
 #include <driver/spi_master.h>
 
 class Display {
+public:
+    static constexpr uint32_t s_Width = 320;
+    static constexpr uint32_t s_Height = 240;
+
   private:
     // TODO pixelByteSize depends on st7789
     static constexpr uint8_t pixelByteSize = 2;
     // TODO screenSize depends on device (specific connected display hardware)
-    static constexpr uint32_t screenSize = 240 * 320;
+    static constexpr uint32_t screenSize = s_Width * s_Height;
     // TODO bufferSize depends on see above
     static constexpr uint32_t bufferSize = screenSize * pixelByteSize;
 

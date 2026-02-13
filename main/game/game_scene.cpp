@@ -13,11 +13,10 @@
 
 #define TAG "Game"
 
-constexpr float speedMultiplier = 2.f;
 constexpr float scoreMultiplier = 7.f;
 
 void GameScene::start(Device& device) {
-    m_Device = &device;
+    m_Device  = &device;
     startTime = esp_timer_get_time();
     for (unsigned int i = 0; i < groundTextureCount; ++i) {
         groundTextures[i] = &grounds[0];
@@ -25,7 +24,7 @@ void GameScene::start(Device& device) {
 }
 
 void GameScene::update(float deltaTime) {
-    float survivalSecs = getSurvivalSecs();
+    const float survivalSeconds  = getSurvivalSeconds();
 
     GAL::fill_background(BACKGROUND_COLOR);
 
@@ -37,14 +36,11 @@ void GameScene::update(float deltaTime) {
         showPlayTitle = false;
     }
 
-    drawScore(survivalSecs);
+    drawScore(survivalSeconds);
 
-    // TODO magic numbers
-    shift += survivalSecs / 50.f + 3;
-
-    // TODO magic number
-    if (shift >= 90) {
-        shift = shift % 90;
+    updateShift(survivalSeconds);
+    if (m_Shift >= GROUND_WIDTH) {
+        m_Shift = m_Shift % GROUND_WIDTH;
 
         updateGround();
     }
@@ -61,6 +57,10 @@ void GameScene::update(float deltaTime) {
         // m_Device->getDisplay().waitASec = true;
     }
     dino.drawDino();
+}
+
+void GameScene::updateShift(float survivalSeconds) {
+    m_Shift += survivalSeconds / 50.f + 3;
 }
 
 void GameScene::drawScore(float survivalSecs) {
@@ -93,7 +93,8 @@ void GameScene::updateGround() {
 void GameScene::drawGround() {
     constexpr int scale = 1;
     for (int i = 0; i < groundTextureCount; ++i) {
-        GAL::draw_at(groundTextures[i]->texture, 0, 90, 38, i * 90 - shift, 240 - 38 * scale - 9, FOREGROUND_COLOR, BACKGROUND_COLOR, scale, true);
+        GAL::draw_at(groundTextures[i]->texture, 0, GROUND_WIDTH, GROUND_HEIGHT, i * GROUND_WIDTH - m_Shift, Display::s_Height - GROUND_HEIGHT * scale - 9,
+                     FOREGROUND_COLOR, BACKGROUND_COLOR, scale, true);
     }
 }
 
@@ -134,7 +135,7 @@ void GameScene::drawInt(int value, int x, int y, int scale) {
     }
 }
 
-float GameScene::getSurvivalSecs() {
+float GameScene::getSurvivalSeconds() {
     return (esp_timer_get_time() - startTime) / 1000000.f;
 }
 

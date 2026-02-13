@@ -33,8 +33,7 @@ void Dino::handleJump(float deltaTime, bool buttonPressed) {
         }
     }
 
-    // TODO magic numbers
-    m_CurrentY = ((240.f - 36.f * scale) - 9.f) - m_JumpHeight;
+    m_CurrentY = ((Display::s_Height - DINO_HEIGHT * scale) - s_DinoScreenOffset) - m_JumpHeight;
 }
 
 bool Dino::isGrounded() {
@@ -126,12 +125,13 @@ bool Dino::checkCollision(Device& device) {
         if (isInRangeUpTo(index)) continue;
         if (device.getDisplay().getPixel(index) == FOREGROUND_COLOR) {
             drawHit(index);
-            ESP_LOGI(TAG, "Body %d", index);
+            //ESP_LOGI(TAG, "Body %d", index);
             return true;
         }
     }
 
     // TODO move to function
+    // TODO magic number
     if (m_CurrentStep < 6) {
         // right
         for (int i = 0; i < footCount; ++i) {
@@ -139,7 +139,7 @@ bool Dino::checkCollision(Device& device) {
             if (isInRangeUpTo(index)) continue;
             if (device.getDisplay().getPixel(index) == FOREGROUND_COLOR) {
                 drawHit(index);
-                ESP_LOGI(TAG, "Right %d", index);
+                //ESP_LOGI(TAG, "Right %d", index);
                 return true;
             }
         }
@@ -149,7 +149,7 @@ bool Dino::checkCollision(Device& device) {
             if (isInRangeUpTo(index)) continue;
             if (device.getDisplay().getPixel(index) == FOREGROUND_COLOR) {
                 drawHit(index);
-                ESP_LOGI(TAG, "Left %d", index);
+                //ESP_LOGI(TAG, "Left %d", index);
                 return true;
             }
         }
