@@ -8,6 +8,7 @@ idf_component_register(
         "core/device.cpp"
         "core/scene.cpp"
         "core/system.cpp"
+        "debug/debug_measurement.cpp"
         REQUIRES esp_driver_spi esp_driver_gpio esp_timer
         INCLUDE_DIRS "."
 )
