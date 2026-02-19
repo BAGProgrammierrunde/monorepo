@@ -59,7 +59,7 @@ void Display::initBuffers() {
     ESP_LOGI(TAG, "BUFFER_SIZE = %d", bufferSize);
     ESP_LOGI(TAG, "Free heap: %d", heap_caps_get_free_size(MALLOC_CAP_DMA));
     for (int i = 0; i < 2; ++i) {
-        frame_buffers[i] = static_cast<uint16_t*>(heap_caps_malloc(bufferSize, MALLOC_CAP_DMA));
+        frame_buffers[i] = static_cast<uint16_t*>(heap_caps_malloc(bufferSize, MALLOC_CAP_DMA | MALLOC_CAP_SPIRAM));
         if (!frame_buffers[i]) {
             ESP_LOGE(TAG, "Failed to allocate buffer %d", i);
             assert(frame_buffers[i]);
