@@ -71,6 +71,9 @@ namespace pa {
 
     // -> What do in the case of for example no alpha and bit_uint<0> ? Is that handled correctly currently? (not just storing 1 useless byte?)
 
+    // Note for ME: typename keyword after C++20 almost never required anymore for dependent typenames (Update!)
+    // Another: replace static_cast<Type>(val) oftentimes with just Type(val) Syntax!
+
     template <std::size_t BitCountR, std::size_t BitCountG, std::size_t BitCountB, std::size_t BitCountA>
     struct ColorBase {
     public:
@@ -105,11 +108,11 @@ namespace pa {
     public:
         constexpr Color() : Color(ColorBaseT::RT::sMax, 0, ColorBaseT::BT::sMax) {} // Magenta, replace with predefined color later
 
-        constexpr Color(const ColorBaseT::PackedT& pColor) : ColorBaseT(),
-            r(static_cast<ColorBaseT::RT>(pColor)),
-            g(static_cast<ColorBaseT::GT>(pColor >> BitCountR)),
-            b(static_cast<ColorBaseT::BT>(pColor >> BitCountR + BitCountG)),
-            a(static_cast<ColorBaseT::AT>(pColor >> BitCountR + BitCountG + BitCountB)) {}
+        constexpr Color(const ColorBaseT::PackedT& pColor) : ColorBaseT(), // Test still if truncating rlly works here
+            r(ColorBaseT::RT(pColor)), // Uses automatic type conversion bit truncating for these
+            g(ColorBaseT::GT(pColor >> BitCountR)),
+            b(ColorBaseT::BT(pColor >> BitCountR + BitCountG)),
+            a(ColorBaseT::AT(pColor >> BitCountR + BitCountG + BitCountB)) {}
         
         constexpr Color(const ColorBaseT::RT& pR, const ColorBaseT::GT& pG, const ColorBaseT::BT& pB, const ColorBaseT::AT& pA = ColorBaseT::AT::sMax) : ColorBaseT(),
             r(pR), g(pG), b(pB), a(pA) {}
@@ -140,25 +143,25 @@ namespace pa {
             color(pColor) {}
 
         constexpr Color(const ColorBaseT::RT& pR, const ColorBaseT::GT& pG, const ColorBaseT::BT& pB, const ColorBaseT::AT& pA = ColorBaseT::AT::sMax) : ColorBaseT(),
-            color(((((((static_cast<ColorBaseT::PackedT>(pA & ColorBaseT::AT::sMax) << BitCountB) | (pB & ColorBaseT::BT::sMax))) << BitCountG) | (pG & ColorBaseT::GT::sMax)) << BitCountR) | (pR & ColorBaseT::RT::sMax)) {}
+            color(((((((ColorBaseT::PackedT(pA & ColorBaseT::AT::sMax) << BitCountB) | (pB & ColorBaseT::BT::sMax))) << BitCountG) | (pG & ColorBaseT::GT::sMax)) << BitCountR) | (pR & ColorBaseT::RT::sMax)) {}
         
         constexpr ColorBaseT::PackedT getColor() const {return color;}
-        constexpr ColorBaseT::RT getR() const {return static_cast<ColorBaseT::RT>(color);}
-        constexpr ColorBaseT::GT getG() const {return static_cast<ColorBaseT::GT>(color >> BitCountR);}
-        constexpr ColorBaseT::BT getB() const {return static_cast<ColorBaseT::BT>(color >> BitCountR + BitCountG);}
-        constexpr ColorBaseT::AT getA() const {return static_cast<ColorBaseT::AT>(color >> BitCountR + BitCountG + BitCountB);}
+        constexpr ColorBaseT::RT getR() const {return ColorBaseT::RT(color);}
+        constexpr ColorBaseT::GT getG() const {return ColorBaseT::GT(color >> BitCountR);}
+        constexpr ColorBaseT::BT getB() const {return ColorBaseT::BT(color >> BitCountR + BitCountG);}
+        constexpr ColorBaseT::AT getA() const {return ColorBaseT::AT(color >> BitCountR + BitCountG + BitCountB);}
 
         constexpr void setR(const ColorBaseT::RT& pR) {
-            color = color & ~bit_mask_r<ColorBaseT::TotalBitCount, 0, BitCountR> | pR;
+            color = color & ~ColorBaseT::PackedT::template bit_mask_r<0, BitCountR> | pR;
         }
         constexpr void setG(const ColorBaseT::GT& pG) {
-            color = color & ~bit_mask_r<ColorBaseT::TotalBitCount, BitCountR, BitCountG> | pG;
+            color = color & ~ColorBaseT::PackedT::template bit_mask_r<BitCountR, BitCountG> | pG;
         }
         constexpr void setB(const ColorBaseT::BT& pB) {
-            color = color & ~bit_mask_r<ColorBaseT::TotalBitCount, BitCountR + BitCountG, BitCountB> | pB;
+            color = color & ~ColorBaseT::PackedT::template bit_mask_r<BitCountR + BitCountG, BitCountB> | pB;
         }
         constexpr void setA(const ColorBaseT::AT& pA) {
-            color = color & ~bit_mask_r<ColorBaseT::TotalBitCount, BitCountR + BitCountG + BitCountB, BitCountA> | pA;
+            color = color & ~ColorBaseT::PackedT::template bit_mask_r<BitCountR + BitCountG + BitCountB, BitCountA> | pA;
         }
     };
 

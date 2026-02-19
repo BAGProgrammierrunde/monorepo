@@ -2,22 +2,19 @@
 
 namespace pa {
     template <std::size_t BitCount, typename = std::enable_if_t<BitCount <= 64>> // Until now only supports all normal CPUs handled types (so up to uint64 bit as of now)
-    using bit_uint_t = std::tuple_element_t<
-        (BitCount > 8) + (BitCount > 16) + (BitCount > 32),
-        std::tuple<std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t>
-    >;
-
-    template <std::size_t BitCount, std::size_t MaskOffset, std::size_t MaskRange>
-    static constexpr bit_uint_t<BitCount> bit_mask_r = static_cast<bit_uint_t<BitCount>>(~bit_uint_t<BitCount>(0)) >> (sizeof(bit_uint_t<BitCount>)*8 - MaskRange) << MaskOffset;
-    template <std::size_t BitCount, std::size_t MaskOffset, std::size_t MaskRange>
-    static constexpr bit_uint_t<BitCount> bit_mask_l = static_cast<bit_uint_t<BitCount>>(~bit_uint_t<BitCount>(0)) << (sizeof(bit_uint_t<BitCount>)*8 - MaskRange) >> MaskOffset;
-    
-    template <std::size_t BitCount>
     struct bit_uint {
     public:
-        using type = bit_uint_t<BitCount>;
+        using type = std::tuple_element_t<
+            (BitCount > 8) + (BitCount > 16) + (BitCount > 32),
+            std::tuple<std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t>
+        >;
 
-        static constexpr type sMax = bit_mask_r<BitCount, 0, BitCount>;
+        template <std::size_t MaskOffset, std::size_t MaskRange>
+        static constexpr type bit_mask_r = type(~type(0)) >> (sizeof(type)*8 - MaskRange) << MaskOffset;
+        template <std::size_t MaskOffset, std::size_t MaskRange>
+        static constexpr type bit_mask_l = type(~type(0)) << (sizeof(type)*8 - MaskRange) >> MaskOffset;
+
+        static constexpr type sMax = bit_mask_r<0, BitCount>;
 
     private:
         type value;
@@ -35,7 +32,7 @@ namespace pa {
 
         // Conversions
 
-        constexpr operator type() const {return value;}
+        constexpr operator type() const {return value;} // ?
 
         // Arithmetic operations
 
