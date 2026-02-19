@@ -4,7 +4,7 @@ constexpr std::uint16_t SWAP16Bit(std::uint16_t pX) {
     return ((pX << 8) | (pX >> 8));
 }
 
-namespace page {
+namespace pa {
     class Display {
     private:
         static constexpr unsigned int width = 240;
@@ -93,7 +93,7 @@ namespace page {
             sendData(data1, sizeof(data1));
 
             sendCmd(0x3A);
-            uint8_t data2[] = {0x07};
+            uint8_t data2[] = {0x05};
             sendData(data2, sizeof(data2));
 
             //if(displayInversion) sendCmd(0x21);

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace page {
+namespace pa {
     /*template <typename ...ColorTs>
     struct Color {
     private:
@@ -40,7 +40,7 @@ namespace page {
         }
     };*/
 
-    struct RGBA8 {
+    /*struct RGBA8 {
     public:
         using CombColorT = std::uint32_t;
         using ColorChannelT = std::uint8_t;
@@ -60,40 +60,105 @@ namespace page {
         
         constexpr RGBA8(ColorChannelT pR, ColorChannelT pG, ColorChannelT pB, ColorChannelT pA)
             : r(pR), g(pG), b(pB), a(pA) {}
+    };*/
+
+
+
+
+    // Create simple data struct for bit_uint_t to become entirely bounds / bit-range safe so that ONLY ever bits inside BitCount range can be 1, others AT ALL TIMES garantueed 0
+    // Color & scan through what else uses this assumption (valid like that?). Replace/modify types there then ig
+    // Then: Do them predefined colors & stuff :)
+
+    // -> What do in the case of for example no alpha and bit_uint<0> ? Is that handled correctly currently? (not just storing 1 useless byte?)
+
+    template <std::size_t BitCountR, std::size_t BitCountG, std::size_t BitCountB, std::size_t BitCountA>
+    struct ColorBase {
+    public:
+        static constexpr std::size_t sTotalBitCount = BitCountR + BitCountG + BitCountB + BitCountA;
+
+        using PackedT = bit_uint<sTotalBitCount>;
+        using RT = bit_uint<BitCountR>;
+        using GT = bit_uint<BitCountG>;
+        using BT = bit_uint<BitCountB>;
+        using AT = bit_uint<BitCountA>;
+
+    protected:
+        constexpr ColorBase() {}
+    };
+
+    template <
+        std::size_t BitCountR, std::size_t BitCountG, std::size_t BitCountB, std::size_t BitCountA,
+        bool StoreChannelsElsePacked = (sizeof(bit_uint<BitCountR + BitCountG + BitCountB + BitCountA>) >= sizeof(bit_uint<BitCountR>) + sizeof(bit_uint<BitCountG>) + sizeof(bit_uint<BitCountB>) + sizeof(bit_uint<BitCountA>))
+    >
+    struct Color : public ColorBase<BitCountR, BitCountG, BitCountB, BitCountA> {};
+
+    template <std::size_t BitCountR, std::size_t BitCountG, std::size_t BitCountB, std::size_t BitCountA>
+    struct Color<BitCountR, BitCountG, BitCountB, BitCountA, true> : public ColorBase<BitCountR, BitCountG, BitCountB, BitCountA> {
+    private:
+        using ColorBaseT = ColorBase<BitCountR, BitCountG, BitCountB, BitCountA>; // Mmmmehh..! Have to be using this base class access evrywhere cuz of this being a templated derived class accessing base's stuff ;(
+
+        ColorBaseT::RT r;
+        ColorBaseT::GT g;
+        ColorBaseT::BT b;
+        ColorBaseT::AT a;
+
+    public:
+        constexpr Color() : Color(ColorBaseT::RT::sMax, 0, ColorBaseT::BT::sMax) {} // Magenta, replace with predefined color later
+
+        constexpr Color(const ColorBaseT::PackedT& pColor) : ColorBaseT(),
+            r(static_cast<ColorBaseT::RT>(pColor)),
+            g(static_cast<ColorBaseT::GT>(pColor >> BitCountR)),
+            b(static_cast<ColorBaseT::BT>(pColor >> BitCountR + BitCountG)),
+            a(static_cast<ColorBaseT::AT>(pColor >> BitCountR + BitCountG + BitCountB)) {}
+        
+        constexpr Color(const ColorBaseT::RT& pR, const ColorBaseT::GT& pG, const ColorBaseT::BT& pB, const ColorBaseT::AT& pA = ColorBaseT::AT::sMax) : ColorBaseT(),
+            r(pR), g(pG), b(pB), a(pA) {}
+
+        constexpr ColorBaseT::PackedT getColor() const {
+            return std::bit_cast<ColorBaseT::PackedT>(*this); // I thInk this is completely legal and not unsafe buut. hm..
+        }
+        constexpr ColorBaseT::RT getR() const {return r;}
+        constexpr ColorBaseT::GT getG() const {return g;}
+        constexpr ColorBaseT::BT getB() const {return b;}
+        constexpr ColorBaseT::AT getA() const {return a;}
+
+        constexpr void setR(const ColorBaseT::RT& pR) {r = pR;}
+        constexpr void setG(const ColorBaseT::GT& pG) {g = pG;}
+        constexpr void setB(const ColorBaseT::BT& pB) {b = pB;}
+        constexpr void setA(const ColorBaseT::AT& pA) {a = pA;}
     };
 
     template <std::size_t BitCountR, std::size_t BitCountG, std::size_t BitCountB, std::size_t BitCountA>
-    struct Color {
+    struct Color<BitCountR, BitCountG, BitCountB, BitCountA, false> : public ColorBase<BitCountR, BitCountG, BitCountB, BitCountA> {
+    private:
+        using ColorBaseT = ColorBase<BitCountR, BitCountG, BitCountB, BitCountA>; // Same as above
+
+        ColorBaseT::PackedT color;
+
     public:
-        static constexpr std:size_t TotalBitCount = BitCountR + BitCountG + BitCountB + BitCountA;
-        bitset<TotalBitCount> color;
+        constexpr Color(const ColorBaseT::PackedT& pColor = ColorBaseT::PackedT(21)) : ColorBaseT(), // ... not Magenta yet ;)
+            color(pColor) {}
 
-        constexpr Color(const bitset<TotalBitCount>& pColor) : color(pColor) {}
+        constexpr Color(const ColorBaseT::RT& pR, const ColorBaseT::GT& pG, const ColorBaseT::BT& pB, const ColorBaseT::AT& pA = ColorBaseT::AT::sMax) : ColorBaseT(),
+            color(((((((static_cast<ColorBaseT::PackedT>(pA & ColorBaseT::AT::sMax) << BitCountB) | (pB & ColorBaseT::BT::sMax))) << BitCountG) | (pG & ColorBaseT::GT::sMax)) << BitCountR) | (pR & ColorBaseT::RT::sMax)) {}
+        
+        constexpr ColorBaseT::PackedT getColor() const {return color;}
+        constexpr ColorBaseT::RT getR() const {return static_cast<ColorBaseT::RT>(color);}
+        constexpr ColorBaseT::GT getG() const {return static_cast<ColorBaseT::GT>(color >> BitCountR);}
+        constexpr ColorBaseT::BT getB() const {return static_cast<ColorBaseT::BT>(color >> BitCountR + BitCountG);}
+        constexpr ColorBaseT::AT getA() const {return static_cast<ColorBaseT::AT>(color >> BitCountR + BitCountG + BitCountB);}
 
-        constexpr bitset<BitCountR> getR() {
-            return color.getBitRange(0, BitCountR - 1);
+        constexpr void setR(const ColorBaseT::RT& pR) {
+            color = color & ~bit_mask_r<ColorBaseT::TotalBitCount, 0, BitCountR> | pR;
         }
-        constexpr bitset<BitCountG> getG() {
-            return color.getBitRange(BitCountR, BitCountR + BitCountG - 1);
+        constexpr void setG(const ColorBaseT::GT& pG) {
+            color = color & ~bit_mask_r<ColorBaseT::TotalBitCount, BitCountR, BitCountG> | pG;
         }
-        constexpr bitset<BitCountB> getB() {
-            return color.getBitRange(BitCountR + BitCountG, BitCountR + BitCountG + BitCountB - 1);
+        constexpr void setB(const ColorBaseT::BT& pB) {
+            color = color & ~bit_mask_r<ColorBaseT::TotalBitCount, BitCountR + BitCountG, BitCountB> | pB;
         }
-        constexpr bitset<BitCountA> getA() {
-            return color.getBitRange(BitCountR + BitCountG + BitCountB, TotalBitCount - 1);
-        }
-
-        constexpr void setR(const bitset<BitCountR>& pR) {
-            color.setBitRange(0, BitCountR - 1, pR);
-        }
-        constexpr void getG(const bitset<BitCountG>& pG) {
-            color.setBitRange(BitCountR, BitCountR + BitCountG - 1, pG);
-        }
-        constexpr void setB(const bitset<BitCountB>& pB) {
-            color.setBitRange(BitCountR + BitCountG, BitCountR + BitCountG + BitCountB - 1, pB);
-        }
-        constexpr void setA(const bitset<BitCountA>& pA) {
-            color.setBitRange(BitCountR + BitCountG + BitCountB, TotalBitCount - 1, pA);
+        constexpr void setA(const ColorBaseT::AT& pA) {
+            color = color & ~bit_mask_r<ColorBaseT::TotalBitCount, BitCountR + BitCountG + BitCountB, BitCountA> | pA;
         }
     };
 
