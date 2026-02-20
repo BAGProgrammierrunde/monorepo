@@ -35,7 +35,9 @@ extern "C" int app_main() {
     display.sendActiveBuffer();
     display.fill(pa::RGB565(0, 0, 0));*/
 
-    pa::Color<8,8,8,8> col;
+    pa::Color<8,8,8,0> col;
+    pa::Color<5,6,5,0> coll(10,10,10);
+    coll.getR();
     pa::Color<8,8,8,8>::AT b = pa::Color<8,8,8,8>::AT::sMax;
     pa::Color<8,8,8,8>::AT a = col.getA().sMax;
 
