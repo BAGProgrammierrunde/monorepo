@@ -98,10 +98,10 @@ namespace pa {
     private:
         using ColorBaseT = ColorBase<BitCountR, BitCountG, BitCountB, BitCountA>; // Mmmmehh..! Have to be using this base class access evrywhere cuz of this being a templated derived class accessing base's stuff ;(
 
-        ColorBaseT::RT r;
-        ColorBaseT::GT g;
-        ColorBaseT::BT b;
-        ColorBaseT::AT a;
+        [[no_unique_address]] ColorBaseT::RT r;
+        [[no_unique_address]] ColorBaseT::GT g;
+        [[no_unique_address]] ColorBaseT::BT b;
+        [[no_unique_address]] ColorBaseT::AT a;
 
     public:
         constexpr Color() : Color(ColorBaseT::RT::sMax, 0, ColorBaseT::BT::sMax) {} // Magenta, replace with predefined color later
