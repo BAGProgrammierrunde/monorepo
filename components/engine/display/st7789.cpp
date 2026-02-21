@@ -2,7 +2,6 @@
 
 #include "display.h"
 
-#include <array>
 #include <driver/gpio.h>
 #include <esp_log.h>
 
@@ -18,6 +17,7 @@
 
 void ST7789::init() {
     ESP_LOGD(TAG, "Initialize display driver ST7789..");
+    ESP_LOGI(TAG, "maxChunkPixels: %d", maxChunkPixels);
     initSPI();
     gpio_set_direction(PIN_NUM_RST, GPIO_MODE_OUTPUT);
     gpio_set_level(PIN_NUM_RST, 0);
@@ -29,9 +29,7 @@ void ST7789::init() {
     uint8_t data1[] = { 0x00 };
     sendData(data1, sizeof(data1));
 
-    sendCmd(ST7789_CMD_COLMOD);
-    uint8_t data2[] = { 0x05 };
-    sendData(data2, sizeof(data2));
+    setColorMode();
 #if CONFIG_DISPLAY_INVERSION
     sendCmd(ST7789_CMD_INVON);
 #endif
@@ -42,6 +40,19 @@ void ST7789::init() {
     // TODO width / height should not be static -> move to paramters from GAL
     setAddressWindow(0, 0,  240 - 1, 320 - 1);
     ESP_LOGD(TAG, "Initialization successful");
+}
+
+void ST7789::setColorMode() {
+    if (ColorSize == 2) {
+        uint8_t colorMode = 0x05;
+        sendCmd(ST7789_CMD_COLMOD);
+        sendData(&colorMode, 1);
+    } else
+    {
+        uint8_t colorMode = 0x06;
+        sendCmd(ST7789_CMD_COLMOD);
+        sendData(&colorMode, 1);
+    }
 }
 
 // TODO Change snake case to camel case yo
@@ -77,28 +88,29 @@ void ST7789::setAddressWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1
 }
 
 // TODO Add parameters for dataLength and chunkSize
-void ST7789::sendDataQueued(uint16_t* data) {
-    size_t offset = 0;
+void ST7789::sendDataQueued(const Color* data) {
+    size_t offsetBytes = 0;
     // TODO Transaction array size only works with current setup
-    spi_transaction_t t[5];
+    spi_transaction_t t[queueSize];
     int queued         = 0;
-    size_t total_words = screenSize;
+    size_t totalPixels = screenSize;
     gpio_set_level(PIN_NUM_DC, 1);
-    while (total_words > 0) {
+    while (totalPixels > 0) {
         // TODO Check if branchless is faster
-        const size_t chunk_words = total_words > maxChunkPixels ? maxChunkPixels : total_words;
+        const size_t chunkPixels = totalPixels > maxChunkPixels ? maxChunkPixels : totalPixels;
 
+        // ESP_LOGI(TAG, "Sending chunk of %d pixels", chunkPixels);
         t[queued] = {
-            .length    = chunk_words * pixelByteSize * 8,
+            .length    = chunkPixels * ColorSize * 8,
             // TODO Check if nullptr works here maybe
             .user      = reinterpret_cast<void*>(1),
-            .tx_buffer = data + offset,
+            .tx_buffer = data + offsetBytes,
         };
 
         ESP_ERROR_CHECK(spi_device_queue_trans(spi, &t[queued], portMAX_DELAY));
 
-        offset += chunk_words;
-        total_words -= chunk_words;
+        offsetBytes += chunkPixels;
+        totalPixels -= chunkPixels;
         queued++;
     }
     for (int i = 0; i < queued; ++i) {
@@ -140,7 +152,7 @@ void ST7789::initSPI() {
         .mode           = 0,
         .clock_speed_hz = CLOCK_SPEED_HZ,
         .spics_io_num   = PIN_NUM_CS,
-        .queue_size     = 5,
+        .queue_size     = queueSize,
     };
 
     gpio_set_direction(PIN_NUM_DC, GPIO_MODE_OUTPUT);

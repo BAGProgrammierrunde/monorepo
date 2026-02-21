@@ -3,11 +3,6 @@
 #include "display/display.h"
 #include "display/st7789.h"
 
-#define SWAP16(x) ((uint16_t)((((uint16_t)(x)) << 8) | (((uint16_t)(x)) >> 8)))
-#define WHITE     SWAP16(0xFFFFu)
-#define BLACK     SWAP16(0x0000u)
-#define RED       SWAP16(0xF800u)
-
 class GAL {
   private:
     static inline Display* display;
@@ -21,15 +16,15 @@ class GAL {
 
     static void init(Display* pDisplay, uint16_t pWidth, uint16_t pHeight, orientation_t orientation);
     static void set_orientation(orientation_t orientation);
-    static void draw_placeholder(uint16_t color);
-    static void fill_background(uint16_t color);
-    static void draw_pixels(uint16_t color, uint16_t count);
-    static void draw(const uint8_t* sprite, int srcWidth, int srcHeight, int verticalScroll, uint16_t foregroundColor,
-                     uint16_t backgroundColor, int scale, bool renderForegroundColorOnly = false);
-    static void draw_at(const uint8_t* sprite, int startBitIndex, int srcWidth, int srcHeight, int x, int y, uint16_t fg, uint16_t bg, int scale,
-                        bool renderForegroundColorOnly = false);
+    static void draw_placeholder(const Color& color);
+    static void fill_background(const Color& color);
+    static void draw_pixels(const Color& color, uint16_t count);
+    static void draw(const uint8_t* sprite, int srcWidth, int srcHeight, int verticalScroll, const Color& foregroundColor,
+                     const Color& backgroundColor, int scale, bool renderForegroundColorOnly = false);
+    static void draw_at(const uint8_t* sprite, int startBitIndex, int srcWidth, int srcHeight, int x, int y, const Color& fg,
+                        const Color& bg, int scale, bool renderForegroundColorOnly = false);
     static void switch_frame_buffers();
     static void send_active_buffer();
-    static void draw_vertical_line(int x, uint16_t color);
-    static void draw_horizontal_line(int y, uint16_t color);
+    static void draw_vertical_line(int x, const Color& color);
+    static void draw_horizontal_line(int y, const Color& color);
 };

@@ -18,15 +18,15 @@ void Display::init() {
     initDriver();
 }
 
-uint16_t Display::getPixel(int index) {
+Color Display::getPixel(int index) {
     return next_frame_buffer[index];
 }
 
-void Display::setPixel(int index, uint16_t color) {
+void Display::setPixel(int index, const Color& color) {
     next_frame_buffer[index] = color;
 }
 
-void Display::setFrame(uint16_t color) {
+void Display::setFrame(Color color) {
     std::fill_n(next_frame_buffer, screenSize, color);
 }
 
@@ -36,7 +36,7 @@ void Display::setOrientation(ST7789::orientation_t orientation, uint16_t width, 
 }
 
 void Display::switchFrameBuffers() {
-    uint16_t* tmp_buffer = active_frame_buffer;
+    Color* tmp_buffer = active_frame_buffer;
     active_frame_buffer  = next_frame_buffer;
     next_frame_buffer    = tmp_buffer;
 }
@@ -59,7 +59,7 @@ void Display::initBuffers() {
     ESP_LOGI(TAG, "BUFFER_SIZE = %d", bufferSize);
     ESP_LOGI(TAG, "Free heap: %d", heap_caps_get_free_size(MALLOC_CAP_DMA));
     for (int i = 0; i < 2; ++i) {
-        frame_buffers[i] = static_cast<uint16_t*>(heap_caps_malloc(bufferSize, MALLOC_CAP_DMA | MALLOC_CAP_SPIRAM));
+        frame_buffers[i] = static_cast<Color*>(heap_caps_malloc(bufferSize, MALLOC_CAP_DMA | MALLOC_CAP_SPIRAM));
         if (!frame_buffers[i]) {
             ESP_LOGE(TAG, "Failed to allocate buffer %d", i);
             assert(frame_buffers[i]);

@@ -2,6 +2,8 @@
 
 #include <driver/spi_master.h>
 
+#include "color.h"
+
 /**
  * @brief chip command definition
  */
@@ -80,15 +82,16 @@ typedef enum {
 // TODO Put pin configuration into template parameters
 class ST7789 {
   private:
-    static constexpr uint8_t pixelByteSize = 2;
     static constexpr uint32_t screenSize = 240 * 320;
-    static constexpr uint32_t bufferSize = screenSize * pixelByteSize;
-    static constexpr uint16_t maxChunkPixels = 15360;
-    static constexpr uint16_t maxChunkBytes = maxChunkPixels * pixelByteSize;
+    static constexpr uint32_t bufferSize = screenSize * ColorSize;
+    static constexpr size_t queueSize = 22;
+    static constexpr uint16_t maxChunkPixels = bufferSize / queueSize; // ~32768 (minus meta data)
+    static constexpr uint32_t maxChunkBytes = maxChunkPixels * ColorSize;
 
     spi_device_handle_t spi = nullptr;
 
     void initSPI();
+    void setColorMode();
 
   public:
     typedef enum {
@@ -102,7 +105,7 @@ class ST7789 {
     void init();
     void setOrientation(orientation_t orientation, bool useBgr, uint16_t width, uint16_t height);
     void setAddressWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
-    void sendDataQueued(uint16_t* data);
+    void sendDataQueued(const Color* data);
     void sendCmd(uint8_t cmd);
     void sendData(const void* data, int len);
 };

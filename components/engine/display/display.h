@@ -1,6 +1,7 @@
 #pragma once
 
 #include "st7789.h"
+#include "color.h"
 
 #include <driver/spi_master.h>
 
@@ -11,7 +12,7 @@ public:
 
   private:
     // TODO pixelByteSize depends on st7789
-    static constexpr uint8_t pixelByteSize = 2;
+    static constexpr uint8_t pixelByteSize = ColorSize;
     // TODO screenSize depends on device (specific connected display hardware)
     static constexpr uint32_t screenSize = s_Width * s_Height;
     // TODO bufferSize depends on see above
@@ -20,19 +21,19 @@ public:
     // TODO Should driver be a value, pointer or reference?
     ST7789 driver;
     // TODO snake case
-    uint16_t* active_frame_buffer = nullptr;
-    uint16_t* next_frame_buffer   = nullptr;
+    Color* active_frame_buffer = nullptr;
+    Color* next_frame_buffer   = nullptr;
 
-    uint16_t* frame_buffers[2] = {};
+    Color* frame_buffers[2] = {};
 
     void initDriver();
     void initBuffers();
 
   public:
     void init();
-    uint16_t getPixel(int index);
-    void setPixel(int index, uint16_t color);
-    void setFrame(uint16_t color);
+    Color getPixel(int index);
+    void setPixel(int index, const Color& color);
+    void setFrame(Color color);
     void setOrientation(ST7789::orientation_t orientation, uint16_t width, uint16_t height);
     void switchFrameBuffers();
     // TODO rename send to transmit
