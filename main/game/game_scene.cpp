@@ -24,39 +24,50 @@ void GameScene::start(Device& device) {
 }
 
 void GameScene::update(float deltaTime) {
+    // TODO split update and draw
+    // TODO implement dedicated collision system
+    if (handleGameOverScreen()) return;
+
+    resetScreen();
+    handleStartScreen();
     const float survivalSeconds  = getSurvivalSeconds();
-
-    GAL::fill_background(BACKGROUND_COLOR);
-
-    // Start Bildschrim
-    // TODO Add boolean for start screen is visible
-    if (!m_Device->isButtonAPressed() && showPlayTitle) {
-        handleStartingScreen();
-    } else if (m_Device->isButtonAPressed()) {
-        showPlayTitle = false;
-    }
-
     drawScore(survivalSeconds);
-
     updateShift(survivalSeconds);
-    if (m_Shift >= GROUND_WIDTH) {
-        m_Shift = m_Shift % GROUND_WIDTH;
+    handleGround();
+    // TODO extract collision detection from Dino
+    const bool collided = handleDino(deltaTime);
+    handleGameOver(collided);
+}
 
-        updateGround();
+bool GameScene::handleGameOverScreen() {
+    if (m_IsGameOver) {
+        if (m_Device->isButtonAPressed()) {
+            m_IsGameOver = false;
+            // TODO reset current game state
+        } else {
+            return true;
+        }
     }
+    return false;
+}
 
-    drawGround();
+void GameScene::resetScreen() {
+    GAL::fill_background(BACKGROUND_COLOR);
+}
 
-    // Dino Jump und update
-    dino.handleJump(deltaTime, m_Device->isButtonAPressed());
-    dino.updateStep();
-    if (dino.checkCollision(*m_Device)) {
-        ESP_LOGI(TAG, "Game Over!");
-        // TODO draw dead dino
-        // TODO just for debugging
-        // m_Device->getDisplay().waitASec = true;
+void GameScene::handleStartScreen() {
+    if (m_IsInStartScreen) {
+        if (m_Device->isButtonAPressed()) {
+            m_IsInStartScreen = false;
+        } else {
+            drawStartScreen();
+        }
     }
-    dino.drawDino();
+}
+
+void GameScene::drawStartScreen() {
+    drawText("Dino Game", 40, 30, 4);
+    drawText("Press Button to Start", 20, 100, 3);
 }
 
 void GameScene::updateShift(float survivalSeconds) {
@@ -65,6 +76,33 @@ void GameScene::updateShift(float survivalSeconds) {
 
 void GameScene::drawScore(float survivalSecs) {
     drawInt(static_cast<int>(survivalSecs * scoreMultiplier), 320 - 10, 10, 4);
+}
+
+void GameScene::handleGround() {
+    if (m_Shift >= GROUND_WIDTH) {
+        m_Shift = m_Shift % GROUND_WIDTH;
+        updateGround();
+    }
+    drawGround();
+}
+
+bool GameScene::handleDino(const float deltaTime) {
+    dino.handleJump(deltaTime, m_Device->isButtonAPressed());
+    dino.updateStep();
+    const bool collided = dino.checkCollision(*m_Device);
+    // ESP_LOGI(TAG, "Game Over!");
+    // TODO draw dead dino
+    // TODO draw game over screen every frame to avoid tremble
+    // TODO just for debugging
+    // m_Device->getDisplay().waitASec = true;
+    dino.drawDino();
+    return collided;
+}
+
+void GameScene::handleGameOver(bool collided) {
+    if (collided) {
+        m_IsGameOver = true;
+    }
 }
 
 const ground_t* GameScene::randomCactus() {
@@ -137,9 +175,4 @@ void GameScene::drawInt(int value, int x, int y, int scale) {
 
 float GameScene::getSurvivalSeconds() {
     return (esp_timer_get_time() - startTime) / 1000000.f;
-}
-
-void GameScene::handleStartingScreen() {
-    drawText("Dino Game", 40, 30, 4);
-    drawText("Press Button to Start", 20, 100, 3);
 }
