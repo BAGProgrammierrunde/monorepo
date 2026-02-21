@@ -62,13 +62,6 @@ namespace pa {
             : r(pR), g(pG), b(pB), a(pA) {}
     };*/
 
-
-
-
-    // Then: Do them predefined colors & stuff :)
-
-    // -> What do in the case of for example no alpha and bit_uint<0> ? Is that handled correctly currently? (not just storing 1 useless byte?)
-
     // Note for ME: typename keyword after C++20 almost never required anymore for dependent typenames (Update!)
     // Another: replace static_cast<Type>(val) oftentimes with just Type(val) Syntax!
 
@@ -106,7 +99,7 @@ namespace pa {
     public:
         constexpr Color() : Color(ColorBaseT::RT::sMax, 0, ColorBaseT::BT::sMax) {} // Magenta, replace with predefined color later
 
-        constexpr Color(const ColorBaseT::PackedT& pColor) : ColorBaseT(), // Test still if truncating rlly works here
+        constexpr Color(const ColorBaseT::PackedT& pColor) : ColorBaseT(),
             r(ColorBaseT::RT(pColor)), // Uses automatic type conversion bit truncating for these
             g(ColorBaseT::GT(pColor >> BitCountR)),
             b(ColorBaseT::BT(pColor >> BitCountR + BitCountG)),
@@ -114,6 +107,8 @@ namespace pa {
         
         constexpr Color(const ColorBaseT::RT& pR, const ColorBaseT::GT& pG, const ColorBaseT::BT& pB, const ColorBaseT::AT& pA = ColorBaseT::AT::sMax) : ColorBaseT(),
             r(pR), g(pG), b(pB), a(pA) {}
+        
+        constexpr Color(float pPercentageR, float pPercentageG, float pPercentageB, float pPercentageA = 1) : Color(pPercentageR * ColorBaseT::RT::sMax, pPercentageG * ColorBaseT::GT::sMax, pPercentageB * ColorBaseT::BT::sMax, pPercentageA * ColorBaseT::AT::sMax) {}
 
         constexpr ColorBaseT::PackedT getColor() const {
             return std::bit_cast<ColorBaseT::PackedT>(*this); // I thInk this is completely legal and not unsafe buut. hm..
@@ -123,10 +118,20 @@ namespace pa {
         constexpr ColorBaseT::BT getB() const {return b;}
         constexpr ColorBaseT::AT getA() const {return a;}
 
+        constexpr float getPercR() const {return (r / ColorBaseT::RT::sMax);}
+        constexpr float getPercG() const {return (g / ColorBaseT::GT::sMax);}
+        constexpr float getPercB() const {return (b / ColorBaseT::BT::sMax);}
+        constexpr float getPercA() const {return (a / ColorBaseT::AT::sMax);}
+
         constexpr void setR(const ColorBaseT::RT& pR) {r = pR;}
         constexpr void setG(const ColorBaseT::GT& pG) {g = pG;}
         constexpr void setB(const ColorBaseT::BT& pB) {b = pB;}
         constexpr void setA(const ColorBaseT::AT& pA) {a = pA;}
+
+        constexpr void setPercR(float pPercentageR) {r = pPercentageR * ColorBaseT::RT::sMax;}
+        constexpr void setPercG(float pPercentageG) {g = pPercentageG * ColorBaseT::GT::sMax;}
+        constexpr void setPercB(float pPercentageB) {b = pPercentageB * ColorBaseT::BT::sMax;}
+        constexpr void setPercA(float pPercentageA) {a = pPercentageA * ColorBaseT::AT::sMax;}
     };
 
     template <std::size_t BitCountR, std::size_t BitCountG, std::size_t BitCountB, std::size_t BitCountA>
@@ -137,17 +142,26 @@ namespace pa {
         ColorBaseT::PackedT color;
 
     public:
-        constexpr Color(const ColorBaseT::PackedT& pColor = typename ColorBaseT::PackedT(21)) : ColorBaseT(), // ... not Magenta yet ;)
+        constexpr Color() : Color(ColorBaseT::RT::sMax, 0, ColorBaseT::BT::sMax) {}
+
+        constexpr Color(const ColorBaseT::PackedT& pColor) : ColorBaseT(),
             color(pColor) {}
 
         constexpr Color(const ColorBaseT::RT& pR, const ColorBaseT::GT& pG, const ColorBaseT::BT& pB, const ColorBaseT::AT& pA = ColorBaseT::AT::sMax) : ColorBaseT(),
             color(((((((typename ColorBaseT::PackedT(pA) << BitCountB) | pB)) << BitCountG) | pG) << BitCountR) | pR) {}
+
+        constexpr Color(float pPercentageR, float pPercentageG, float pPercentageB, float pPercentageA = 1) : Color(pPercentageR * ColorBaseT::RT::sMax, pPercentageG * ColorBaseT::GT::sMax, pPercentageB * ColorBaseT::BT::sMax, pPercentageA * ColorBaseT::AT::sMax) {}
         
         constexpr ColorBaseT::PackedT getColor() const {return color;}
         constexpr ColorBaseT::RT getR() const {return typename ColorBaseT::RT(color);}
         constexpr ColorBaseT::GT getG() const {return typename ColorBaseT::GT(color >> BitCountR);}
         constexpr ColorBaseT::BT getB() const {return typename ColorBaseT::BT(color >> BitCountR + BitCountG);}
         constexpr ColorBaseT::AT getA() const {return typename ColorBaseT::AT(color >> BitCountR + BitCountG + BitCountB);}
+
+        constexpr float getPercR() const {return (getR() / ColorBaseT::RT::sMax);}
+        constexpr float getPercG() const {return (getG() / ColorBaseT::GT::sMax);}
+        constexpr float getPercB() const {return (getB() / ColorBaseT::BT::sMax);}
+        constexpr float getPercA() const {return (getA() / ColorBaseT::AT::sMax);}
 
         constexpr void setR(const ColorBaseT::RT& pR) {
             color = color & ~ColorBaseT::PackedT::template bit_mask_r<0, BitCountR> | pR;
@@ -161,6 +175,11 @@ namespace pa {
         constexpr void setA(const ColorBaseT::AT& pA) {
             color = color & ~ColorBaseT::PackedT::template bit_mask_r<BitCountR + BitCountG + BitCountB, BitCountA> | (typename ColorBaseT::PackedT(pA) << (BitCountR + BitCountG + BitCountB));
         }
+
+        constexpr void setPercR(float pPercentageR) {setR(pPercentageR * ColorBaseT::RT::sMax);}
+        constexpr void setPercG(float pPercentageG) {setG(pPercentageG * ColorBaseT::GT::sMax);}
+        constexpr void setPercB(float pPercentageB) {setB(pPercentageB * ColorBaseT::BT::sMax);}
+        constexpr void setPercA(float pPercentageA) {setA(pPercentageA * ColorBaseT::AT::sMax);}
     };
 
 
