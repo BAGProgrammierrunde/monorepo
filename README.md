@@ -1,8 +1,7 @@
 # BAG Programmierrunde - Monorepo
 
-Hier findest du alle relevanten Dateien und Links rund um unser ESP32 Mikrocontroller-Projekt. Im Projekt entwickeln wir
-gemeinsam an einem Gerät, worauf als kleines Projekt zum Anfangen
-das [Dino-Spiel](https://de.wikipedia.org/wiki/Dino-Spiel) gespielt werden können soll.
+Hier findest du alle relevanten Dateien und Links rund um unser ESP32 Mikrocontroller-Projekt.
+Im Projekt entwickeln wir gemeinsam an einem Gerät, worauf als kleines Projekt zum Anfangen das [Browser Dino-Spiel](https://de.wikipedia.org/wiki/Dino-Spiel) gespielt werden können soll.
 
 * [Über uns](#über-uns)
 * [Hardware Komponenten](#hardware-komponenten)
@@ -14,78 +13,76 @@ das [Dino-Spiel](https://de.wikipedia.org/wiki/Dino-Spiel) gespielt werden könn
 
 ## Über uns
 
-Wir sind eine offene und freie Programmierrunde. Wir treffen uns jeden Mittwoch um 18 Uhr auf unserem Discord-Server.
-Öfters auch spontan zwischendurch in den Voice Channels. Komm einfach mal vorbei und tritt uns bei!
+Wir sind eine sehr programmier-interessierte offene und freie Programmierrunde. Wir treffen uns jeden Mittwoch um 18 Uhr auf unserem Discord-Server, öfters aber auch einfach spontan zwischendurch in den Voice Channels.
+Komm gerne und schau einfach mal vorbei wenn das nach etwas klingt was dir auch Spaß machen würde! :D
 
 [BAG Programmierrunde](https://discord.gg/dzDScWAK)
 
-Keine Verpflichtungen – alles locker und entspannt. Die Runde soll dazu dienen, sich auszutauschen, voneinander zu
-lernen und gemeinsam Spaß zu haben.
+Keine Verpflichtungen hier, alles locker und entspannt. Die Runde soll ja eh hauptsächlich dazu dienen einfach Spaß zu haben und das zu tun worauf wir Lust haben, im Austausch und einer netten Runde aus anderen, die deine Interessen teilen.
+Wer weiß, vielleicht lernt man ja sogar was voneinander ;).
+
+# Das Projekt
+
+Hier jetzt alle nötigen Infos, Komponenten und Schritte zum Aufsetzen, Testen und selbst Entwickeln von/an unserem aktuellen Hauptprojekt.
 
 ## Hardware Komponenten
 
 - ESP32-S3-DevKitC-1 N16R8
 - 2.8" TFT LCD 240x320 ST7789
-- ein Switch / Button
+- Aktuell ein Switch / Button
 
 ## Anleitung
 
-Das ist ein einfacher Weg, das Projekt bei dir einzurichten. Wir machen es hauptsächlich so, du kannst natürlich aber
-auch frei einen anderen wählen.
+Hier ein einfacher Weg, das Projekt bei dir einzurichten. Wir machen es hauptsächlich so, du kannst natürlich aber auch frei einen anderen wählen.
 
 ### Benötigte Programme
 
-Für diesen Weg müsstest du dir diese Programme einmal herunterladen und installieren:
+Für diesen Weg brauchst du folgende Programme herunterladen und installiert:
 
 - Visual Studio Code: https://code.visualstudio.com/
 - Git: https://git-scm.com/
 
 ### Schritt-für-Schritt Einrichtung
 
-1. Nachdem du VS Code gestartet hast, klicke links auf den Reiter `Extensions`, suche nach folgenden Erweiterungen und
-   installiere sie:
+1. Starte VS Code, klicke links auf den Reiter `Extensions` und suche nach den folgenden beiden Erweiterungen und installiere sie:
     - `C/C++` von Microsoft
     - `ESP-IDF` von Espressif Systems
-2. Öffne die ESP-IDF Extension über das Espressif-Symbol in der linken Seitenleiste:
-    - Klappe in der Liste ganz unten `Advanced` auf
+2. Öffne die ESP-IDF Extension über das neu dazu gekommene Espressif-Symbol in der linken Seitenleiste:
+    - Klappe in der nun links geöffneten Liste in ganz unten `Advanced` auf
     - Klicke hier auf den ersten Eintrag `Open ESP-IDF Installation Manager`
-    - Wähle im oben in der Mitte geöffnetem Popup `Github` aus
-3. Im ESP-IDF Installation Manager:
+    - Wähle jetzt im oben in der Mitte geöffneten Popup `Github` aus
+3. Im ESP-IDF Installation Manager (neue geöffnetes Fenster):
     - Klicke auf den Button `Start Installation`
     - Wähle `Custom Installation` aus (`Start Configuration Wizard`)
     - Bei Step 2: Klicke auf `Install Python` (falls das Fenster keine Rückmeldung mehr gibt, einfach warten)
-    - Bei Step 3: Klicke auf `esp32s3` (oder lasse den Haken bei `All` drin) und dann auf
-      `Continue with Selected Targets`
+    - Bei Step 3: Klicke auf `esp32s3` (oder lass einfach den Haken bei `All` drin) und gehe dann auf `Continue with Selected Targets`
     - Bei Step 4: Klicke bei Stable Releases auf `Latest` (aktuell: `v5.5.3`) und dann unten auf `Continue Installation`
     - Bei Step 5: Klicke auf `Continue with Selected Mirrors` (die schnellsten Server werden automatisch ausgewählt)
-    - Bei Step 6: Wähle zusätzlich zu `core` mindestens auch `ide` aus und klicke dann auf `Continue to Tools selection`
+    - Bei Step 6: Wähle hier mindestens `core` und `ide` aus (und alle weiteren die du möchtest) und klicke dann auf `Continue to Tools selection`
     - Bei Step 7: Klicke auf `Continue`
-    - Bei Step 8: Klicke auf `Continue` (hier kannst du den Installationspfad ändern, Empfehlung ist es, den Standard zu
-      lassen)
+    - Bei Step 8: Klicke auf `Continue` (Hier kannst du den Installationspfad ändern. Wir lassen oft einfach den Standard drin, aber wie du möchtest)
     - Bei Step 9: Klicke auf `Start Installation`
-    - Warte, bis die Installation abgeschlossen ist
+    - Warte bis die Installation abgeschlossen ist
     - Klicke auf `Complete Installation`
     - Klicke auf `Exit Installer`
-4. Klicke in VS Code links auf den Reiter `Source Control`
+4. In VS Code nun wieder, klicke ganz links in der Seitenleiste auf das `Source Control`-Symbol
     - Wähle hier `Clone Repository` aus
-    - Trage im aufkommenden Dialogfeld dann folgende URL ein: https://github.com/BAGProgrammierrunde/monorepo.git
-    - Wähle den gewünschten Zielordner fürs Projekt aus und öffne das Projekt.
-    - Logge dich bei GitHub ein, falls du dazu aufgefordert wirst (wenn du noch keinen GitHub Account hast, kannst du
-      dich hier anmelden: https://github.com/signup)
-5. Nach dem erfolgreichen Öffnen des Projektes, wieder im Explorer, den `.vscode` Ordner löschen (wenn vorhanden)
-6. Klicke in der linken Seitenleiste wieder auf die Espressif-Extension:
-    - In der Liste ganz unten den Reiter `Advanced` aufklappen
-    - Klicke hier auf den Eintrag `Add .vscode subdirectory files`
+    - Trage im aufkommenden Dialogfeld dann folgende URL ein: `https://github.com/BAGProgrammierrunde/monorepo.git`
+    - Wähle den gewünschten Zielordner für das Projekt aus und öffne es
+    - Logge dich bei GitHub ein falls du dazu aufgefordert wirst (Wenn du noch keinen GitHub Account hast, kannst du dich hier anmelden: `https://github.com/signup`)
+5. Nach dem erfolgreichen Öffnen des Projektes wieder im VS Code File Explorer, den `.vscode` Ordner löschen (wenn vorhanden)
+6. Klicke in der linken Seitenleiste wieder auf das Espressif-Symbol:
+    - In der Liste ganz unten wieder den Reiter `Advanced` aufklappen
+    - Und hier auf den Eintrag `Add .vscode subdirectory files` klicken
 7. In der Leiste ganz unten in VS Code muss Folgendes eingestellt werden:
-    - Klicke auf `ESP-IDF vx.x` und wähle oben im Popup die eben installierte Version aus
+    - Klicke auf `ESP-IDF vx.x` und wähle im Popup mittig oben die eben installierte Version aus
     - Klicke daneben auf den Stern und wähle oben im Popup `UART` aus
-    - Im Feld daneben sollte `Detect` oder der richtige COM-Port stehen, an dem dein ESP angeschlossen ist
-    - Neben dem COM-Port sollte als Gerät `esp32s3` ausgewählt werden
-    - Nachdem du das Gerät ausgewählt hast, wirst du aufgefordert einen Chip auszuwählen. Diese Auswahl mit einem Escape
-      oder Klick außerhalb des Dialoges schließen
+    - Im Feld daneben sollte `Detect` oder der richtige COM-Port stehen, an dem dein ESP ggf. angeschlossen ist
+    - Neben dem COM-Port sollte dann als Gerät `esp32s3` ausgewählt stehen. Wenn nicht, dann einfach drauf klicken und den richtigen Eintrag wählen
+    - Nachdem du den richtigen Eintrag ausgewählt hast, wirst du mit einem Popup wieder in der Mitte oben aufgefordert, einen Chip auszuwählen. Diese Auswahl mit einem Escape oder Klick irgendwo auf den Bildschirm schließen
 
-Bei Fragen oder Problemen aller Art melde dich super gerne bei uns. Wir helfen dir gerne weiter! :D
-Und nun viel Spaß mit deinem eingerichteten Projekt!
+Bei Fragen oder Problemen aller Art melde dich super gerne bei uns. Wir helfen immer gern weiter! :D
+Und nun viel Spaß mit deinem eingerichteten Projekt! Die Welt steht dir offen.
 
 ### Das Projekt auf den ESP laden und laufen lassen
 
