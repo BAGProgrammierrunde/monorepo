@@ -1,88 +1,59 @@
 #include <iostream>
-#include <cstring>
-#include <tuple>
-#include <type_traits>
-#include <limits>
-
 #include <freertos/FreeRTOS.h>
-#include <driver/gpio.h>
-#include <driver/spi_master.h>
-#include <esp_timer.h>
+//#include <driver/gpio.h>
+#include <driver/touch_sens.h>
 
-#include "engine/bit_uint.hpp"
-#include "engine/Color.hpp"
+#include "engine/bits.hpp"
 #include "engine/ClockTimer.hpp"
 #include "engine/IntervalTimer.hpp"
-//#include "main/Display.hpp"
-
-//void mainn(void* pArgs) {}
-//xTaskCreatePinnedToCore(&mainn, "Main", 8192, nullptr, 10, nullptr, 1);
+#include "main/TouchPin.hpp"
+#include "main/Display.hpp"
 
 extern "C" int app_main() {
-    // BUTTON
-    gpio_set_direction(GPIO_NUM_7, GPIO_MODE_INPUT);
-    gpio_pullup_en(GPIO_NUM_7);
-    bool buttonPressed = false;
-    pa::IntervalTimer<std::int64_t> buttonDebounceTimer(100*1000);
+    constexpr unsigned int SAMPLE_NUM = 1;
 
-    // DISPLAY
-    /*pa::Display display(GPIO_NUM_11, GPIO_NUM_12, GPIO_NUM_10, GPIO_NUM_17, GPIO_NUM_18);
-    display.init();
-    display.fill(pa::RGB565(0, 0, 0)/ *pa::Color::Black.getRGB565()* /);
-    //display.drawVerticalLine(160, pa::RGB565()/ *pa::Color::White.getRGB565()* /);
-    display.drawRainbowRect();
-    display.switchFrameBuffers();
-    display.sendActiveBuffer();
-    display.fill(pa::RGB565(0, 0, 0));*/
+    touch_sensor_sample_config_t sample_cfg[SAMPLE_NUM] = {TOUCH_SENSOR_V2_DEFAULT_SAMPLE_CONFIG(10, TOUCH_VOLT_LIM_L_0V5, TOUCH_VOLT_LIM_H_2V7)};
 
-    pa::Color<8,8,8,0> col;
-    pa::Color<5,6,5,0> coll(10,10,10);
-    coll.getR();
-    pa::Color<8,8,8,8>::AT b = pa::Color<8,8,8,8>::AT::sMax;
-    pa::Color<8,8,8,8>::AT a = col.getA().sMax;
+    touch_sensor_config_t touch_cfg = TOUCH_SENSOR_DEFAULT_BASIC_CONFIG(SAMPLE_NUM, sample_cfg);
+    touch_sensor_handle_t sens_handle = NULL;
+    touch_sensor_new_controller(&touch_cfg, &sens_handle);
 
+    touch_channel_config_t chan_cfg = {
+        .active_thresh = {0},
+        .charge_speed = TOUCH_CHARGE_SPEED_4,
+        .init_charge_volt = TOUCH_INIT_CHARGE_VOLT_DEFAULT
+    };
+    int chan_id = 1;
+    touch_channel_handle_t chan_handle = NULL;
+    touch_sensor_new_channel(sens_handle, chan_id, &chan_cfg, &chan_handle);
 
-    // LOOP
-    pa::IntervalTimer<std::int64_t> idfIdleTimer(3*1000*1000);
-    int64_t curFrameTime = 0;
-    bool running = true;
-    while (running)
+    touch_proximity_config_t prox_cfg = {
+        .proximity_chan = {chan_handle, chan_handle, chan_handle},
+        .scan_times = 5
+    };
+    touch_sensor_config_proximity_sensing(sens_handle, &prox_cfg);
+    
+    touch_sensor_enable(sens_handle);
+
+    touch_sensor_start_continuous_scanning(sens_handle);
+    //touch_sensor_trigger_oneshot_scanning(sens_handle, -1);
+    
+    while (true)
     {
-        curFrameTime = esp_timer_get_time();
+        /*uint32_t raw[SAMPLE_NUM] = {0};
+        uint32_t benchmark[SAMPLE_NUM] = {0};
 
-        // Button events
-        if (buttonDebounceTimer.tryUpdate(curFrameTime))
-        {
-            bool buttonCurPressed = !gpio_get_level(GPIO_NUM_7);
-            if (buttonCurPressed != buttonPressed)
-            {
-                if (buttonCurPressed)
-                {
-                    std::cout << "PRESSED" << std::endl;
-                    /*display.fill(page::RGB565(0, 0, 0));
-                    display.drawHorizontalLine(70, pa::RGB565());
-                    display.switchFrameBuffers();
-                    display.sendActiveBuffer();*/
-                }
-                else
-                {
-                    std::cout << "RELEASED\n" << std::endl;
-                    /*display.fill(pa::RGB565(0, 0, 0));
-                    display.drawHorizontalLine(140, pa::RGB565());
-                    display.switchFrameBuffers();
-                    display.sendActiveBuffer();*/
-                }
-                buttonPressed = buttonCurPressed;
-            }
-        }
-        
-        // IDF FreeRTOS idling (the delay) every couple of seconds and the "yield"ing here every iteration is kinda required for background processes to take place so we don't completely block the CPU with our main loop :).
-        if (idfIdleTimer.tryUpdate(curFrameTime))
-        {
-            std::cout << "IDLED 1" << std::endl;
-            vTaskDelay(1);
-        }
-        else taskYIELD();
+        touch_channel_read_data(chan_handle, TOUCH_CHAN_DATA_TYPE_SMOOTH, raw);
+        touch_channel_read_data(chan_handle, TOUCH_CHAN_DATA_TYPE_BENCHMARK, benchmark);
+
+        std::int32_t delta = static_cast<std::int32_t>(benchmark[0]) - static_cast<std::int32_t>(raw[0]);
+        std::cout << "raw: " << raw[0] << " | bench: " << benchmark[0] << " | delta: " << (delta > 0 ? " " : "") << delta << std::endl;*/
+
+        uint32_t data[SAMPLE_NUM] = {0};
+        touch_channel_read_data(chan_handle, TOUCH_CHAN_DATA_TYPE_PROXIMITY, data);
+        std::cout << "Data: " << data[0] << std::endl;
+
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 
     return 0;
