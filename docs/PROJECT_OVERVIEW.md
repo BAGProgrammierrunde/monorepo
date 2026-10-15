@@ -56,6 +56,120 @@ flowchart TD
     AG --> L
 ```
 
+## UML-Klassendiagramme
+
+### Engine + Spiel (Uebersicht)
+
+```mermaid
+classDiagram
+    class System {
+        +init()
+        +start()
+        +start~SceneT~(...)
+        +setScene~SceneT~(...)
+    }
+
+    class Scene {
+        <<abstract>>
+        +start(Device& device)
+        +update(float deltaTime)*
+    }
+
+    class GameScene {
+        -Device* m_Device
+        -Dino dino
+        -bool m_IsInStartScreen
+        -bool m_IsGameOver
+        +start(Device& device)
+        +update(float deltaTime)
+    }
+
+    class Dino {
+        -bool m_Alive
+        -int m_CurrentY
+        -float m_JumpHeight
+        -float m_Velocity
+        +handleJump(float deltaTime, bool buttonPressed)
+        +updateStep()
+        +drawDino()
+        +checkCollision(Device& device)
+    }
+
+    class Device {
+        -Display m_Display
+        -Button m_ButtonAPressed
+        -Button m_ButtonBPressed
+        +getDisplay() Display&
+        +isButtonAPressed() bool
+        +isButtonBPressed() bool
+    }
+
+    class Display {
+        -ST7789 driver
+        -Color* active_frame_buffer
+        -Color* next_frame_buffer
+        +init()
+        +switchFrameBuffers()
+        +sendActiveBuffer()
+    }
+
+    class ST7789 {
+        +init()
+        +setOrientation(...)
+        +setAddressWindow(...)
+        +sendDataQueued(const Color* data)
+    }
+
+    class Button {
+        -gpio_num_t pin
+        +isPressed() bool
+    }
+
+    class GAL {
+        <<static>>
+        +init(Display* pDisplay, ...)
+        +fill_background(const Color& color)
+        +draw_at(...)
+        +switch_frame_buffers()
+        +send_active_buffer()
+    }
+
+    Scene <|-- GameScene
+    System *-- Device
+    System o-- Scene : active via PolyValue
+    Device *-- Display
+    Device *-- Button
+    Display *-- ST7789
+    GameScene *-- Dino
+    GameScene --> Device : uses
+    Dino --> Device : collision check
+    GAL --> Display : uses
+```
+
+### Core-Utility-Typen
+
+```mermaid
+classDiagram
+    class PolyValue~BaseT~ {
+        +setInPlace(T* object)
+        +clear()
+        +operator->() BaseT*
+    }
+
+    class AnyCallable~ReturnT(Params...)~ {
+        +operator=(function)
+        +operator()() ReturnT
+    }
+
+    class Scene
+    class System
+
+    PolyValue~BaseT~ o-- BaseT : owns polymorph object
+    AnyCallable~ReturnT(Params...)~ o-- PolyValue~CallableBase~
+    System o-- PolyValue~Scene~ : active scene
+    System o-- AnyCallable~void()~ : delayedSceneSwitchFunc
+```
+
 ## Root-Dateien
 
 | Datei | Aufgabe |
