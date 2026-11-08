@@ -55,9 +55,7 @@ bool Dino::checkCollision(Device& device) {
     constexpr int bodyCount = 12;
     constexpr int x = 0;
     constexpr int y = 1;
-    constexpr int displayWidth = 240;
-    constexpr int displayHeight = 320;
-    constexpr int bufferWidth = displayWidth;
+    constexpr int displayWidth = Display::s_Width;
     constexpr int dinoScreenX = 10;
     constexpr int dinoBody[bodyCount][2] = {
         {1, 21},
@@ -91,40 +89,17 @@ bool Dino::checkCollision(Device& device) {
     };
 
     const auto toBufferIndex = [&](int screenX, int screenY) {
-        const int bufferX = displayWidth - 1 - screenY;
-        const int bufferY = screenX;
-        // ESP_LOGI(TAG, "(%d, %d) -> (%d, %d)", screenX, screenY, bufferX, bufferY);
-        return bufferY * bufferWidth + bufferX;
+        return screenY * displayWidth + screenX;
     };
-
-    // TODO just for debugging
-    const auto drawHit = [&](int index) {
-        const int centerX = index % bufferWidth;
-        const int centerY = index / bufferWidth;
-        for (int dy = -1; dy <= 1; ++dy) {
-            for (int dx = -1; dx <= 1; ++dx) {
-                device.getDisplay().setPixel((centerY + dy) * bufferWidth + (centerX + dx), RED);
-            }
-        }
-    };
-
-    // TODO draws a red line - just for debugging
-    for (int dbgX = 0; dbgX < 320; ++dbgX) {
-        int idxTL = toBufferIndex(dbgX, 221);
-        device.getDisplay().setPixel(idxTL, RED);
-    }
 
     const auto isInRangeUpTo = [&](int index) {
-        constexpr int bufferWidth = 240;
-        int y = index % bufferWidth;
-        return y < 20;
+        return index / displayWidth >= Display::s_Height - 20;
     };
 
     for (int i = 0; i < bodyCount; ++i) {
         const int index = toBufferIndex(dinoScreenX + dinoBody[i][x], m_CurrentY + dinoBody[i][y]);
         if (isInRangeUpTo(index)) continue;
         if (device.getDisplay().getPixel(index) == FOREGROUND_COLOR) {
-            drawHit(index);
             //ESP_LOGI(TAG, "Body %d", index);
             return true;
         }
@@ -138,7 +113,6 @@ bool Dino::checkCollision(Device& device) {
             const int index = toBufferIndex(dinoScreenX + dinoRightStepFoot[i][x], m_CurrentY + dinoRightStepFoot[i][y]);
             if (isInRangeUpTo(index)) continue;
             if (device.getDisplay().getPixel(index) == FOREGROUND_COLOR) {
-                drawHit(index);
                 //ESP_LOGI(TAG, "Right %d", index);
                 return true;
             }
@@ -148,7 +122,6 @@ bool Dino::checkCollision(Device& device) {
             const int index = toBufferIndex(dinoScreenX + dinoLeftStepFoot[i][x], m_CurrentY + dinoLeftStepFoot[i][y]);
             if (isInRangeUpTo(index)) continue;
             if (device.getDisplay().getPixel(index) == FOREGROUND_COLOR) {
-                drawHit(index);
                 //ESP_LOGI(TAG, "Left %d", index);
                 return true;
             }

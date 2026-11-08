@@ -14,6 +14,7 @@ void GAL::init(Display* pDisplay, const uint16_t pWidth, const uint16_t pHeight,
     width               = pWidth;
     height              = pHeight;
     current_orientation = orientation;
+    display->setOrientation(static_cast<ST7789::orientation_t>(orientation), width, height);
 }
 
 void GAL::set_orientation(const orientation_t orientation) {
@@ -46,21 +47,16 @@ void IRAM_ATTR GAL::draw_placeholder(const Color& color) {
     const int right       = static_cast<int>(width) - 1 - margin;
     const int top         = margin;
     const int bottom      = static_cast<int>(height) - 1 - margin;
-    const int bufferWidth = static_cast<int>(height);
-
-    auto to_ccw_buffer_index = [&](int x, int y) -> int {
-        // Logical (x,y) with rotated width/height -> CCW-rotated linear buffer index.
-        return (static_cast<int>(width) - 1 - x) * bufferWidth + y;
-    };
+    auto to_buffer_index = [&](int x, int y) -> int { return y * static_cast<int>(width) + x; };
 
     for (int x = left; x <= right; ++x) {
-        display->setPixel(to_ccw_buffer_index(x, top), color);
-        display->setPixel(to_ccw_buffer_index(x, bottom), color);
+        display->setPixel(to_buffer_index(x, top), color);
+        display->setPixel(to_buffer_index(x, bottom), color);
     }
 
     for (int y = top; y <= bottom; ++y) {
-        display->setPixel(to_ccw_buffer_index(left, y), color);
-        display->setPixel(to_ccw_buffer_index(right, y), color);
+        display->setPixel(to_buffer_index(left, y), color);
+        display->setPixel(to_buffer_index(right, y), color);
     }
 }
 
@@ -191,88 +187,11 @@ void IRAM_ATTR GAL::draw_at(const uint8_t* sprite, int startBitIndex, int srcWid
         return;
     }
 
-    const int fb_w = std::min(width, height);
-    const int fb_h = std::max(width, height);
-
     auto set_pixel_oriented = [&](int lx, int ly, Color color) {
-        int px = lx;
-        int py = ly;
-        switch (current_orientation) {
-        case PORTRAIT:
-            break;
-        case PORTRAIT_INVERTED:
-            px = fb_w - 1 - lx;
-            py = fb_h - 1 - ly;
-            break;
-        case LANDSCAPE:
-            px = fb_w - 1 - ly;
-            py = lx;
-            break;
-        case LANDSCAPE_INVERTED:
-            px = ly;
-            py = fb_h - 1 - lx;
-            break;
-        default:
-            break;
-        }
-
-        if ((unsigned)px < (unsigned)fb_w && (unsigned)py < (unsigned)fb_h) {
-            // TODO remove me later - just for debugging
-            if (display->getPixel(py * fb_w + px) != RED)
-                display->setPixel(py * fb_w + px, color);
+        if ((unsigned)lx < (unsigned)width && (unsigned)ly < (unsigned)height) {
+            display->setPixel(ly * width + lx, color);
         }
     };
-
-    if (current_orientation == PORTRAIT) {
-        for (int sy = first_sy; sy <= last_sy; ++sy) {
-            const int y0           = off_y + sy * scale;
-            int d_base             = y0 * width + first_dest_x;
-            const int row_bit_base = startBitIndex + sy * srcWidth;
-
-            auto bit_at = [&](int sx) -> bool {
-                const int bit_index   = row_bit_base + sx;
-                const int byte_idx    = bit_index >> 3;      // / 8
-                const int bit_in_byte = 7 - (bit_index & 7); // % 8, invertiert
-                return (sprite[byte_idx] >> bit_in_byte) & 0x1;
-            };
-
-            auto paint_run = [&](int run_w, Color color) {
-                if (run_w <= 0) {
-                    return;
-                }
-                if (renderForegroundColorOnly && color == bg) {
-                    d_base += run_w;
-                    return;
-                }
-                int d = d_base;
-                for (int s = 0; s < scale; ++s) {
-                    int di = d + s * width;
-                    for (int i = 0; i < run_w; ++i) {
-                        // TODO remove me later - just for debugging
-                        if (display->getPixel(di + 1) != RED)
-                            display->setPixel(di++, color);
-                    }
-                }
-                d_base += run_w;
-            };
-
-            if (left_w) {
-                const Color c = bit_at(src_scaled_start / scale) ? fg : bg;
-                paint_run(left_w, c);
-            }
-
-            for (int k = 0, sx = sx_start_full; k < full_cols; ++k, ++sx) {
-                const Color c = bit_at(sx) ? fg : bg;
-                paint_run(scale, c);
-            }
-
-            if (right_w) {
-                const Color c = bit_at(sx_start_full + full_cols) ? fg : bg;
-                paint_run(right_w, c);
-            }
-        }
-        return;
-    }
 
     for (int sy = first_sy; sy <= last_sy; ++sy) {
         const int y0           = off_y + sy * scale;

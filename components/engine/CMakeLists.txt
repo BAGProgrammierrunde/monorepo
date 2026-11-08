@@ -9,6 +9,6 @@ idf_component_register(
         "core/scene.cpp"
         "core/system.cpp"
         "debug/debug_measurement.cpp"
-        REQUIRES esp_driver_spi esp_driver_gpio esp_timer
+        REQUIRES esp_driver_spi esp_driver_gpio esp_timer freertos heap
         INCLUDE_DIRS "."
 )

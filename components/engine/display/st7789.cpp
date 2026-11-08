@@ -4,6 +4,8 @@
 
 #include <driver/gpio.h>
 #include <esp_log.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 #define TAG "ST7789"
 
@@ -13,7 +15,7 @@
 #define PIN_NUM_DC   GPIO_NUM_17
 #define PIN_NUM_RST  GPIO_NUM_18
 
-#define CLOCK_SPEED_HZ (80 * 1000 * 1000)
+#define CLOCK_SPEED_HZ (20 * 1000 * 1000)
 
 void ST7789::init() {
     ESP_LOGD(TAG, "Initialize display driver ST7789..");
@@ -37,8 +39,6 @@ void ST7789::init() {
     vTaskDelay(pdMS_TO_TICKS(120));
     sendCmd(ST7789_CMD_DISPON);
 
-    // TODO width / height should not be static -> move to paramters from GAL
-    setAddressWindow(0, 0,  240 - 1, 320 - 1);
     ESP_LOGD(TAG, "Initialization successful");
 }
 
@@ -158,3 +158,4 @@ void ST7789::initSPI() {
     gpio_set_direction(PIN_NUM_DC, GPIO_MODE_OUTPUT);
     ESP_ERROR_CHECK(spi_bus_add_device(SPI2_HOST, &devcfg, &spi));
 }
+

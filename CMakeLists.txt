@@ -14,4 +14,4 @@ else()
 endif()
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(PROJECT_NAME)
+project(${PROJECT_NAME})
