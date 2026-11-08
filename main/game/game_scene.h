@@ -13,11 +13,13 @@ class GameScene final : public Scene {
     Device* m_Device = nullptr;
     uint64_t startTime = 0;
     int m_Shift = 0;
+    float m_FinalScore = 0;
 
     Dino dino;
 
     bool m_IsInStartScreen = true;
     bool m_IsGameOver = false;
+    bool m_PreviousButtonPressed = false;
 
     static constexpr unsigned int groundTextureCount = 5;
     const ground_t* groundTextures[groundTextureCount] = {};
@@ -29,18 +31,17 @@ class GameScene final : public Scene {
     void drawText(const std::string_view& text, int x, int y, int scale);
     void drawInt(int value, int x, int y, int scale);
 
-    inline bool handleGameOverScreen();
     inline void updateShift(float survivalSeconds);
     float getSurvivalSeconds();
     static inline void resetScreen();
-    inline void handleStartScreen();
     inline void drawStartScreen();
+    inline void drawGameOverScreen();
     inline void drawScore(float survivalSecs);
     inline void handleGround();
     inline void updateGround();
     inline void drawGround();
-    inline bool handleDino(float deltaTime);
-    inline void handleGameOver(bool collided);
+    inline bool handleDino(float deltaTime, bool jumpPressed);
+    void resetRun();
 
   public:
     void start(Device& device) override;

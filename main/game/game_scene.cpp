@@ -18,56 +18,64 @@ constexpr float scoreMultiplier = 7.f;
 void GameScene::start(Device& device) {
     m_Device  = &device;
     startTime = esp_timer_get_time();
+    m_PreviousButtonPressed = m_Device->isButtonAPressed();
     for (unsigned int i = 0; i < groundTextureCount; ++i) {
         groundTextures[i] = &grounds[0];
     }
 }
 
 void GameScene::update(float deltaTime) {
-    // TODO split update and draw
-    // TODO implement dedicated collision system
-    if (handleGameOverScreen()) return;
+    const bool buttonPressed = m_Device->isButtonAPressed();
+    const bool buttonJustPressed = buttonPressed && !m_PreviousButtonPressed;
+    m_PreviousButtonPressed = buttonPressed;
+
+    if (m_IsInStartScreen) {
+        resetScreen();
+        drawGround();
+        drawStartScreen();
+        if (buttonJustPressed) {
+            m_IsInStartScreen = false;
+            resetRun();
+        }
+        return;
+    }
+
+    if (m_IsGameOver) {
+        resetScreen();
+        drawGround();
+        drawScore(m_FinalScore);
+        drawGameOverScreen();
+        if (buttonJustPressed) {
+            m_IsGameOver = false;
+            resetRun();
+        }
+        return;
+    }
 
     resetScreen();
-    handleStartScreen();
     const float survivalSeconds  = getSurvivalSeconds();
     drawScore(survivalSeconds);
     updateShift(survivalSeconds);
     handleGround();
-    // TODO extract collision detection from Dino
-    const bool collided = handleDino(deltaTime);
-    handleGameOver(collided);
-}
-
-bool GameScene::handleGameOverScreen() {
-    if (m_IsGameOver) {
-        if (m_Device->isButtonAPressed()) {
-            m_IsGameOver = false;
-            // TODO reset current game state
-        } else {
-            return true;
-        }
+    const bool collided = handleDino(deltaTime, buttonJustPressed);
+    if (collided) {
+        m_FinalScore = survivalSeconds;
+        m_IsGameOver = true;
     }
-    return false;
 }
 
 void GameScene::resetScreen() {
     GAL::fill_background(BACKGROUND_COLOR);
 }
 
-void GameScene::handleStartScreen() {
-    if (m_IsInStartScreen) {
-        if (m_Device->isButtonAPressed()) {
-            m_IsInStartScreen = false;
-        } else {
-            drawStartScreen();
-        }
-    }
-}
-
 void GameScene::drawStartScreen() {
     drawText("Dino Game", 40, 30, 4);
     drawText("Press Button to Start", 20, 100, 3);
+}
+
+void GameScene::drawGameOverScreen() {
+    drawText("GAME OVER", 60, 50, 4);
+    drawText("Press Button to Restart", 20, 110, 2);
 }
 
 void GameScene::updateShift(float survivalSeconds) {
@@ -86,8 +94,8 @@ void GameScene::handleGround() {
     drawGround();
 }
 
-bool GameScene::handleDino(const float deltaTime) {
-    dino.handleJump(deltaTime, m_Device->isButtonAPressed());
+bool GameScene::handleDino(const float deltaTime, bool jumpPressed) {
+    dino.handleJump(deltaTime, jumpPressed);
     dino.updateStep();
     const bool collided = dino.checkCollision(*m_Device);
     // ESP_LOGI(TAG, "Game Over!");
@@ -99,9 +107,13 @@ bool GameScene::handleDino(const float deltaTime) {
     return collided;
 }
 
-void GameScene::handleGameOver(bool collided) {
-    if (collided) {
-        m_IsGameOver = true;
+void GameScene::resetRun() {
+    startTime = esp_timer_get_time();
+    m_Shift = 0;
+    m_FinalScore = 0;
+    dino = Dino{};
+    for (unsigned int i = 0; i < groundTextureCount; ++i) {
+        groundTextures[i] = &grounds[0];
     }
 }
 
