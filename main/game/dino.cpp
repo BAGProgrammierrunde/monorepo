@@ -25,7 +25,7 @@ void Dino::handleJump(float deltaTime, bool buttonPressed) {
         }
     } else {
         m_Velocity -= s_Gravity * deltaTime;
-        m_JumpHeight += m_Velocity;
+        m_JumpHeight += m_Velocity * deltaTime;
 
         if (isGrounded()) {
             m_JumpHeight = 0;

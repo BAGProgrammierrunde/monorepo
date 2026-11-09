@@ -16,7 +16,7 @@ void System::init() {
     device.getDisplay().init();
 
     // DISCUSS Here or in game or in device?
-    GAL::init(&device.getDisplay(), displayWidth, displayHeight, LANDSCAPE);
+    GAL::init(&device.getDisplay(), displayWidth, displayHeight, LANDSCAPE_INVERTED);
 
     // DISCUSS Clears the buffers - here or in GAL or in display?
     GAL::fill_background(BLACK);
